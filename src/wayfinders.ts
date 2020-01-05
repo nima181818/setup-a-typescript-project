@@ -21,19 +21,30 @@ export class Astar{
     constructor(){
         this.rowCount = 600;
         this.colCount = 400;
+        for(let j=0;j<80;j++){
+			this.map[j] = []
+			for(let k=0;k<120;k++){
+				this.map[j][k] = 0
+			}
+		}
     }
     //是否为障碍物
     IsBar(x:number,y:number):boolean{
         let xshrink = parseInt((x/5).toString());
-        let Yshrink = parseInt((y/5).toString())
-        if(this.map[Yshrink][xshrink]==3){
+        let Yshrink = parseInt((y/5).toString());
+        try{
+            if(this.map[Yshrink][xshrink]==3){
          
-            return true;
+                return true;
+            }
+            else{
+               
+                return false;
+            }
+        }catch(e){
+            debugger
         }
-        else{
-           
-            return false;
-        }
+      
     }
      //当前坐标是否在OpenList
      IsInOpenList(x:number,y:number):boolean{
@@ -138,10 +149,13 @@ export class Astar{
             console.log(p+".....");
             while(p.father!=null){
                 p= p.father;
-            
-                this.map[p.y][p.x]=4;
+                let xshrink = parseInt((p.x/5).toString());
+                 let Yshrink = parseInt((p.y/5).toString());
+                this.map[Yshrink][xshrink]=4;
             }
             //把终结点也设置成4
-            this.map[this.endPoint.y][this.endPoint.x]=4;
+            let endxshrink = parseInt((this.endPoint.x/5).toString());
+            let endYshrink = parseInt((this.endPoint.y/5).toString());
+            this.map[endYshrink][endxshrink]=4;
         }
     }

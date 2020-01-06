@@ -4,13 +4,12 @@ interface Position1 {
     y: number
 }
 import { Point,Astar } from './wayfinders'
-import {obstacle} from './obstacle';
+import {Obstacle} from './obstacle';
 import {Watcher} from './watcher';
 let globalAstarmanage = new Astar();
     //初始化地图
-function initGlobalMap(){
-
-}
+let obstacle = new Obstacle()
+globalAstarmanage.initGlobalMap(obstacle);
 class Eventlist{
     canvasclickeventlist:Function[]=[]
     windowmousemoveeventlist:Function[]=[]
@@ -51,12 +50,14 @@ export class Tank {
     static id:number=-1
     _id:number
     blood: number
+    matrixposition:Position1={x:0,y:0}
     watcher:Watcher<Tank>
     mapmanager:Astar=new Astar()
     autofirecurrency:number=200
     bulletmaxmile:number=173
     clicktimestamp:number=new Date().getTime()
     currentclickpoints: Position1={x:null,y:null}
+    targetpoint:Position1={x:0,y:0} //目标点
     width:number=30
     height:number = 30
     currentctx: any=null
@@ -81,63 +82,83 @@ export class Tank {
         this.position.x = position.x;
         this.position.y = position.y
     
-        this.initMap();
+        this.initStartpointendpoint();
         
     }
     currentclickpointsTrigger(){
        
          this.ownobstacles=[{
              x:this.currentclickpoints.x-60<0?0:this.currentclickpoints.x-60,
-             y:this.currentclickpoints.y-70<0?0:this.currentclickpoints.x-60
+             y:this.currentclickpoints.y-60<0?0:this.currentclickpoints.y-60
          },{
             x:this.currentclickpoints.x+90>600?600:this.currentclickpoints.x+90,
             y:this.currentclickpoints.y+75>400?400:this.currentclickpoints.y+75
          }];
-         console.log(this.ownobstacles,"触发发布")
+     
+         this.initStartpointendpoint();
     }
-    initMap(){
+    initStartpointendpoint(){
 		// for(let j=0;j<80;j++){
 		// 	this.mapmanager.map[j] = []
 		// 	for(let k=0;k<120;k++){
 		// 		this.mapmanager.map[j][k] = 0
 		// 	}
 		// }
-		//出发点
-		this.mapmanager.startPoint.x = this.position.x;
-		this.mapmanager.startPoint.y = this.position.y;
-		this.mapmanager.startPoint.father = null;
-		let stepx = parseInt((this.mapmanager.startPoint.x/5).toString())
-		let stepy = parseInt((this.mapmanager.startPoint.y/5).toString())
-		this.mapmanager.map[stepy][stepx] = 1;
-		//终点
-		this.mapmanager.endPoint.x = 25
-		this.mapmanager.endPoint.y = 5;
-		this.mapmanager.startPoint.father = null;
-		let stepx1 = parseInt((this.mapmanager.endPoint.x/5).toString())
-		let stepy1 = parseInt((this.mapmanager.endPoint.y/5).toString())
-		this.mapmanager.map[stepy1][stepx1] = 2;
-		//障碍物
-		for(let j=0;j<this.mapmanager.map.length;j++){
-			for(let k=0;k<this.mapmanager.map[j].length;k++){
-				  for(let u=0;u<obstacle.points.length;u++){
-                      if(
-						  k*5<=obstacle.points[u].x
-						  &&
-						  (k+1)*5>obstacle.points[u].x
-						  &&
-						  j*5<=obstacle.points[u].y
-						  &&
-						  (j+1)*5>obstacle.points[u].y
-					  ){
-						this.mapmanager.map[j][k] =3
-					  }
-				  }
-                
-			}
-		}
-		// this.mapmanager.FindPoint();
+        //出发点
+        
+		globalAstarmanage.startPoint.x = this.currentclickpoints.x;
+		globalAstarmanage.startPoint.y = this.currentclickpoints.y;
+        globalAstarmanage.startPoint.father = null;
+        //旧的矩阵点设置为0
+        globalAstarmanage.map[this.matrixposition.y][this.matrixposition.x] = 0;
+		let stepx = parseInt((globalAstarmanage.startPoint.x/5).toString())
+		let stepy = parseInt((globalAstarmanage.startPoint.y/5).toString())
+        globalAstarmanage.map[stepy][stepx] = 1;
+        this.matrixposition.x = stepx;
+        this.matrixposition.y = stepy;
 
-	}
+		//终点
+		globalAstarmanage.endPoint.x = this.targetpoint.x
+		globalAstarmanage.endPoint.y = this.targetpoint.y
+		globalAstarmanage.startPoint.father = null;
+		let stepx1 = parseInt((globalAstarmanage.endPoint.x/5).toString())
+		let stepy1 = parseInt((globalAstarmanage.endPoint.y/5).toString())
+		globalAstarmanage.map[stepy1][stepx1] = 2;
+	
+		// this.mapmanager.FindPoint();
+        //障碍 
+        //先将障碍物置为空
+        for(let k=0;k<globalAstarmanage.map.length;k++){
+            for(let u=0;u<globalAstarmanage.map[k].length;u++){
+               if(globalAstarmanage.map[k][u] ==3){
+                globalAstarmanage.map[k][u] =0;
+               }
+            }
+        }
+        for(let j=0;j< eventlist.tanklist.length;j++){
+             if(this!==eventlist.tanklist[j]){
+                console.log(eventlist.tanklist[j].currentclickpoints.x,eventlist.tanklist[j].currentclickpoints.y,"其他坦克的坐标点")
+                 for(let k=0;k<globalAstarmanage.map.length;k++){
+                     for(let u=0;u<globalAstarmanage.map[k].length;u++){
+                        if(
+                            k*5>=eventlist.tanklist[j].ownobstacles[0].y
+                            &&
+                            k*5<eventlist.tanklist[j].ownobstacles[1].y
+                            &&
+                            u*5>=eventlist.tanklist[j].ownobstacles[0].x
+                            &&
+                            u*5<eventlist.tanklist[j].ownobstacles[1].x
+                        ){
+                         
+                            globalAstarmanage.map[k][u] =3
+                        }
+                     }
+                 }
+             }
+        }
+        console.log(globalAstarmanage.map,"地图当前")
+    }
+    
     select(canvas: HTMLCanvasElement): void {
         // canvas.onclick
        
@@ -154,7 +175,8 @@ export class Tank {
                     this.selected = true;
                     for(let j=0;j<eventlist.tanklist.length;j++){
                         if(this!==eventlist.tanklist[j]){
-                            eventlist.tanklist[j].selected=false
+                            eventlist.tanklist[j].selected=false;
+                            this.targetpoint = {x:e.pageX,y:e.pageY}
                         }
                     }
                 }else{
@@ -222,6 +244,7 @@ export class Tank {
       
     //  }.bind(this)
     }
+    //路径规划
     movingfunc(type:string,position: Position1, lastx: number, lasty: number, j: number,height:number,width:number,speed:number,that:any) {
         let x0 =position.x,
             y0 = position.y,

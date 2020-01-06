@@ -1,3 +1,4 @@
+import {Obstacle} from './obstacle';
 export class Point{
     x:number=0
     y:number=0
@@ -10,6 +11,7 @@ export class Point{
         this.father=father;
     }
 }
+
 export class Astar{
     map:Array<Array<any>>=[]
     rowCount:number=0
@@ -28,7 +30,29 @@ export class Astar{
 			}
 		}
     }
-    //是否为障碍物
+    //初始化地图
+    initGlobalMap(obstacle:Obstacle){
+    	//障碍物
+		for(let j=0;j<this.map.length;j++){
+			for(let k=0;k<this.map[j].length;k++){
+				  for(let u=0;u<obstacle.points.length;u++){
+                    //   if(
+					// 	  k*5<=obstacle.points[u].x
+					// 	  &&
+					// 	  (k+1)*5>obstacle.points[u].x
+					// 	  &&
+					// 	  j*5<=obstacle.points[u].y
+					// 	  &&
+					// 	  (j+1)*5>obstacle.points[u].y
+					//   ){
+						this.map[j][k] =0
+					//   }
+				  }
+                
+			}
+		}
+    }
+        //是否为障碍物
     IsBar(x:number,y:number):boolean{
         let xshrink = parseInt((x/5).toString());
         let Yshrink = parseInt((y/5).toString());

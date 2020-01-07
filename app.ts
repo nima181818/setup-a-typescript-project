@@ -4,7 +4,7 @@ import { Tank ,eventlist} from './src/tank';
 // let newTank2 = new Tank({ x: 100, y: 0 });
 let newTank3 = new Tank({ x: 200, y: 0 });
 let newTank4 = new Tank({ x: 300, y: 100 });
-  debugger
+  
 window.onload=function(){
   // console.log(newTank,"iiiii");
 // return;

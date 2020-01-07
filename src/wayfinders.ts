@@ -13,6 +13,8 @@ export class Point{
 }
 
 export class Astar{
+    startmatrix:{x:number,y:number}={x:0,y:0}
+    endmatrix:{x:number,y:number}={x:0,y:0}
     map:Array<Array<any>>=[]
     rowCount:number=0
     colCount:number=0
@@ -29,6 +31,10 @@ export class Astar{
 				this.map[j][k] = 0
 			}
 		}
+    }
+    //精确度判段
+    accuracyJudge(x1:number,x2:number){
+         return ((x1-x2)**2)<0.1
     }
     //初始化地图
     initGlobalMap(obstacle:Obstacle){
@@ -52,6 +58,33 @@ export class Astar{
 			}
 		}
     }
+    //设置开始位置与结束位置
+    setStartpointandendpoint(x:number,y:number,type:string){
+        debugger
+       if(type=='startpoint'){
+          this.startPoint.x = x;
+          this.startPoint.y = y;
+          this.map[this.startmatrix.y][this.startmatrix.x] = 0;
+          let stepx = parseInt((this.startPoint.x/5).toString())
+          let stepy = parseInt((this.startPoint.y/5).toString())
+          this.map[stepy][stepx] = 1;
+          this.startmatrix = {
+              x:stepx,
+              y:stepy
+          }
+       }else{
+        this.endPoint.x = x;
+        this.endPoint.y = y;
+        this.map[this.endmatrix.y][this.endmatrix.x] = 0;
+        let stepx = parseInt((this.endPoint.x/5).toString())
+        let stepy = parseInt((this.endPoint.y/5).toString())
+        this.map[stepy][stepx] = 1;
+        this.endmatrix = {
+            x:stepx,
+            y:stepy
+        }
+       }
+    }
         //是否为障碍物
     IsBar(x:number,y:number):boolean{
         let xshrink = parseInt((x/5).toString());
@@ -73,7 +106,7 @@ export class Astar{
      //当前坐标是否在OpenList
      IsInOpenList(x:number,y:number):boolean{
         for(var i=0;i<this.openList.length;i++){
-            if(this.openList[i].x==x&&this.openList[i].y==y){
+            if(this.accuracyJudge(this.openList[i].x,x)&&this.accuracyJudge(this.openList[i].y,y)){
                 return true;
             }
 
@@ -83,7 +116,7 @@ export class Astar{
         //当前坐标是否在OpenList
         IsInCloseList(x:number,y:number):boolean{
             for(var i=0;i<this.closeList.length;i++){
-                if(this.closeList[i].x==x&&this.closeList[i].y==y){
+                if(this.accuracyJudge(this.closeList[i].x,x)&&this.accuracyJudge(this.closeList[i].y,y)){
                     return true;
                 }
 
@@ -103,13 +136,13 @@ export class Astar{
         }
          //添加当前点的上下左右相邻的方格到Open列表中
          AddNeiToOpenList(curPoint:Point){
-             console.log(curPoint,"666666")
+            //  console.log(curPoint,"666666")
             for(var x=curPoint.x-5;x<=curPoint.x+5;x+=5){
                 for(var y=curPoint.y-5;y<=curPoint.y+5;y+=5){
                     //排除自身以及超出下标的点
-                    if((x>=0&&x<this.colCount&&y>=0&&y<this.rowCount)&&!(curPoint.x==x&&curPoint.y==y)){
+                    if((x>=0&&x<this.colCount&&y>=0&&y<this.rowCount)&&!(this.accuracyJudge(curPoint.x,x)&&this.accuracyJudge(curPoint.y,y))){
                         //排除斜对角
-                        if(Math.abs(x-curPoint.x)+Math.abs(y-curPoint.y)==5){
+                        if(this.accuracyJudge(Math.abs(x-curPoint.x)+Math.abs(y-curPoint.y),5)){
                             //不是障碍物且不在关闭列表中
                             if(this.IsBar(x,y)==false&&this.IsInCloseList(x,y)==false){
                                 //不存在Open列表
@@ -146,7 +179,7 @@ export class Astar{
         //获取该点在openList中的位置
         GetPointFromOpenList(x:number,y:number):Point{
             for(var i=0;i<this.openList.length;i++){
-                if(this.openList[i].x==x&&this.openList[i].y==y){
+                if(this.accuracyJudge(this.openList[i].x,x)&&this.accuracyJudge(this.openList[i].y,y)){
                     return this.openList[i];
                 }
             }
@@ -158,8 +191,9 @@ export class Astar{
             console.log(this);
             this.openList.push(this.startPoint);
             while(this.IsInOpenList(this.endPoint.x,this.endPoint.y)==false||this.openList.length==0){
+                debugger
                 var curPoint=this.GetMinFFromOpenList().minPoint;
-               
+                   console.log(curPoint,"当前点")
                 var index=this.GetMinFFromOpenList().index;
                 if(curPoint==null){
                     console.log("没有路");
@@ -170,16 +204,18 @@ export class Astar{
                 this.AddNeiToOpenList(curPoint);
             }
             var p=this.GetPointFromOpenList(this.endPoint.x,this.endPoint.y);
-            console.log(p+".....");
+          
             while(p.father!=null){
                 p= p.father;
                 let xshrink = parseInt((p.x/5).toString());
                  let Yshrink = parseInt((p.y/5).toString());
-                this.map[Yshrink][xshrink]=4;
+                this.map[xshrink][Yshrink]=4;
+                
             }
             //把终结点也设置成4
             let endxshrink = parseInt((this.endPoint.x/5).toString());
             let endYshrink = parseInt((this.endPoint.y/5).toString());
-            this.map[endYshrink][endxshrink]=4;
+            this.map[endxshrink][endYshrink]=4;
+
         }
     }

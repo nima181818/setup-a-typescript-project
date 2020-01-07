@@ -6,7 +6,7 @@ class Watcher<T>{
     eventHandlers:handlers[]=[]
     //订阅
     register(fucname:string,handlerfunction:Function){
-        debugger
+        
     this.eventHandlers.push({
         name:fucname,
         handlerfunction:handlerfunction

@@ -83,7 +83,7 @@ export class Tank {
         this.currentclickpoints.y = position.y
         this.position.x = position.x;
         this.position.y = position.y
-        globalAstarmanage.setStartpointandendpoint(this.currentclickpoints.x, this.currentclickpoints.y, 'endpoint')
+        globalAstarmanage.setStartpointandendpoint(this.closeFunc(this.currentclickpoints.y),this.closeFunc(this.currentclickpoints.x), 'endpoint')
         this.initStartpointendpoint();
 
     }
@@ -110,7 +110,7 @@ export class Tank {
 
         // globalAstarmanage.startPoint.x = this.currentclickpoints.x;
         // globalAstarmanage.startPoint.y = this.currentclickpoints.y;
-        globalAstarmanage.startPoint.father = null;
+        // globalAstarmanage.startPoint.father = null;
         //旧的出发矩阵点设置为0
         //  globalAstarmanage.map[this.matrixposition.y][this.matrixposition.x] = 0;
         //	let stepx = parseInt((globalAstarmanage.startPoint.x/5).toString())
@@ -144,8 +144,8 @@ export class Tank {
             //  if((date - this.clicktimestamp)>300){
 
             if ((e.pageX - this.currentclickpoints.x) ** 2 < 800 && (e.pageY - this.currentclickpoints.y) ** 2 < 800) {
-                       alert(e.pageX)
-                       alert(e.pageY)
+                    //    alert(e.pageX)
+                    //    alert(e.pageY)
                 this.selected = true;
                 for (let j = 0; j < eventlist.tanklist.length; j++) {
                     if (this !== eventlist.tanklist[j]) {
@@ -154,7 +154,7 @@ export class Tank {
                     }
                 }
                 this.targetpoint = { x: e.pageX, y: e.pageY };
-                globalAstarmanage.setStartpointandendpoint(e.pageX, e.pageY, 'endpoint')
+                globalAstarmanage.setStartpointandendpoint( this.closeFunc(e.pageY),this.closeFunc(e.pageX), 'endpoint')
                 //障碍 
                 //先将障碍物置为空
                 for (let k = 0; k < globalAstarmanage.map.length; k++) {
@@ -214,6 +214,11 @@ export class Tank {
         //子弹移动
         this.movingfunc('bullet', bullet.position, x, y, j, bullet.height, bullet.width, bullet.speed, bullet)
     }
+    //临近函数 //找出距离自己最近的矩阵点
+    closeFunc(point:number):number{
+      let k=parseInt((point/5).toString());
+      return k*5
+    }
     //坦克移动
     nextPoint(lastx: number, lasty: number) {
         if (this.selected) {
@@ -224,15 +229,18 @@ export class Tank {
                 this.timer = null;
                 this.startpoint.x = this.currentclickpoints.x;
                 this.startpoint.y = this.currentclickpoints.y;
-                globalAstarmanage.setStartpointandendpoint(this.startpoint.x, this.startpoint.y, 'startpoint')
+                globalAstarmanage.setStartpointandendpoint(this.closeFunc(this.startpoint.y),this.closeFunc(this.startpoint.x), 'startpoint')
                 //    this.currentclickpoints = {
                 //     x:lastx,
                 //     y:lasty
                 // }
+            }else{
+                globalAstarmanage.setStartpointandendpoint(this.closeFunc(lasty),this.closeFunc(lastx), 'endpoint')
             }
             //寻路算法
             globalAstarmanage.FindPoint();
             console.log(globalAstarmanage.map, "地图")
+            
             this.movingfunc('tank', this.currentclickpoints, lastx, lasty, j, this.height, this.width, this.speed, this);
         }
     }
@@ -294,7 +302,7 @@ export class Tank {
                 //顺利结束  抵达终点(1)
                 this.startpoint.x = position.x;
                 this.startpoint.y = position.y;
-                globalAstarmanage.setStartpointandendpoint(this.startpoint.x, this.startpoint.y, 'startpoint')
+                globalAstarmanage.setStartpointandendpoint( this.closeFunc(this.startpoint.y),this.closeFunc(this.startpoint.x), 'startpoint')
             }
         }, 16.6)
     }

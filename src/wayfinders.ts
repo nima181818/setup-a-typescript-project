@@ -13,6 +13,7 @@ export class Point{
 }
 
 export class Astar{
+    lastwaysmatrixlist:{x:number,y:number}[]=[] //标记的路径
     startmatrix:{x:number,y:number}={x:0,y:0}
     endmatrix:{x:number,y:number}={x:0,y:0}
     map:Array<Array<any>>=[]
@@ -24,7 +25,7 @@ export class Astar{
     closeList:Point[]=[]
     constructor(){
         this.rowCount = 600;
-        this.colCount = 400;
+        this.colCount = 600;
         for(let j=0;j<80;j++){
 			this.map[j] = []
 			for(let k=0;k<120;k++){
@@ -64,10 +65,10 @@ export class Astar{
        if(type=='startpoint'){
           this.startPoint.x = x;
           this.startPoint.y = y;
-          this.map[this.startmatrix.y][this.startmatrix.x] = 0;
+          this.map[this.startmatrix.x][this.startmatrix.y] = 0;
           let stepx = parseInt((this.startPoint.x/5).toString())
           let stepy = parseInt((this.startPoint.y/5).toString())
-          this.map[stepy][stepx] = 1;
+          this.map[stepx][stepy] = 1;
           this.startmatrix = {
               x:stepx,
               y:stepy
@@ -75,10 +76,10 @@ export class Astar{
        }else{
         this.endPoint.x = x;
         this.endPoint.y = y;
-        this.map[this.endmatrix.y][this.endmatrix.x] = 0;
-        let stepx = parseInt((this.endPoint.x/5).toString())
-        let stepy = parseInt((this.endPoint.y/5).toString())
-        this.map[stepy][stepx] = 1;
+        this.map[this.endmatrix.x][this.endmatrix.x] = 0;
+        let stepx =  parseInt((this.endPoint.x/5).toString())
+        let stepy =  parseInt((this.endPoint.y/5).toString())
+        this.map[stepx][stepy] = 1;
         this.endmatrix = {
             x:stepx,
             y:stepy
@@ -87,10 +88,10 @@ export class Astar{
     }
         //是否为障碍物
     IsBar(x:number,y:number):boolean{
-        let xshrink = parseInt((x/5).toString());
-        let Yshrink = parseInt((y/5).toString());
+        let xshrink = parseInt((x/5).toString())
+        let Yshrink = parseInt((y/5).toString())
         try{
-            if(this.map[Yshrink][xshrink]==3){
+            if(this.map[xshrink][Yshrink]==3){
          
                 return true;
             }
@@ -106,7 +107,7 @@ export class Astar{
      //当前坐标是否在OpenList
      IsInOpenList(x:number,y:number):boolean{
         for(var i=0;i<this.openList.length;i++){
-            if(this.accuracyJudge(this.openList[i].x,x)&&this.accuracyJudge(this.openList[i].y,y)){
+            if(this.openList[i].x==x&&this.openList[i].y==y){
                 return true;
             }
 
@@ -116,7 +117,7 @@ export class Astar{
         //当前坐标是否在OpenList
         IsInCloseList(x:number,y:number):boolean{
             for(var i=0;i<this.closeList.length;i++){
-                if(this.accuracyJudge(this.closeList[i].x,x)&&this.accuracyJudge(this.closeList[i].y,y)){
+                if(this.closeList[i].x==x&&this.closeList[i].y==y){
                     return true;
                 }
 
@@ -124,11 +125,12 @@ export class Astar{
             return false;
          }
           //计算G值;(p是Point类)
-          GetG(p:Point):number{
+          //参数2：是否倾斜方向
+          GetG(p:Point,isleans:boolean):number{
             if(p.father==null){
                 return 0;
             }
-            return p.father.G+5;
+            return p.father.G+(isleans?7:5);
         }
           //计算H值
           GetH(p:Point,pb:Point){
@@ -140,9 +142,9 @@ export class Astar{
             for(var x=curPoint.x-5;x<=curPoint.x+5;x+=5){
                 for(var y=curPoint.y-5;y<=curPoint.y+5;y+=5){
                     //排除自身以及超出下标的点
-                    if((x>=0&&x<this.colCount&&y>=0&&y<this.rowCount)&&!(this.accuracyJudge(curPoint.x,x)&&this.accuracyJudge(curPoint.y,y))){
-                        //排除斜对角
-                        if(this.accuracyJudge(Math.abs(x-curPoint.x)+Math.abs(y-curPoint.y),5)){
+                    if((x>=0&&x<this.rowCount&&y>=0&&y<this.colCount)&&!(curPoint.x==x&&curPoint.y==y)){
+                        //非斜对角
+                        if(Math.abs(x-curPoint.x)+Math.abs(y-curPoint.y)==5){
                             //不是障碍物且不在关闭列表中
                             if(this.IsBar(x,y)==false&&this.IsInCloseList(x,y)==false){
                                 //不存在Open列表
@@ -151,7 +153,21 @@ export class Astar{
                                     point.x=x;
                                     point.y=y;
                                     point.father=curPoint;
-                                    point.G=this.GetG(point);
+                                    point.G=this.GetG(point,false);
+                                    point.H=this.GetH(point,this.endPoint);
+                                    this.openList.push(point);
+                                }
+                            }
+                        }else{
+                            //不是障碍物且不在关闭列表中
+                            if(this.IsBar(x,y)==false&&this.IsInCloseList(x,y)==false){
+                                //不存在Open列表
+                                if(this.IsInOpenList(x,y)==false){
+                                    var point=new Point();
+                                    point.x=x;
+                                    point.y=y;
+                                    point.father=curPoint;
+                                    point.G=this.GetG(point,true);
                                     point.H=this.GetH(point,this.endPoint);
                                     this.openList.push(point);
                                 }
@@ -179,7 +195,7 @@ export class Astar{
         //获取该点在openList中的位置
         GetPointFromOpenList(x:number,y:number):Point{
             for(var i=0;i<this.openList.length;i++){
-                if(this.accuracyJudge(this.openList[i].x,x)&&this.accuracyJudge(this.openList[i].y,y)){
+                if(this.openList[i].x==x&&this.openList[i].y==y){
                     return this.openList[i];
                 }
             }
@@ -187,7 +203,13 @@ export class Astar{
         }
         //寻路算法
         FindPoint(){
-            
+            this.openList = [];
+            this.closeList=[];
+            for(let j=0;j< this.lastwaysmatrixlist.length;j++){
+                this.map[this.lastwaysmatrixlist[j].x][this.lastwaysmatrixlist[j].y] = 0
+            }
+            this.lastwaysmatrixlist = [];
+             
             console.log(this);
             this.openList.push(this.startPoint);
             while(this.IsInOpenList(this.endPoint.x,this.endPoint.y)==false||this.openList.length==0){
@@ -210,12 +232,18 @@ export class Astar{
                 let xshrink = parseInt((p.x/5).toString());
                  let Yshrink = parseInt((p.y/5).toString());
                 this.map[xshrink][Yshrink]=4;
-                
+                this.lastwaysmatrixlist.push({
+                    x:xshrink,
+                    y:Yshrink
+                })
             }
             //把终结点也设置成4
             let endxshrink = parseInt((this.endPoint.x/5).toString());
             let endYshrink = parseInt((this.endPoint.y/5).toString());
             this.map[endxshrink][endYshrink]=4;
-
+            this.lastwaysmatrixlist.push({
+                x:endxshrink,
+                y:endYshrink
+            })
         }
     }

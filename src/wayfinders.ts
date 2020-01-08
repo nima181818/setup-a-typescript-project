@@ -14,6 +14,7 @@ export class Point{
 
 export class Astar{
     lastwaysmatrixlist:{x:number,y:number}[]=[] //标记的路径
+    deltamatrixllist:{deltax:number,deltay:number}[]=[]
     startmatrix:{x:number,y:number}={x:0,y:0}
     endmatrix:{x:number,y:number}={x:0,y:0}
     map:Array<Array<any>>=[]
@@ -58,6 +59,17 @@ export class Astar{
                 
 			}
 		}
+    }
+    //增量函数的处理办法
+    deltaFunchandler(){
+        this.deltamatrixllist=[];
+        for(let j=0;j+1<this.lastwaysmatrixlist.length;j++){
+              let obj = {
+                deltax:this.lastwaysmatrixlist[j+1].x - this.lastwaysmatrixlist[j].x,
+                deltay:this.lastwaysmatrixlist[j+1].y - this.lastwaysmatrixlist[j].y
+              }
+              this.deltamatrixllist.push(obj)
+        }
     }
     //设置开始位置与结束位置
     setStartpointandendpoint(x:number,y:number,type:string){
@@ -244,6 +256,7 @@ export class Astar{
             this.lastwaysmatrixlist.push({
                 x:endxshrink,
                 y:endYshrink
-            })
+            });
+            this.deltaFunchandler();
         }
     }

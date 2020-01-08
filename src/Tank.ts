@@ -212,7 +212,7 @@ export class Tank {
         bullet.currentctx = this.currentctx
         this.tankbullet = bullet
         //子弹移动
-        this.movingfunc('bullet', bullet.position, x, y, j, bullet.height, bullet.width, bullet.speed, bullet)
+//this.movingfunc('bullet', bullet.position, x, y, j, bullet.height, bullet.width, bullet.speed, bullet)
     }
     //临近函数 //找出距离自己最近的矩阵点
     closeFunc(point:number):number{
@@ -267,44 +267,112 @@ export class Tank {
     }
     //路径规划
     movingfunc(type: string, position: Position1, lastx: number, lasty: number, j: number, height: number, width: number, speed: number, that: any) {
-        let x0 = position.x,
-            y0 = position.y,
-            x1 = lastx,
-            y1 = lasty,
-
-            k = (y1 - y0) / (x1 - x0),
-            minusy = y1 - y0 >= 0 ? 1 : -1,
-            minusx = x1 - x0 >= 0 ? 1 : -1,
-            cosr = (speed) * 1 / ((k * k + 1) ** 0.5),
-            sinr = (speed) * k / ((k * k + 1) ** 0.5)
-
-        that.timer = setInterval(() => {
-            let tem = j
-            j = j + minusx
-            this.currentctx.fillStyle = 'black'
-            this.currentctx.clearRect(x0 + cosr * tem - 1, y0 + sinr * tem - 1, width + 2, height + 2);
-            this.currentctx.fillRect(x0 + cosr * (j), y0 + sinr * (j), width, height);
-
-            position.x = x0 + cosr * (j)
-            position.y = y0 + sinr * (j)
-            // this.currentclickpoints = JSON.parse(JSON.stringify(position))
+     //最新的路径规划方案
+     let k=0,
+	     u=0,
+	    currentindex=0,
+		dk =0,
+        du =0,
+        positionarrays=[],
+        delta=globalAstarmanage.deltamatrixllist
+        for(let j=0;j<globalAstarmanage.lastwaysmatrixlist.length;j++){
+            let obj = {
+                x:globalAstarmanage.lastwaysmatrixlist[j].x*5,
+                y:globalAstarmanage.lastwaysmatrixlist[j].y*5
+            }
+            positionarrays.push(obj)
+        }
+       
+	    that.timer= setInterval(()=>{
+	   for(let j=0;j+1<positionarrays.length;j++){
+	   
+	     if(positionarrays[j].x*5+k==positionarrays[j+1].x*5&&positionarrays[j].y*5+u==positionarrays[j+1].y*5){
+		 k=0;
+		 u=0;
+		 currentindex++;
+		    
+		   break;
+		 }
+		
+	   }
+	     if(currentindex==positionarrays.length-1){
+          clearInterval( that.timer);
+          that.timer = null;
+          //顺利结束  抵达终点(1)
+          this.startpoint.x = position.x;
+          this.startpoint.y = position.y;
+          globalAstarmanage.setStartpointandendpoint( this.closeFunc(this.startpoint.y),this.closeFunc(this.startpoint.x), 'startpoint')
+  
+		  return;
+	   }
+	    dk =delta[currentindex].deltax;
+	    du =delta[currentindex].deltay;
+	     k = k+dk;
+		 u=u+du
+	   console.log(positionarrays[currentindex].x*5+k,positionarrays[currentindex].y*5+u);
+       this.currentctx.fillStyle = 'black';
+       this.currentctx.clearRect(positionarrays[currentindex].x*5+k - dk, positionarrays[currentindex].y*5+u - du, width + 2, height + 2);
+       this.currentctx.fillRect(positionarrays[currentindex].x*5+k, positionarrays[currentindex].y*5+u, width, height); 
+       position.x = positionarrays[currentindex].x*5+k;
+       position.y = positionarrays[currentindex].y*5+u;
             if (type == 'tank') {
                 // this.showBloodlength(x0 + cosr * tem - 1,y0 + sinr * tem - 1);
-                this.showBloodlength(x0 + cosr * tem - 1, y0 + sinr * tem - 1)
+                this.showBloodlength(positionarrays[currentindex].x*5+k - dk - 1,  positionarrays[currentindex].y*5+u - du)
             }
-
-            if (j * j - ((x1 - x0) / cosr) ** 2 > 0) {
-                if (type == 'bullet') {
-                    this.currentctx.clearRect(x0 + cosr * (j) - 1, y0 + sinr * (j) - 1, width + 2, height + 2);
-                }
-                clearInterval(that.timer);
-                that.timer = null;
+            
+         //   if (j * j - ((x1 - x0) / cosr) ** 2 > 0) {
+           //     if (type == 'bullet') {
+            //        this.currentctx.clearRect(x0 + cosr * (j) - 1, y0 + sinr * (j) - 1, width + 2, height + 2);
+           //     }
+           //     clearInterval(that.timer);
+           //     that.timer = null;
                 //顺利结束  抵达终点(1)
-                this.startpoint.x = position.x;
-                this.startpoint.y = position.y;
-                globalAstarmanage.setStartpointandendpoint( this.closeFunc(this.startpoint.y),this.closeFunc(this.startpoint.x), 'startpoint')
-            }
-        }, 16.6)
+          //      this.startpoint.x = position.x;
+          //      this.startpoint.y = position.y;
+           //     globalAstarmanage.setStartpointandendpoint( this.closeFunc(this.startpoint.y),this.closeFunc(this.startpoint.x), 'startpoint')
+        //    }
+    },16.6)
+    
+     //最新的路径规划方案
+     
+        // let x0 = position.x,
+        //     y0 = position.y,
+        //     x1 = lastx,
+        //     y1 = lasty,
+
+        //     k = (y1 - y0) / (x1 - x0),
+        //     minusy = y1 - y0 >= 0 ? 1 : -1,
+        //     minusx = x1 - x0 >= 0 ? 1 : -1,
+        //     cosr = (speed) * 1 / ((k * k + 1) ** 0.5),
+        //     sinr = (speed) * k / ((k * k + 1) ** 0.5)
+     
+        // that.timer = setInterval(() => {
+        //     let tem = j
+        //     j = j + minusx
+        //     this.currentctx.fillStyle = 'black'
+        //     this.currentctx.clearRect(x0 + cosr * tem - 1, y0 + sinr * tem - 1, width + 2, height + 2);
+        //     this.currentctx.fillRect(x0 + cosr * (j), y0 + sinr * (j), width, height);
+
+        //     position.x = x0 + cosr * (j)
+        //     position.y = y0 + sinr * (j)
+        //     // this.currentclickpoints = JSON.parse(JSON.stringify(position))
+        //     if (type == 'tank') {
+        //         // this.showBloodlength(x0 + cosr * tem - 1,y0 + sinr * tem - 1);
+        //         this.showBloodlength(x0 + cosr * tem - 1, y0 + sinr * tem - 1)
+        //     }
+
+        //     if (j * j - ((x1 - x0) / cosr) ** 2 > 0) {
+        //         if (type == 'bullet') {
+        //             this.currentctx.clearRect(x0 + cosr * (j) - 1, y0 + sinr * (j) - 1, width + 2, height + 2);
+        //         }
+        //         clearInterval(that.timer);
+        //         that.timer = null;
+        //         //顺利结束  抵达终点(1)
+        //         this.startpoint.x = position.x;
+        //         this.startpoint.y = position.y;
+        //         globalAstarmanage.setStartpointandendpoint( this.closeFunc(this.startpoint.y),this.closeFunc(this.startpoint.x), 'startpoint')
+        //     }
+        // }, 16.6)
     }
     //选中时显示血量
     showBloodlength(x: number = this.currentclickpoints.x, y: number = this.currentclickpoints.y) {

@@ -8,7 +8,7 @@ import { Obstacle } from './obstacle';
 import { Watcher } from './watcher';
 let globalAstarmanage = new Astar();
 //初始化地图
-let obstacle = new Obstacle()
+let obstacle = new Obstacle() 
 globalAstarmanage.initGlobalMap(obstacle);
 class Eventlist {
     canvasclickeventlist: Function[] = []

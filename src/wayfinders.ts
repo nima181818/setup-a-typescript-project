@@ -25,11 +25,11 @@ export class Astar{
     openList:Point[]=[]
     closeList:Point[]=[]
     constructor(){
-        this.rowCount = 600;
-        this.colCount = 600;
-        for(let j=0;j<80;j++){
+        this.rowCount = 900;
+        this.colCount = 900;
+        for(let j=0;j<100;j++){
 			this.map[j] = []
-			for(let k=0;k<120;k++){
+			for(let k=0;k<100;k++){
 				this.map[j][k] = 0
 			}
 		}
@@ -65,10 +65,10 @@ export class Astar{
         this.deltamatrixllist=[];
         for(let j=0;j+1<this.lastwaysmatrixlist.length;j++){
               let obj = {
-                deltax:this.lastwaysmatrixlist[j+1].x - this.lastwaysmatrixlist[j].x,
-                deltay:this.lastwaysmatrixlist[j+1].y - this.lastwaysmatrixlist[j].y
+                deltax:this.lastwaysmatrixlist[j].x - this.lastwaysmatrixlist[j+1].x,
+                deltay:this.lastwaysmatrixlist[j].y - this.lastwaysmatrixlist[j+1].y
               }
-              this.deltamatrixllist.push(obj)
+              this.deltamatrixllist.unshift(obj)
         }
     }
     //设置开始位置与结束位置

@@ -3,8 +3,8 @@ import { Tank ,eventlist} from './src/tank';
 // let newTank = new Tank({ x: 0, y: 0 });
 // let newTank2 = new Tank({ x: 100, y: 0 });
 let newTank3 = new Tank({ x: 0, y: 0 });
-let newTank4 = new Tank({ x: 0, y: 100 });
-  
+let newTank4 = new Tank({ x: 0, y: 200 });
+let newTank5 = new Tank({ x: 100, y: 200 });
 window.onload=function(){
   // console.log(newTank,"iiiii");
 // return;
@@ -13,6 +13,7 @@ let canvas1:HTMLCanvasElement = document.getElementById('canvas1') as HTMLCanvas
 // newTank2.paint(canvas1);
 newTank3.paint(canvas1);
 newTank4.paint(canvas1);
+newTank5.paint(canvas1);
 canvas1.onclick=function(e){
     console.log(66)
     eventlist.movingjudge(e);

@@ -8,7 +8,7 @@ import { Obstacle } from './obstacle';
 import { Watcher } from './watcher';
 let globalAstarmanage = new Astar();
 //初始化地图
-let obstacle = new Obstacle() 
+let obstacle = new Obstacle()
 globalAstarmanage.initGlobalMap(obstacle);
 class Eventlist {
     canvasclickeventlist: Function[] = []
@@ -83,7 +83,7 @@ export class Tank {
         this.currentclickpoints.y = position.y
         this.position.x = position.x;
         this.position.y = position.y
-        globalAstarmanage.setStartpointandendpoint(this.closeFunc(this.currentclickpoints.y),this.closeFunc(this.currentclickpoints.x), 'endpoint')
+        globalAstarmanage.setStartpointandendpoint(this.closeFunc(this.currentclickpoints.y), this.closeFunc(this.currentclickpoints.x), 'startpoint')
         this.initStartpointendpoint();
 
     }
@@ -93,8 +93,8 @@ export class Tank {
             x: this.currentclickpoints.x - 60 < 0 ? 0 : this.currentclickpoints.x - 60,
             y: this.currentclickpoints.y - 60 < 0 ? 0 : this.currentclickpoints.y - 60
         }, {
-            x: this.currentclickpoints.x + 90 > 600 ? 600 : this.currentclickpoints.x + 90,
-            y: this.currentclickpoints.y + 75 > 400 ? 400 : this.currentclickpoints.y + 75
+            x: this.currentclickpoints.x + 50 > 600 ? 600 : this.currentclickpoints.x + 50,
+            y: this.currentclickpoints.y + 45 > 400 ? 400 : this.currentclickpoints.y + 45
         }];
 
         this.initStartpointendpoint();
@@ -144,8 +144,8 @@ export class Tank {
             //  if((date - this.clicktimestamp)>300){
 
             if ((e.pageX - this.currentclickpoints.x) ** 2 < 800 && (e.pageY - this.currentclickpoints.y) ** 2 < 800) {
-                    //    alert(e.pageX)
-                    //    alert(e.pageY)
+                //    alert(e.pageX)
+                //    alert(e.pageY)
                 this.selected = true;
                 for (let j = 0; j < eventlist.tanklist.length; j++) {
                     if (this !== eventlist.tanklist[j]) {
@@ -154,7 +154,7 @@ export class Tank {
                     }
                 }
                 this.targetpoint = { x: e.pageX, y: e.pageY };
-                globalAstarmanage.setStartpointandendpoint( this.closeFunc(e.pageY),this.closeFunc(e.pageX), 'endpoint')
+                globalAstarmanage.setStartpointandendpoint(this.closeFunc(e.pageY), this.closeFunc(e.pageX), 'startpoint')
                 //障碍 
                 //先将障碍物置为空
                 for (let k = 0; k < globalAstarmanage.map.length; k++) {
@@ -186,6 +186,7 @@ export class Tank {
                     }
                 }
             } else {
+                globalAstarmanage.setStartpointandendpoint(this.closeFunc(e.pageY), this.closeFunc(e.pageX), 'endpoint')
                 // this.selected = false
             }
             //     }else{
@@ -212,12 +213,12 @@ export class Tank {
         bullet.currentctx = this.currentctx
         this.tankbullet = bullet
         //子弹移动
-//this.movingfunc('bullet', bullet.position, x, y, j, bullet.height, bullet.width, bullet.speed, bullet)
+        //this.movingfunc('bullet', bullet.position, x, y, j, bullet.height, bullet.width, bullet.speed, bullet)
     }
     //临近函数 //找出距离自己最近的矩阵点
-    closeFunc(point:number):number{
-      let k=parseInt((point/5).toString());
-      return k*5
+    closeFunc(point: number): number {
+        let k = parseInt((point / 5).toString());
+        return k * 5
     }
     //坦克移动
     nextPoint(lastx: number, lasty: number) {
@@ -229,18 +230,18 @@ export class Tank {
                 this.timer = null;
                 this.startpoint.x = this.currentclickpoints.x;
                 this.startpoint.y = this.currentclickpoints.y;
-                globalAstarmanage.setStartpointandendpoint(this.closeFunc(this.startpoint.y),this.closeFunc(this.startpoint.x), 'startpoint')
+                globalAstarmanage.setStartpointandendpoint(this.closeFunc(this.startpoint.y), this.closeFunc(this.startpoint.x), 'startpoint')
                 //    this.currentclickpoints = {
                 //     x:lastx,
                 //     y:lasty
                 // }
-            }else{
-                globalAstarmanage.setStartpointandendpoint(this.closeFunc(lasty),this.closeFunc(lastx), 'endpoint')
+            } else {
+                globalAstarmanage.setStartpointandendpoint(this.closeFunc(lasty), this.closeFunc(lastx), 'endpoint')
             }
             //寻路算法
             globalAstarmanage.FindPoint();
             console.log(globalAstarmanage.map, "地图")
-            
+
             this.movingfunc('tank', this.currentclickpoints, lastx, lasty, j, this.height, this.width, this.speed, this);
         }
     }
@@ -267,74 +268,77 @@ export class Tank {
     }
     //路径规划
     movingfunc(type: string, position: Position1, lastx: number, lasty: number, j: number, height: number, width: number, speed: number, that: any) {
-     //最新的路径规划方案
-     let k=0,
-	     u=0,
-	    currentindex=0,
-		dk =0,
-        du =0,
-        positionarrays=[],
-        delta=globalAstarmanage.deltamatrixllist
-        for(let j=0;j<globalAstarmanage.lastwaysmatrixlist.length;j++){
+        //最新的路径规划方案
+        let k = 0,
+            u = 0,
+            currentindex = 0,
+            dk = 0,
+            du = 0,
+            positionarrays = [],
+            delta = globalAstarmanage.deltamatrixllist
+        for (let j = 0; j+1 < globalAstarmanage.lastwaysmatrixlist.length; j++) {
             let obj = {
-                x:globalAstarmanage.lastwaysmatrixlist[j].x*5,
-                y:globalAstarmanage.lastwaysmatrixlist[j].y*5
+                x: globalAstarmanage.lastwaysmatrixlist[j].y,
+                y: globalAstarmanage.lastwaysmatrixlist[j].x
             }
-            positionarrays.push(obj)
+            positionarrays.unshift(obj)
         }
-       
-	    that.timer= setInterval(()=>{
-	   for(let j=0;j+1<positionarrays.length;j++){
-	   
-	     if(positionarrays[j].x*5+k==positionarrays[j+1].x*5&&positionarrays[j].y*5+u==positionarrays[j+1].y*5){
-		 k=0;
-		 u=0;
-		 currentindex++;
-		    
-		   break;
-		 }
-		
-	   }
-	     if(currentindex==positionarrays.length-1){
-          clearInterval( that.timer);
-          that.timer = null;
-          //顺利结束  抵达终点(1)
-          this.startpoint.x = position.x;
-          this.startpoint.y = position.y;
-          globalAstarmanage.setStartpointandendpoint( this.closeFunc(this.startpoint.y),this.closeFunc(this.startpoint.x), 'startpoint')
-  
-		  return;
-	   }
-	    dk =delta[currentindex].deltax;
-	    du =delta[currentindex].deltay;
-	     k = k+dk;
-		 u=u+du
-	   console.log(positionarrays[currentindex].x*5+k,positionarrays[currentindex].y*5+u);
-       this.currentctx.fillStyle = 'black';
-       this.currentctx.clearRect(positionarrays[currentindex].x*5+k - dk, positionarrays[currentindex].y*5+u - du, width + 2, height + 2);
-       this.currentctx.fillRect(positionarrays[currentindex].x*5+k, positionarrays[currentindex].y*5+u, width, height); 
-       position.x = positionarrays[currentindex].x*5+k;
-       position.y = positionarrays[currentindex].y*5+u;
+        console.log(positionarrays,"路径函数",delta)
+        if (positionarrays.length == 0) {
+            return;
+        }
+        that.timer = setInterval(() => {
+            for (let j = 0; j + 1 < positionarrays.length; j++) {
+
+                if (positionarrays[j].x * 5 + k == positionarrays[j + 1].x * 5 && positionarrays[j].y * 5 + u == positionarrays[j + 1].y * 5) {
+                    k = 0;
+                    u = 0;
+                    currentindex++;
+
+                    break;
+                }
+
+            }
+            if (currentindex == positionarrays.length - 1) {
+                clearInterval(that.timer);
+                that.timer = null;
+                //顺利结束  抵达终点(1)
+                this.startpoint.x = position.x;
+                this.startpoint.y = position.y;
+                globalAstarmanage.setStartpointandendpoint(this.closeFunc(this.startpoint.y), this.closeFunc(this.startpoint.x), 'startpoint')
+
+                return;
+            }
+            dk = delta[currentindex+1].deltay;
+            du = delta[currentindex+1].deltax;
+            k = k + dk;
+            u = u + du
+            // console.log(positionarrays[currentindex].x * 5 + k, positionarrays[currentindex].y * 5 + u);
+            this.currentctx.fillStyle = 'black';
+            this.currentctx.clearRect(positionarrays[currentindex].x * 5 + k - dk, positionarrays[currentindex].y * 5 + u - du, width + 2, height + 2);
+            this.currentctx.fillRect(positionarrays[currentindex].x * 5 + k, positionarrays[currentindex].y * 5 + u, width, height);
+            position.x = positionarrays[currentindex].x * 5 + k;
+            position.y = positionarrays[currentindex].y * 5 + u;
             if (type == 'tank') {
                 // this.showBloodlength(x0 + cosr * tem - 1,y0 + sinr * tem - 1);
-                this.showBloodlength(positionarrays[currentindex].x*5+k - dk - 1,  positionarrays[currentindex].y*5+u - du)
+                this.showBloodlength(positionarrays[currentindex].x * 5 + k - dk - 1, positionarrays[currentindex].y * 5 + u - du)
             }
-            
-         //   if (j * j - ((x1 - x0) / cosr) ** 2 > 0) {
-           //     if (type == 'bullet') {
+
+            //   if (j * j - ((x1 - x0) / cosr) ** 2 > 0) {
+            //     if (type == 'bullet') {
             //        this.currentctx.clearRect(x0 + cosr * (j) - 1, y0 + sinr * (j) - 1, width + 2, height + 2);
-           //     }
-           //     clearInterval(that.timer);
-           //     that.timer = null;
-                //顺利结束  抵达终点(1)
-          //      this.startpoint.x = position.x;
-          //      this.startpoint.y = position.y;
-           //     globalAstarmanage.setStartpointandendpoint( this.closeFunc(this.startpoint.y),this.closeFunc(this.startpoint.x), 'startpoint')
-        //    }
-    },16.6)
-    
-     //最新的路径规划方案
-     
+            //     }
+            //     clearInterval(that.timer);
+            //     that.timer = null;
+            //顺利结束  抵达终点(1)
+            //      this.startpoint.x = position.x;
+            //      this.startpoint.y = position.y;
+            //     globalAstarmanage.setStartpointandendpoint( this.closeFunc(this.startpoint.y),this.closeFunc(this.startpoint.x), 'startpoint')
+            //    }
+        }, 16.6)
+
+        //最新的路径规划方案
+
         // let x0 = position.x,
         //     y0 = position.y,
         //     x1 = lastx,
@@ -345,7 +349,7 @@ export class Tank {
         //     minusx = x1 - x0 >= 0 ? 1 : -1,
         //     cosr = (speed) * 1 / ((k * k + 1) ** 0.5),
         //     sinr = (speed) * k / ((k * k + 1) ** 0.5)
-     
+
         // that.timer = setInterval(() => {
         //     let tem = j
         //     j = j + minusx

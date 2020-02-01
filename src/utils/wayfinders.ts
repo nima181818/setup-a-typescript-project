@@ -29,7 +29,7 @@ export class Point{
         this.rowCount = 1000;
         this.colCount = 1000;
         for(let j=0;j<200;j++){
-			this.map[j] = []
+			this.map[j] = [] 
 			for(let k=0;k<200;k++){
 				this.map[j][k] = 0
 			}

@@ -19,6 +19,7 @@ export class Point{
     startmatrix:{x:number,y:number}={x:0,y:0}
     endmatrix:{x:number,y:number}={x:0,y:0}
     map:Array<Array<any>>=[]
+    fakemap:Array<Array<any>>=[] //存取当前地图所有的障碍物--动态
     rowCount:number=0
     colCount:number=0
     startPoint:Point=new Point()
@@ -29,9 +30,11 @@ export class Point{
         this.rowCount = 1000;
         this.colCount = 1000;
         for(let j=0;j<200;j++){
-			this.map[j] = [] 
+            this.map[j] = [] 
+            this.fakemap[j] = [] 
 			for(let k=0;k<200;k++){
-				this.map[j][k] = 0
+                this.map[j][k] = 0
+                this.fakemap[j][k] = 0
 			}
 		}
     }
@@ -225,9 +228,9 @@ export class Point{
         FindPoint(){
             this.openList = [];
             this.closeList=[];
-            for(let j=0;j< this.lastwaysmatrixlist.length;j++){
-                this.map[this.lastwaysmatrixlist[j].x][this.lastwaysmatrixlist[j].y] = 0
-            }
+            // for(let j=0;j< this.lastwaysmatrixlist.length;j++){
+            //     this.map[this.lastwaysmatrixlist[j].x][this.lastwaysmatrixlist[j].y] = 0
+            // }
             this.lastwaysmatrixlist = [];
              
             console.log(this);

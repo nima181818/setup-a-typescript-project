@@ -8,9 +8,9 @@ export class Soliderfactory extends Structure{
         this.paint(position);
     }
     paint(position: { x: number, y: number }) {
-        console.log(image, "wocao")
+     
         let img = transformimg(image.default);
-        console.log(require, "9999999999999999");
+       
         this.baseimg = img;
        this.baseimg.onload = function () {
             this.ctx.drawImage(this.baseimg, position.x,position.y, this.size.x, this.size.y);

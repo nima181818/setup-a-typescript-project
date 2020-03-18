@@ -1,7 +1,8 @@
 import {Tank} from './Tank'
 import { globalAstarmanage } from '../utils/wayfinders'
 import { Watcher } from '../utils/watcher';
-import {eventlist} from './Eventlist'
+import {eventlist} from './Eventlist';
+import {rvosystem} from '../utils/rovpathfindinghelper'
 const imagelb = require('../assets/rhinocerotidaetank/rhinocerotidaetank-lb.png');//↙
 const imagebot = require('../assets/rhinocerotidaetank/rhinocerotidaetankbot.png');//↓
 const imagelef = require('../assets/rhinocerotidaetank/rhinocerotidaetanklef.png');//←
@@ -41,9 +42,9 @@ export class Rhinocerotidaetank extends Tank{
     ownobstacles: Position1[] = []
     constructor(position: Position1) {
         super(position)
-        Tank.id++;
-        this._id = Tank.id;
-        
+        // Tank.id++;
+        // this._id = Tank.id;
+        // console.log('当前id',this._id)
         this.width = 54*2/3; //覆盖父的
         this.height = 35*2/3; //覆盖父的
         this.autoFire();
@@ -51,6 +52,9 @@ export class Rhinocerotidaetank extends Tank{
         this.watcher = new Watcher();
         this.watcher.register('currentclickpointsTrigger', this.currentclickpointsTrigger);
         this.watcher.responseMode(this, 'currentclickpoints');
+        this.watcher.register('targetpointTrigger', this.targetpointTrigger);
+        this.watcher.responseMode(this, 'targetpoint');
+     
         this.currentclickpoints.x = position.x;
         this.currentclickpoints.y = position.y;
         this.position.x = position.x;
@@ -59,5 +63,7 @@ export class Rhinocerotidaetank extends Tank{
         this.initStartpointendpoint();
         this.imgList = [imagetop.default,imagert.default,imagerig.default,imagerb.default,imagebot.default,imagelb.default,imagelef.default,imagelt.default,imagetop.default];
         this.initPicimg();
+        rvosystem.addVihcles(this);
+        // console.log(rvosystem,"rvo系统")
     }
 }

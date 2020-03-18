@@ -10,6 +10,7 @@ const mapobstacle = require('./mapobstacle.json');
 export class World{
     size:sizes
     ctx:any
+    // tanks:[]
     worldimg:HTMLImageElement
     worldobstacles: sizes[] = []
     constructor(size:sizes,ctx:HTMLCanvasElement){

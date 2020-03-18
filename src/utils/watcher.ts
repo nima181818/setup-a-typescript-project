@@ -33,7 +33,7 @@ class Watcher<T>{
                return tempy
             },
             set:function(val){
-                // alert('fuck')
+             
                 tempy = val;
                that.notify(key+'Trigger',targrt)
             }
@@ -45,6 +45,10 @@ class Watcher<T>{
       for(let j=0;j<this.eventHandlers.length;j++){
          
           if(key==this.eventHandlers[j].name){
+              if(key!='currentclickpointsTrigger'){
+                console.log(key,this,"监听器")
+              }
+          
               this.eventHandlers[j].handlerfunction.call(targrt);
           }
       }

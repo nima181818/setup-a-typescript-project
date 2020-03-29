@@ -39,14 +39,15 @@ export class Rhinocerotidaetank extends Tank{
     selected: false
     tankbullet: any
     speed: number = 2
+    
     ownobstacles: Position1[] = []
     constructor(position: Position1) {
         super(position)
         // Tank.id++;
         // this._id = Tank.id;
         // console.log('当前id',this._id)
-        this.width = 54*2/3; //覆盖父的
-        this.height = 35*2/3; //覆盖父的
+        this.width = 40; //覆盖父的
+        this.height = 40; //覆盖父的
         this.autoFire();
         eventlist.tanklist.push(this);
         this.watcher = new Watcher();
@@ -59,6 +60,8 @@ export class Rhinocerotidaetank extends Tank{
         this.currentclickpoints.y = position.y;
         this.position.x = position.x;
         this.position.y = position.y;
+        this.targetpoint.x = this.currentclickpoints.x
+        this.targetpoint.y = this.currentclickpoints.y
         globalAstarmanage.setStartpointandendpoint(this.closeFunc(this.currentclickpoints.y), this.closeFunc(this.currentclickpoints.x), 'startpoint');
         this.initStartpointendpoint();
         this.imgList = [imagetop.default,imagert.default,imagerig.default,imagerb.default,imagebot.default,imagelb.default,imagelef.default,imagelt.default,imagetop.default];

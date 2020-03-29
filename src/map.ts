@@ -36,7 +36,7 @@ export class World{
         })
       }
       
-      globalAstarmanage.addObstacle(temp)
+      globalAstarmanage.addObstacle(temp,33)
     }
 
 }

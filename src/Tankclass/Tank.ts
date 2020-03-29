@@ -27,6 +27,23 @@ class Bullet<T>{
 export class Tank {
     static id: number = -1
     _id: number
+    r: number = 20
+    dt: number = 0.08
+    obstaclematrix: Position1 = { x: 0, y: 0 }
+    avoidforce: Position1 = { x: 0, y: 0 }
+    seekforce: Position1 = { x: 0, y: 0 }
+    velocity: Position1 = { x: 0, y: 0 }
+    mass: number = 2
+    stable:boolean=false
+    MAX_SEE_AHEAD: number = 40
+    MAX_AVOID_FORCE: number = 80
+    MAX_SPEED: number = 80
+    MAX_SEEK_FORCE: number = 180
+    headpositionleft: Position1 = { x: 0, y: 0 }
+    headpositionright: Position1 = { x: 0, y: 0 }
+    head: Position1 = { x: 0, y: 0 }
+    headposition: Position1 = { x: 0, y: 0 }
+    collisiondectingbyAstar: boolean = false //由A*系统检测是否遭遇碰撞
     movingcommander: boolean = false //运动控制默认为false，true为运动状态
     engineDriver: string = 'A*' //引擎驱动器  默认为A* 还有可能为 rvo
     oldengineDriver: string = 'A*' //上一次的引擎驱动器
@@ -45,13 +62,15 @@ export class Tank {
     currentclickpoints: Position1 = { x: null, y: null }
     proxycurrentclickpoints: Position1 = { x: null, y: null } //保证在不操作 currentclickpoints的情况下处理rvo的回调，以备不时之需
     targetpoint: Position1 = { x: 0, y: 0 } //目标点
+    destinationpoint: Position1 = { x: 0, y: 0 } //目标点的子集 用以寻路
     startpoint: Position1 = { x: 0, y: 0 } //开始点
-    width: number = 30
-    height: number = 30
+    width: number = 54
+    height: number = 54
     currentctx: any = null
     timer: number
     position: Position1 = { x: null, y: null }
     selected: boolean = false
+    multiselect:boolean = false
     tankbullet: any
     speed: number = 2
     myendpoint: Position1
@@ -63,11 +82,20 @@ export class Tank {
             if (typeof realAstarmanage[j] == 'function') {
                 this.globalAstarmanage[j] = realAstarmanage[j]
             } else {
-                //       console.log(realAstarmanage[j])
-                this.globalAstarmanage[j] = JSON.parse(JSON.stringify(realAstarmanage[j]))
+                      
+                this.globalAstarmanage[j] = JSON.parse(JSON.stringify(realAstarmanage[j]));
+            //    if(j=='map'){
+            //        for(let u=0;u<realAstarmanage.map.length;u++){
+            //            for(let k=0;k<realAstarmanage.map[u].length;k++){
+            //                 if(realAstarmanage.map[u][k]==33||realAstarmanage.map[u][k]==333){
+            //                     this.globalAstarmanage.map[j] = realAstarmanage
+            //                 }
+            //            }
+            //        }
+            //    }
             }
         }
-
+        
         // this.autoFire()
         // eventlist.tanklist.push(this);
         // console.log( eventlist.tanklist,"坦克")
@@ -93,24 +121,26 @@ export class Tank {
         if (this.ownobstacles.length) {
             this.realUpdatingownerobstacle(0)
         }
-
+    
         this.ownobstacles = [{
-            x: this.currentclickpoints.x - this.width <= 0 ? 0 : this.currentclickpoints.x - this.width,
-            y: this.currentclickpoints.y - this.height <= 0 ? 0 : this.currentclickpoints.y - this.height
+            x: this.currentclickpoints.x - this.width*0.5 <= 0 ? 0 : this.currentclickpoints.x - this.width*0.5,
+            y: this.currentclickpoints.y - this.height*0.5 <= 0 ? 0 : this.currentclickpoints.y - this.height*0.5
         }, {
-            x: this.currentclickpoints.x + this.width >= 600 ? 600 : this.currentclickpoints.x + this.width,
-            y: this.currentclickpoints.y + this.height >= 400 ? 400 : this.currentclickpoints.y + this.height
+            x: this.currentclickpoints.x + this.width*0.5 >= 600 ? 600 : this.currentclickpoints.x + this.width*0.5,
+            y: this.currentclickpoints.y + this.height*0.5 >= 400 ? 400 : this.currentclickpoints.y + this.height*0.5
         }];
 
-        this.proxycurrentclickpoints.x = this.currentclickpoints.x;
-        this.proxycurrentclickpoints.y = this.currentclickpoints.y;
+        this.proxycurrentclickpoints.x = this.currentclickpoints.x + Math.random();
+        this.proxycurrentclickpoints.y = this.currentclickpoints.y + Math.random();
         this.realUpdatingownerobstacle(3)
         //     this.initStartpointendpoint();
     }
+    //
     //实时更新自己本身的障碍点
     realUpdatingownerobstacle(value: number) {
         // alert('wocao')
         // setTimeout(()=>{
+            //TODO--
         for (let k = 0; k < realAstarmanage.fakemap.length; k++) {
             for (let u = 0; u < realAstarmanage.fakemap[k].length; u++) {
                 if (
@@ -127,8 +157,7 @@ export class Tank {
                 }
             }
         }
-        // })
-        //   console.log(globalAstarmanage.fakemap,"该死的地图",this._id)
+      
         this.notifyRVOsystem()
     }
     initStartpointendpoint() {
@@ -169,19 +198,50 @@ export class Tank {
 
         }
         if (movingcommander) {
-           
+        
             for (let k = 0; k < this.globalAstarmanage.map.length; k++) {
                 for (let u = 0; u < this.globalAstarmanage.map[k].length; u++) {
-                    this.globalAstarmanage.map[k][u] = 0
+                    //TODO-- 这里处理了地图障碍物，还有建筑障碍物未处理
+                    if(this.globalAstarmanage.map[k][u] !=33&&this.globalAstarmanage.map[k][u] !=333){
+                        this.globalAstarmanage.map[k][u] = 0
+                    }
+                 
                 }
             }
             this.globalAstarmanage.setStartpointandendpoint(this.closeFunc(this.startpoint.y), this.closeFunc(this.startpoint.x), 'startpoint');
             this.globalAstarmanage.setStartpointandendpoint(this.closeFunc(this.targetpoint.y), this.closeFunc(this.targetpoint.x), 'endpoint');
             this.obstacleRepailie();
             //开始寻路
-            this.movingfunc('tank', this.currentclickpoints, this.height, this.width, this.speed, this);
+             var MT = new Multithread(4);//web worker
+           
+             let handle = MT.process(this.globalAstarmanage.prepareForwebworker,(e)=>{
+               this.globalAstarmanage.map = e.map;
+               this.globalAstarmanage.lastwaysmatrixlist = e.lastwaysmatrixlist;
+               this.movingfunc('tank', this.currentclickpoints, this.height, this.width, this.speed, this)
+                });
+             let sp = {
+                 x:this.globalAstarmanage.startPoint.x,
+                 y:this.globalAstarmanage.startPoint.y
+             },
+               ep = {
+                   x:this.globalAstarmanage.endPoint.x,
+                   y:this.globalAstarmanage.endPoint.y
+               }
+              
+                   
+             handle(this.globalAstarmanage.map,sp,ep)
+             
+           
+               /*
+                this.globalAstarmanage.FindPoint();
+            this.movingfunc('tank', this.currentclickpoints, this.height, this.width, this.speed, this)
+               */
+           
+            
+            
         }
     }
+   
     ///障碍重排
     obstacleRepailie() {
 
@@ -190,6 +250,7 @@ export class Tank {
             if (this._id !== eventlist.tanklist[j]._id) {
 
                 for (let k = 0; k < this.globalAstarmanage.map.length; k++) {
+                    
                     for (let u = 0; u < this.globalAstarmanage.map[k].length; u++) {
                         if (
                             k * 5 >= eventlist.tanklist[j].ownobstacles[0].y
@@ -200,17 +261,21 @@ export class Tank {
                             &&
                             u * 5 <= eventlist.tanklist[j].ownobstacles[1].x
                         ) {
-
+                          //TODO-- 还有建筑物生成的障碍物未处理
+                          if(this.globalAstarmanage.map[k][u]!=33&&this.globalAstarmanage.map[k][u]!=333){
                             this.globalAstarmanage.map[k][u] = 3
+                          }
+                           
                         }
                     }
                 }
             }
 
         }
-
-        this.globalAstarmanage.FindPoint();
-        //  console.log(this.globalAstarmanage.map,"寻路算法之后的地图")
+       console.log(this.globalAstarmanage.map,"寻路算法之前的地图")
+       //TODO-- 要采用webworker异步 但似乎遇到了困难
+    //   
+     
     }
 
     //重绘--不可打扰其他物体的在界面上的显示
@@ -249,58 +314,14 @@ export class Tank {
     }
     //路径规划 --rvo驱动
     pathplaningbyRvo(x: number, y: number) {
-        //此函数一直被调用，以便于处理障碍
-        this.oldengineDriver = this.engineDriver
-        let goonrvo = this.handleRvopositions(x, y);
-        if (goonrvo) {
-            //rvo获得控制权
-            this.engineDriver = 'rvo';
-            this.currentclickpoints.x = x;
-            this.currentclickpoints.y = y;
 
-        } else {
-            // A*获得控制权
-            this.engineDriver = 'A*'
-        }
-        this.nextStepdecide(x,y);
-      //  if(this._id==0){
-            console.log(x,y,'引擎驱动默认值为',this.engineDriver,'行军中'+this.movingcommander)
-      //  }
-      
+
     }
     //下一步根据引擎驱动选择驱动方式
-    nextStepdecide(x:number,y:number) {
-        if (this.oldengineDriver != this.engineDriver) {
-            if (this.oldengineDriver == 'A*') {
-             //   if(this._id==0){
-                    console.log('引擎切换由A*--->rvo')
-            //    }
-                
-                clearInterval(this.timer);
-                this.timer = null;
-                if(this.movingcommander){
-                //    this.currentctx.clearRect(this.currentclickpoints.x-10, this.currentclickpoints.y-10, this.width - 2, this.height - 2);
-                    this.currentctx.drawImage(this.picimgList[0],x,y, this.width, this.height)
-    
-                }
-              
-              
-            } else {
-                console.log('引擎切换由 rvo--->A*')
-                if(this.movingcommander){
-                    this.setTankspoints(this.currentclickpoints.x, this.currentclickpoints.y, 'setstartpoints', true)
-          
-                }
-                }
-        }else{
-            if(this.engineDriver=='rvo'){
-                if(this.movingcommander){
-                    //    this.currentctx.clearRect(this.currentclickpoints.x-10, this.currentclickpoints.y-10, this.width - 2, this.height - 2);
-                        this.currentctx.drawImage(this.picimgList[0],x,y, this.width, this.height)
-        
-                    }
-            }
-        }
+    nextStepdecide(x: number, y: number) {
+        if (this.oldengineDriver != this.engineDriver) { }
+        this.currentctx.drawImage(this.picimgList[0], x, y, this.width, this.height)
+
     }
     //判断rvo position周围是否有障碍 返回true 表示控制权在rvo手上
     /*
@@ -317,59 +338,80 @@ export class Tank {
             \     /   
           */
     handleRvopositions(x: number, y: number, invokedby: string = null) {
-        let limitleft = {
-            x: this.closeFunc(x - this.width - 10),
-            y: this.closeFunc(y)
-        },
-            limitright = {
-                x: this.closeFunc(x + this.width + 10),
-                y: this.closeFunc(y)
-            },
-            limittop = {
-                x: this.closeFunc(x),
-                y: this.closeFunc(y - this.height - 10)
-            },
-            limitbottom = {
-                x: this.closeFunc(x),
-                y: this.closeFunc(y + this.height + 10)
-            },
-            list = this.filterProbooutofborder([limitleft, limitright, limittop, limitbottom]),
-            incollision = false;
+        let itemlist = [];
+        for (let j = 0; j < 100; j++) {
+            let theta = j * 2 * Math.PI / 100;
+            let r = 50
+            let item = {
+                x: this.closeFunc(x + r * Math.cos(theta)),
+                y: this.closeFunc(y + r * Math.sin(theta))
+            }
+            itemlist.push(item)
+        }
+
+        let list = this.filterProbooutofborder(itemlist);
+        let incollision = false;
 
         for (let j = 0; j < list.length; j++) {
             if (realAstarmanage.fakemap[list[j].y / 5][list[j].x / 5] == 3) {
                 incollision = true
             }
         }
-       // if(this._id==0){
-            console.log('是否在障碍中'+incollision,'被'+invokedby+'调用')
-      //  }
-       
+        if (this._id == 0) {
+            console.log('是否在障碍中' + incollision, '被' + invokedby + '调用', '当前的驱动引擎为', this.engineDriver)
+        }
+
         return incollision
     }
     //筛选 过滤探针在边界之外的
     filterProbooutofborder(list: Array<{ x: number, y: number }>): any {
         let templist = JSON.parse(JSON.stringify(list))
         for (let j = 0; j < templist.length; j++) {
-            if (templist[j].x < 0 || templist[j].y < 0) {
+            if (templist[j].x <= 0 || templist[j].y <= 0) {
                 templist.splice(j, 1);
                 j--
             }
         }
         return templist
     }
+    //当由 rvo转到A*时，此时要对下面的k和j，index做偏移
+    rvoToastar(positionarrays: { x: number, y: number }[], x: number, y: number) {
+        let mostclosestpoint = (positionarrays[0].x * 5 - x) ** 2 + (positionarrays[0].y * 5 - y) ** 2
+        let finalindex = 0;
+        for (let j = 0; j < positionarrays.length; j++) {
+            let distance = (positionarrays[j].x * 5 - x) ** 2 + (positionarrays[j].y * 5 - y) ** 2;
+            if (mostclosestpoint > distance) {
+                mostclosestpoint = distance;
+                finalindex = j
+            }
+        }
+        console.log(finalindex)
+
+        return finalindex
+    }
+    //处理当前运动的点的位置
+    handleCurrenttarget(positionarrays: Position1[]) {
+        let x = parseInt((this.currentclickpoints.x / 5).toString()),
+            y = parseInt((this.currentclickpoints.y / 5).toString()),
+            positionindex = null
+        for (let j = 0; j < positionarrays.length; j++) {
+            if (positionarrays[j].x == y && positionarrays[j].y == x) {
+                positionindex = j;
+                return positionindex
+            }
+        }
+    }
+
+
     //路径规划 --A*驱动
     movingfunc(type: string, position: Position1, height: number, width: number, speed: number, that: any) {
         //最新的路径规划方案
-    
-        let k = 0,
-            u = 0,
-            currentindex = 0,
-            dk = 0,
-            du = 0,
-            positionarrays = [],
-            delta = this.globalAstarmanage.deltamatrixllist
+        let positionarrays = [],
+            currentindex = 0;
 
+        //设置开始速度
+        // this.velocity.x = 0;
+        // this.velocity.y = 50;
         for (let j = 0; j + 1 < this.globalAstarmanage.lastwaysmatrixlist.length; j++) {
             let obj = {
                 x: this.globalAstarmanage.lastwaysmatrixlist[j].y,
@@ -377,82 +419,449 @@ export class Tank {
             }
             positionarrays.unshift(obj)
         }
-
         if (positionarrays.length == 0) {
             return;
         }
-        console.log('寻路开始------')
         that.timer = setInterval(() => {
-            for (let j = 0; j + 1 < positionarrays.length; j++) {
-
-                if (positionarrays[j].x * 5 + k == positionarrays[j + 1].x * 5 && positionarrays[j].y * 5 + u == positionarrays[j + 1].y * 5) {
-                    k = 0;
-                    u = 0;
-                    currentindex++;
-
-                    break;
-                }
-
+            //p为当前点，a为寻路算法当前点，b为寻路算法下一点
+            let PA = {
+                x: positionarrays[currentindex].x * 5 - this.currentclickpoints.x,
+                y: positionarrays[currentindex].y * 5 - this.currentclickpoints.y
+            }
+            let AB = {
+                x: positionarrays[currentindex + 1].x * 5 - positionarrays[currentindex].x * 5,
+                y: positionarrays[currentindex + 1].y * 5 - positionarrays[currentindex].y * 5,
+            }
+            if (PA.x * AB.x + PA.y * AB.y < 0) {
+                //已经越过当前寻路点
+                currentindex++
             }
 
-            if (currentindex == positionarrays.length - 1) {
-                clearInterval(that.timer);
-                that.timer = null;
-                //顺利结束  抵达终点(1)
+            this.destinationpoint = {
+                x: positionarrays[currentindex + 1].x * 5,
+                y: positionarrays[currentindex + 1].y * 5
+            }
+            let temp = {
+                x: this.velocity.x * this.dt,
+                y: this.velocity.y * this.dt
+            }
+
+
+            if (currentindex == positionarrays.length - 2) {
                 this.startpoint.x = position.x;
                 this.startpoint.y = position.y;
+                clearInterval(that.timer)
+                this.velocity = {
+                    x: 0,
+                    y: 0
+                }
                 this.globalAstarmanage.setStartpointandendpoint(this.closeFunc(this.startpoint.y), this.closeFunc(this.startpoint.x), 'startpoint')
                 this.movingcommander = false;
-                return;
             }
-            dk = delta[currentindex + 1].deltay;
-            du = delta[currentindex + 1].deltax;
-            k = k + dk;
-            u = u + du
-            this.currentctx.fillStyle = 'black';
-            this.currentctx.clearRect(positionarrays[currentindex].x * 5 + k - dk, positionarrays[currentindex].y * 5 + u - du, width + 2, height + 2);
-            let tempindex = 0
-            if (dk == 0 && du == -1) {
-                tempindex = 0
-            }
-            if (dk == 1 && du == -1) {
-                tempindex = 1
-            }
-            if (dk == 1 && du == 0) {
-                tempindex = 2
-            }
-            if (dk == 1 && du == 1) {
-                tempindex = 3
-            }
-            if (dk == 0 && du == 1) {
-                tempindex = 4
-            }
-            if (dk == -1 && du == 1) {
-                tempindex = 5
-            }
-            if (dk == -1 && du == 0) {
-                tempindex = 6
-            }
-            if (dk == -1 && du == -1) {
-                tempindex = 7
-            }
-            this.currentctx.drawImage(this.picimgList[tempindex], positionarrays[currentindex].x * 5 + k, positionarrays[currentindex].y * 5 + u, this.width, this.height)
+            this.updating();
+            this.updatingcalculateobstaclematrix();
 
-            //}
-            //    setTimeout(()=>{
-            //   if(!this.incollision){
-            this.handleRvopositions(this.currentclickpoints.x, this.currentclickpoints.y, 'A*')
-            //     }
-
-            //  },500)
-
-            position.x = positionarrays[currentindex].x * 5 + k;
-            position.y = positionarrays[currentindex].y * 5 + u;
-            // console.log(k, u, "当前位置")
+            this.updatingVelocity();
+            
+            this.updatingDisplacement();
+            this.handleDestinations()
 
         }, 16.6)
+    }
+    //实时更新--head,head position
+    updating() {
+        //	 console.log(this.id,this.velocity.x,this.velocity.y)
+        let cosv = this.velocity.x / (this.squalCaculator(this.velocity, true)),
+            sinv = this.velocity.y / (this.squalCaculator(this.velocity, true));
+        
+        this.head = {
+            x: cosv * this.MAX_SEE_AHEAD ? cosv * this.MAX_SEE_AHEAD : 0,
+            y: sinv * this.MAX_SEE_AHEAD ? sinv * this.MAX_SEE_AHEAD : 0
+        };
+        const cos = this.head.x / (this.head.x ** 2 + this.head.y ** 2) ** 0.5;
+        const sin = this.head.y / (this.head.x ** 2 + this.head.y ** 2) ** 0.5;
+        this.headposition = {
+            x: this.currentclickpoints.x + this.head.x,
+            y: this.currentclickpoints.y + this.head.y
+        };
+        this.headpositionleft = {
+            x: this.headposition.x - this.r * (sin ? sin : 0),
+            y: this.headposition.y + this.r * (cos ? cos : 0)
+
+        }
+        this.headpositionright = {
+            x: this.headposition.x + this.r * (sin ? sin : 0),
+            y: this.headposition.y - this.r * (cos ? cos : 0)
+
+        }
+    }
+    //updating--计算障碍中心到head的向量--障碍物产生的力obstacle avoidance
+    updatingcalculateobstaclematrix() {
+
+        let obstacle = this.findMostcloseobstacle();
+        //	console.log(obstacle)
+
+        this.calculateObstacleavoidance(obstacle);
+
+        this.calculateSeekforce();
+        let cosobstaclematrix = this.obstaclematrix.x / this.squalCaculator(this.obstaclematrix, true),
+            sinobstaclematriy = this.obstaclematrix.y / this.squalCaculator(this.obstaclematrix, true);
+        this.avoidforce = {
+            x: (this.obstaclematrix.x),
+            y: (this.obstaclematrix.y)
+        }
+        if (this.squalCaculator(this.obstaclematrix, true) > this.MAX_AVOID_FORCE) {
+            this.avoidforce = {
+                x: cosobstaclematrix * this.MAX_AVOID_FORCE ? cosobstaclematrix * this.MAX_AVOID_FORCE : 0,
+                y: sinobstaclematriy * this.MAX_AVOID_FORCE ? sinobstaclematriy * this.MAX_AVOID_FORCE : 0
+            }
+
+        }
+
+        if ((this.calculateDistance(obstacle, false) > obstacle.r) && ((obstacle.currentclickpoints.x - this.currentclickpoints.x) ** 2 + (obstacle.currentclickpoints.y - this.currentclickpoints.y) ** 2 >= (this.r + obstacle.r) ** 2)) {
+
+            this.avoidforce = {
+                x: 0,
+                y: 0
+            }
+
+        } else { }
+
+        //	 console.log(this.avoidforce.x,this.avoidforce.y)
+    }
+    //距离公式
+    distanceFormlation(p1:any,p2:Position1,kf:boolean = false){
+        let value = (p1.x - p2.x)**2+(p1.y-p2.y)**2;
+        return kf?(value**0.5):value
+    }
+    //重绘
+    paintAgain() {
+        // this.currentclickpoints.x += this.velocity.x * this.dt;
+        // this.currentclickpoints.y += this.velocity.y * this.dt;
+        let picindex = 0,
+            velocitylength = this.squalCaculator(this.velocity, true),
+            v =　{
+                x: (this.velocity.x / velocitylength) ? (this.velocity.x / velocitylength) : 0,
+                y: (this.velocity.y / velocitylength) ? (this.velocity.y / velocitylength) : 0
+            },
+         
+            part = 0.7071,
+            imglist = [{x:0,y:-1},{
+
+            },{
+                x:part,y:-part
+            },{
+                x:1,y:0
+            },{
+                x:part,y:part
+            },{
+                x:1,y:1
+            },{
+                x:-part,y:part
+            },{
+                x:-1,y:0
+            },{
+                x:-part,y:-part
+            }],
+            mini = null;
+            for(let j=0;j<imglist.length;j++){
+                let value = this.distanceFormlation(imglist[j],v,true)
+               if(j==0){
+                   mini=value
+               }
+             
+               if(value<=mini){
+                   mini = value;
+                   picindex = j
+               }
+            }
+
+           
+        this.currentctx.clearRect(this.currentclickpoints.x - this.velocity.x * this.dt-this.width*0.5, this.currentclickpoints.y - this.velocity.y * this.dt-this.height*0.5, this.width, this.height);
+        this.currentctx.drawImage(this.picimgList[picindex], this.currentclickpoints.x-this.width*0.5, this.currentclickpoints.y-this.height*0.5, this.width, this.height)
+    }
+    //////////////////////steering behavior↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
+    //计算最近的距离
+    calculateDistance(obstacle: any, usemiddle: boolean = false) {
+        if (!usemiddle) {
+            let left = (((this.headpositionleft.x - obstacle.currentclickpoints.x) ** 2 + (this.headpositionleft.y - obstacle.currentclickpoints.y) ** 2)) ** 0.5,
+                right = (((this.headpositionright.x - obstacle.currentclickpoints.x) ** 2 + (this.headpositionright.y - obstacle.currentclickpoints.y) ** 2)) ** 0.5
+
+            return left <= right ? left : right
+        } else {
+            return (((this.headposition.x - obstacle.currentclickpoints.x) ** 2 + (this.headposition.y - obstacle.currentclickpoints.y) ** 2)) ** 0.5
+        }
 
     }
+    ////计算最近的障碍物
+    findMostcloseobstacle() {
+        let tempobstaclearray = []
+
+        // return 
+        for (let j = 0; j < eventlist.tanklist.length; j++) {
+            if (eventlist.tanklist[j]._id != this._id) {
+                tempobstaclearray.push(eventlist.tanklist[j]);
+
+            }
+        }
+        let obstacle = tempobstaclearray[0];
+
+        for (let j = 0; j < tempobstaclearray.length; j++) {
+            if (tempobstaclearray[j]._id != this._id) {
+                if (tempobstaclearray[j + 1]) {
+                    if (this.calculateDistance(tempobstaclearray[j + 1], true) < this.calculateDistance(obstacle)) {
+                        obstacle = tempobstaclearray[j + 1]
+                    }
+                }
+            }
+
+        }
+        return obstacle
+    }
+    //handle multi-entitys have the same destination
+		handleDestinations() {
+		    if (this.multiselect) {
+                console.log()
+                //当前位置已抵达终点
+		        if (((this.currentclickpoints.x-this.targetpoint.x)**2+(this.currentclickpoints.y-this.targetpoint.y)**2)**0.5<(this.r*1)) {
+                         this.stable = true
+		            let obstacle = this.minDistancefromcenter();
+		            if ((this.pointDistance(obstacle.currentclickpoints, this.currentclickpoints) < ((this.r + obstacle.r) ** 2) + 1)
+		                 && (this.pointDistance(obstacle.currentclickpoints, this.currentclickpoints) > ((this.r + obstacle.r) ** 2) - 1)) {
+		                //
+                       console.log('成功抵达1')
+		                obstacle.destinationpoint.x = obstacle.currentclickpoints.x;
+		                obstacle.destinationpoint.y = obstacle.currentclickpoints.y;
+                        clearInterval(obstacle.timer);
+                        obstacle.timer = null;
+                        obstacle.stable = true
+                       // this.timer = null;
+		            }
+
+		        } else {
+                    //当前位置未到达终点
+                    let obstacle = this.minDistancefromcenter();
+                    console.log('调整中');
+                  
+                   
+                    console.log(((obstacle.currentclickpoints.x-obstacle.targetpoint.x)**2+(obstacle.currentclickpoints.y-obstacle.targetpoint.y)**2)**0.5,(obstacle.r*1))
+                    if ((this.pointDistance(obstacle.currentclickpoints, this.currentclickpoints) < ((this.r + obstacle.r) ** 2) + (this.r+obstacle.r))
+                         && (this.pointDistance(obstacle.currentclickpoints, this.currentclickpoints) > ((this.r + obstacle.r) ** 2) - (this.r+obstacle.r))
+                         &&(obstacle.stable)) {
+		                //
+                       console.log('调整成功')
+		              
+		                this.destinationpoint.x = this.currentclickpoints.x;
+		                this.destinationpoint.y = this.currentclickpoints.y;
+                        clearInterval(this.timer)
+                        this.timer = null;
+                        this.stable = true
+		            }
+				}
+
+		    }
+
+		}
+    //计算两个机车圆心的距离
+    minDistancefromcenter(){
+        let temp = []
+        for(let j=0;j<eventlist.tanklist.length;j++){
+            if(eventlist.tanklist[j].multiselect&&this._id!=eventlist.tanklist[j]._id){
+                temp.push(eventlist.tanklist[j])
+            }
+        }
+        let obstacle = temp[0];
+        for(let j=0;j<temp.length;j++){
+            if(this.pointDistance(this.currentclickpoints,temp[j].currentclickpoints)<=this.pointDistance(this.currentclickpoints,obstacle.currentclickpoints)){
+                obstacle = temp[j]
+            }
+        }
+      return obstacle;
+    }
+    //distance function
+		pointDistance(obj1:Position1,obj2:Position1,kf=false):number{
+			let distance =  (obj1.x-obj2.x)**2 +(obj1.y - obj2.y)**2;
+            return kf?(distance**0.5):distance			
+			
+		}
+    //计算-seek
+    calculateSeekforce() {
+        let destination = {
+            x: this.destinationpoint.x - this.currentclickpoints.x,
+            y: this.destinationpoint.y - this.currentclickpoints.y
+        }
+
+        let cons = destination.x / ((destination.x) ** 2 + (destination.y) ** 2) ** 0.5;
+        let sins = destination.y / ((destination.x) ** 2 + (destination.y) ** 2) ** 0.5;
+        let currentspendlength = ((destination.x) ** 2 + (destination.y) ** 2) ** 0.5;
+
+
+        //假设 seekforce恒定？
+        let destinationvelocity = {
+            x: (cons * this.MAX_SPEED) ? (cons * this.MAX_SPEED) : 0,
+            y: (sins * this.MAX_SPEED) ? sins * this.MAX_SPEED : 0
+
+        }
+
+        //假设朝向终点的seekforce与物体到终点的长度成正比?
+        this.seekforce = {
+            x: destination.x - this.velocity.x,
+            y: destination.y - this.velocity.y
+        }
+        //上述假设不成立  假设牵引力大小始终为恒定值？
+        //    this.seekforce = {
+        //        x:this.MAX_SEEK_FORCE*(this.seekforce.x/(this.squalCaculator(this.seekforce,true))),
+        //        y:this.MAX_SEEK_FORCE*(this.seekforce.y/(this.squalCaculator(this.seekforce,true)))
+        //    }
+        if (this._id == 2) {
+            // console.log(this.seekforce.x, this.seekforce.y)
+        }
+
+    }
+
+    //Square conversion
+    squalCaculator(obj: Position1, needgh: boolean = false) {
+        let value = obj.x ** 2 + obj.y ** 2;
+        return needgh ? (value ** 0.5) : value
+    }
+    //位置检测函数 如果两者的距离小于了两者圆心的距离则迅速让其分离
+    positionTestfunc() {
+        let obstacle = this.findMostcloseobstacle();
+        let speedlength = this.squalCaculator(this.velocity, true)
+        if ((obstacle.currentclickpoints.x - this.currentclickpoints.x) ** 2 + (obstacle.currentclickpoints.y - this.currentclickpoints.y) ** 2 + speedlength * this.dt * 2 < (this.r + obstacle.r) ** 2) {
+
+            let this2obstacle = {
+                x: obstacle.currentclickpoints.x - this.currentclickpoints.x,
+                y: obstacle.currentclickpoints.y - this.currentclickpoints.y
+
+            }
+            let ethis2obstacle = {
+                x: (this2obstacle.x / this.squalCaculator(this2obstacle, true)) ? (this2obstacle.x / this.squalCaculator(this2obstacle, true)) : 0,
+                y: (this2obstacle.y / this.squalCaculator(this2obstacle, true)) ? (this2obstacle.y / this.squalCaculator(this2obstacle, true)) : 0,
+
+            }
+            let cose = (this.velocity.x * this2obstacle.x + this.velocity.y * this2obstacle.y) / ((this.squalCaculator(this.velocity, true)) * (this.squalCaculator(this2obstacle, true)));
+            if (cose < 0) {
+                return;
+            } else {
+                let velocitylength = this.squalCaculator(this.velocity, true);
+                let striktlength = velocitylength * (cose ? cose : 0)
+                let velocitylengthmatrix = {
+                    x: ethis2obstacle.x * striktlength,
+                    y: ethis2obstacle.y * striktlength
+
+                }
+                this.velocity = {
+                    x: this.velocity.x - velocitylengthmatrix.x,
+                    y: this.velocity.y - velocitylengthmatrix.y
+
+                }
+            }
+            // let overlapdistance = ((((obstacle.currentclickpoints.x - this.currentclickpoints.x) ** 2 + (obstacle.currentclickpoints.y - this.currentclickpoints.y) ** 2) ** 0.5 - (this.r + obstacle.r)) ** 2) ** 0.5,
+            // overlapobj = {
+            //     x: this.currentclickpoints.x - obstacle.currentclickpoints.x,
+            //     y: this.currentclickpoints.y - obstacle.currentclickpoints.y
+            // },
+
+            // cos = overlapobj.x / ((overlapobj.x) ** 2 + (overlapobj.y) ** 2) ** 0.5,
+            // sin = overlapobj.y / ((overlapobj.x) ** 2 + (overlapobj.y) ** 2) ** 0.5;
+            // this.currentclickpoints.x = this.currentclickpoints.x + (overlapdistance) * cos
+            //     this.currentclickpoints.y = this.currentclickpoints.y + (overlapdistance) * sin
+
+        }
+    }
+    //实时更新速度
+    updatingVelocity() {
+        let obstacle = this.findMostcloseobstacle();
+
+        let acceleration = {
+            x: (this.seekforce.x + this.avoidforce.x) / this.mass ? (this.seekforce.x + this.avoidforce.x) / this.mass : 0,
+            y: (this.seekforce.y + this.avoidforce.y) / this.mass ? (this.seekforce.y + this.avoidforce.y) / this.mass : 0
+        }
+
+        let directionofmiles = {
+            x: obstacle.currentclickpoints.x - this.currentclickpoints.x,
+            y: obstacle.currentclickpoints.y - this.currentclickpoints.y
+        }
+        let xvelocity = acceleration.x / (acceleration.x ** 2 + acceleration.y ** 2) ** 0.5,
+            yvelocity = acceleration.y / (acceleration.x ** 2 + acceleration.y ** 2) ** 0.5;
+
+        this.velocity = {
+            //  x: velocityall * xvelocity + id * 2,
+            x: this.velocity.x + (acceleration.x ? acceleration.x : 0) * this.dt,
+            y: this.velocity.y + (acceleration.y ? acceleration.y : 0) * this.dt
+            //y: velocityall * yvelocity + id * 2
+        };
+        let all = ((this.velocity.x) ** 2 + this.velocity.y ** 2) ** 0.5;
+        if (this.squalCaculator(this.avoidforce, true) < 0.0001) {
+            //方向为seekforce的方向
+            // let cosseek = this.seekforce.x/this.squalCaculator(this.seekforce,true),
+            //     sinseek = this.seekforce.y/this.squalCaculator(this.seekforce,true);
+            //     this.velocity = {
+            //         x:(cosseek?cosseek:0)*this.MAX_SPEED,
+            //         y:(sinseek?sinseek:0)*this.MAX_SPEED
+            //  }
+        }
+        if (all > this.MAX_SPEED) {
+            let cosa = this.velocity.x / ((this.velocity.x) ** 2 + this.velocity.y ** 2) ** 0.5;
+            let sina = this.velocity.y / ((this.velocity.x) ** 2 + this.velocity.y ** 2) ** 0.5
+            this.velocity = {
+                x: this.MAX_SPEED * (cosa ? cosa : 0),
+                y: this.MAX_SPEED * (sina ? sina : 0)
+            }
+        }
+
+
+        //	  clearInterval(this.movingtimer)
+        this.positionTestfunc()
+        // this.motivateForce();
+
+        //	 console.log(this.velocity)
+    }
+
+    //计算-obstacle avoidance
+    calculateObstacleavoidance(obstacle: any) {
+      
+        this.obstaclematrix = {
+            x: (this.headposition.x - obstacle.currentclickpoints.x),
+            y: (this.headposition.y - obstacle.currentclickpoints.y)
+        };
+    }
+    //实时更新位移
+    updatingDisplacement() {
+        //如果快到边边了 返回去
+        if (this.currentclickpoints.x > 700 || this.currentclickpoints.y > 700 || this.currentclickpoints.x < 0 || this.currentclickpoints.y < 0) {
+            this.velocity = {
+
+                x: -this.velocity.x,
+                y: -this.velocity.y
+            }
+
+        }
+        if((this.currentclickpoints.x-this.targetpoint.x)**2+(this.currentclickpoints.y-this.targetpoint.y)**2<1){
+            this.handleEntityisinstable(true);
+        }else{
+                this.handleEntityisinstable(false);
+        }
+        let ds = {
+            x: this.velocity.x * this.dt,
+            y: this.velocity.y * this.dt
+        }
+        this.currentclickpoints.x += ds.x;
+        this.currentclickpoints.y += ds.y;
+    }
+    //处理物体是否处于稳定状态
+    handleEntityisinstable(state:boolean){
+        // this.stable = state;
+        // if(this.stable){
+        //     this.velocity = {
+        //         x:0,
+        //         y:0
+        //       }
+        // }
+     
+    }
+    //////////////////////steering behavior↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑
     //选中时显示血量
     showBloodlength(x: number = this.currentclickpoints.x, y: number = this.currentclickpoints.y) {
         this.currentctx.beginPath()
@@ -476,14 +885,16 @@ export class Tank {
         let that = this
 
         this.baseimg.onload = function () {
-            that.currentctx.drawImage(this.baseimg, this.currentclickpoints.x, this.currentclickpoints.y, this.width, this.height)
+            that.currentctx.drawImage(this.baseimg, this.currentclickpoints.x-this.width*0.5, this.currentclickpoints.y-this.height*0.5, this.width, this.height)
 
         }.bind(that)
         this.position = {
             x: 10,
             y: 10
         }
-
+        setInterval(() => {
+            this.paintAgain();
+        }, 16.6)
         // this.select(canvas)
     }
 

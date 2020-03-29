@@ -12,7 +12,8 @@ import { eventlist } from '../Tankclass/Eventlist';
 class Rvosystem {
     rvoruningtimer: null
     rvohelper: any = RVO
-    simulator: any = new RVO.Simulator(2, 50, 5, 10, 10, 30, 1, [0, 0])
+    //timeStep, neighborDist, maxNeighbors, timeHorizon, timeHorizonObst, radius, maxSpeed, velocity
+    simulator: any = new RVO.Simulator(1, 50, 100, 100, 1000, 30, 2, [0, 1])
     goals: Array<goalsinternal> = []
     //增加机动车
     addVihcles(tank: any) {
@@ -28,6 +29,7 @@ class Rvosystem {
     //当机车在运动的时候 动态更新goals的数据,
     //同时更新开始点？当A*算法结束,当前RVO开始的时候
     dynamicUpdategoals(tank: any, type: string) {
+    
         if (type == 'np') {
             for (let j = 0; j < this.goals.length; j++) {
                 if (this.goals[j]._uid == tank._id) {
@@ -60,28 +62,37 @@ class Rvosystem {
     //rvo！！！
     rvostart() {
         setInterval(() => {
+           
             this.setPreferredVelocities();
             this.simulator.doStep();
-
+              
             for (let j = 0; j < this.simulator.agents.length; j++) {
                 for (let k = 0; k < eventlist.tanklist.length; k++) {
                     if(eventlist.tanklist[k]._id==this.simulator.agents[j]._uid){
-                     //   if(eventlist.tanklist[k]._id==0){
+                  //      if(!eventlist.tanklist[k].movingcommander){
+                      //     this.simulator.agents[j].position = {
+                        //    x:eventlist.tanklist[k].targetpoint.x,
+                          //  y:eventlist.tanklist[k].targetpoint.y
+                     //      }
+                  
+//}else{
                             eventlist.tanklist[k].pathplaningbyRvo(this.simulator.agents[j].position[0], this.simulator.agents[j].position[1]);
-
-                        //}
+                  
+                  //    }
+                   
                         
                     }
                  
                 }
                
             }
-        }, 500);
+         //   console.log(this.simulator.agents[1].position,"位置",this.goals[1]);
+        }, 16.6);
     }
 }
 
 
 let rvosystem = new Rvosystem();
-rvosystem.rvostart();
+//rvosystem.rvostart();
 export { rvosystem }
 

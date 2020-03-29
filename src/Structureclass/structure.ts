@@ -118,7 +118,7 @@ class Structure{
     }
      //临近函数 //找出距离自己最近的矩阵点
      closeFunc(point: number): number {
-        let k = parseInt((point / 5).toString());
+        let k = parseInt((point / 10).toString());
         return k 
     }
     //初始化自身的地图
@@ -141,8 +141,8 @@ class Structure{
         //TODO-- 障碍需要又加有减？
          for(let j=0;j<obstacle.length;j++){
             let item = {
-                x:obstacle[j].x,
-                y:obstacle[j].y
+                x:parseInt((obstacle[j].x/2).toString()),
+                y:parseInt((obstacle[j].y/2).toString())
             }
             temp.push(item);
          }         

@@ -34,8 +34,8 @@ export class Oil extends Structure{
         this.needanimation = true
         this.animationend = this.imgUrllist.length-1;
         this.size = {
-            x:1211/1.5,
-            y:1009/1.5
+            x:1211/2,
+            y:1009/2
         }
         this.needanimation = true
         this.initImgelement().then(res=>{

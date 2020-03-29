@@ -144,13 +144,13 @@ export class Tank {
         for (let k = 0; k < realAstarmanage.fakemap.length; k++) {
             for (let u = 0; u < realAstarmanage.fakemap[k].length; u++) {
                 if (
-                    k * 5 >= this.ownobstacles[0].y
+                    k * 10 >= this.ownobstacles[0].y
                     &&
-                    k * 5 < this.ownobstacles[1].y
+                    k * 10 < this.ownobstacles[1].y
                     &&
-                    u * 5 >= this.ownobstacles[0].x
+                    u * 10 >= this.ownobstacles[0].x
                     &&
-                    u * 5 < this.ownobstacles[1].x
+                    u * 10 < this.ownobstacles[1].x
                 ) {
 
                     realAstarmanage.fakemap[k][u] = value
@@ -180,8 +180,8 @@ export class Tank {
     }
     //临近函数 //找出距离自己最近的矩阵点
     closeFunc(point: number): number {
-        let k = parseInt((point / 5).toString());
-        return k * 5
+        let k = parseInt((point / 10).toString());
+        return k * 10
     }
     setTankspoints(x: number, y: number, type: string, movingcommander: boolean = false) {
         if (type == 'setstartpoints') {
@@ -213,30 +213,32 @@ export class Tank {
             this.obstacleRepailie();
             //开始寻路
              var MT = new Multithread(4);//web worker
-           
-             let handle = MT.process(this.globalAstarmanage.prepareForwebworker,(e)=>{
-               this.globalAstarmanage.map = e.map;
-               this.globalAstarmanage.lastwaysmatrixlist = e.lastwaysmatrixlist;
-               this.movingfunc('tank', this.currentclickpoints, this.height, this.width, this.speed, this)
-                });
-             let sp = {
-                 x:this.globalAstarmanage.startPoint.x,
-                 y:this.globalAstarmanage.startPoint.y
-             },
-               ep = {
-                   x:this.globalAstarmanage.endPoint.x,
-                   y:this.globalAstarmanage.endPoint.y
-               }
-              
-                   
-             handle(this.globalAstarmanage.map,sp,ep)
+           /*
              
+           */
+          
+          let handle = MT.process(this.globalAstarmanage.prepareForwebworker,(e)=>{
+            this.globalAstarmanage.map = e.map;
+            this.globalAstarmanage.lastwaysmatrixlist = e.lastwaysmatrixlist;
+            this.movingfunc('tank', this.currentclickpoints, this.height, this.width, this.speed, this)
+             });
+          let sp = {
+              x:this.globalAstarmanage.startPoint.x,
+              y:this.globalAstarmanage.startPoint.y
+          },
+            ep = {
+                x:this.globalAstarmanage.endPoint.x,
+                y:this.globalAstarmanage.endPoint.y
+            }
+           
+                
+          handle(this.globalAstarmanage.map,sp,ep)
            
                /*
-                this.globalAstarmanage.FindPoint();
-            this.movingfunc('tank', this.currentclickpoints, this.height, this.width, this.speed, this)
+                 this.globalAstarmanage.FindPoint();
+              this.movingfunc('tank', this.currentclickpoints, this.height, this.width, this.speed, this)
                */
-           
+            
             
             
         }
@@ -253,13 +255,13 @@ export class Tank {
                     
                     for (let u = 0; u < this.globalAstarmanage.map[k].length; u++) {
                         if (
-                            k * 5 >= eventlist.tanklist[j].ownobstacles[0].y
+                            k * 10 >= eventlist.tanklist[j].ownobstacles[0].y
                             &&
-                            k * 5 <= eventlist.tanklist[j].ownobstacles[1].y
+                            k * 10 <= eventlist.tanklist[j].ownobstacles[1].y
                             &&
-                            u * 5 >= eventlist.tanklist[j].ownobstacles[0].x
+                            u * 10 >= eventlist.tanklist[j].ownobstacles[0].x
                             &&
-                            u * 5 <= eventlist.tanklist[j].ownobstacles[1].x
+                            u * 10 <= eventlist.tanklist[j].ownobstacles[1].x
                         ) {
                           //TODO-- 还有建筑物生成的障碍物未处理
                           if(this.globalAstarmanage.map[k][u]!=33&&this.globalAstarmanage.map[k][u]!=333){
@@ -290,8 +292,12 @@ export class Tank {
     initPicimg() {
 
         for (let j = 0; j < this.imgList.length; j++) {
-            let img = transformimg(this.imgList[j]);
-            this.picimgList.push(img);
+            let img:HTMLImageElement = new Image(); 
+                img.src = this.imgList[j]
+                img.onload = function(){
+                    this.picimgList[j] = img
+                }.bind(this)
+         
             document.body.appendChild(img)
         }
     }
@@ -353,7 +359,7 @@ export class Tank {
         let incollision = false;
 
         for (let j = 0; j < list.length; j++) {
-            if (realAstarmanage.fakemap[list[j].y / 5][list[j].x / 5] == 3) {
+            if (realAstarmanage.fakemap[list[j].y / 10][list[j].x / 10] == 3) {
                 incollision = true
             }
         }
@@ -391,8 +397,8 @@ export class Tank {
     }
     //处理当前运动的点的位置
     handleCurrenttarget(positionarrays: Position1[]) {
-        let x = parseInt((this.currentclickpoints.x / 5).toString()),
-            y = parseInt((this.currentclickpoints.y / 5).toString()),
+        let x = parseInt((this.currentclickpoints.x / 10).toString()),
+            y = parseInt((this.currentclickpoints.y / 10).toString()),
             positionindex = null
         for (let j = 0; j < positionarrays.length; j++) {
             if (positionarrays[j].x == y && positionarrays[j].y == x) {
@@ -425,12 +431,12 @@ export class Tank {
         that.timer = setInterval(() => {
             //p为当前点，a为寻路算法当前点，b为寻路算法下一点
             let PA = {
-                x: positionarrays[currentindex].x * 5 - this.currentclickpoints.x,
-                y: positionarrays[currentindex].y * 5 - this.currentclickpoints.y
+                x: positionarrays[currentindex].x * 10 - this.currentclickpoints.x,
+                y: positionarrays[currentindex].y * 10 - this.currentclickpoints.y
             }
             let AB = {
-                x: positionarrays[currentindex + 1].x * 5 - positionarrays[currentindex].x * 5,
-                y: positionarrays[currentindex + 1].y * 5 - positionarrays[currentindex].y * 5,
+                x: positionarrays[currentindex + 1].x * 10 - positionarrays[currentindex].x * 10,
+                y: positionarrays[currentindex + 1].y * 10 - positionarrays[currentindex].y * 10,
             }
             if (PA.x * AB.x + PA.y * AB.y < 0) {
                 //已经越过当前寻路点
@@ -438,8 +444,8 @@ export class Tank {
             }
 
             this.destinationpoint = {
-                x: positionarrays[currentindex + 1].x * 5,
-                y: positionarrays[currentindex + 1].y * 5
+                x: positionarrays[currentindex + 1].x * 10,
+                y: positionarrays[currentindex + 1].y * 10
             }
             let temp = {
                 x: this.velocity.x * this.dt,
@@ -547,15 +553,13 @@ export class Tank {
          
             part = 0.7071,
             imglist = [{x:0,y:-1},{
-
-            },{
                 x:part,y:-part
             },{
                 x:1,y:0
             },{
                 x:part,y:part
             },{
-                x:1,y:1
+                x:0,y:1
             },{
                 x:-part,y:part
             },{
@@ -566,6 +570,8 @@ export class Tank {
             mini = null;
             for(let j=0;j<imglist.length;j++){
                 let value = this.distanceFormlation(imglist[j],v,true)
+                
+               
                if(j==0){
                    mini=value
                }
@@ -644,9 +650,11 @@ export class Tank {
                     console.log('调整中');
                   
                    
-                    console.log(((obstacle.currentclickpoints.x-obstacle.targetpoint.x)**2+(obstacle.currentclickpoints.y-obstacle.targetpoint.y)**2)**0.5,(obstacle.r*1))
-                    if ((this.pointDistance(obstacle.currentclickpoints, this.currentclickpoints) < ((this.r + obstacle.r) ** 2) + (this.r+obstacle.r))
-                         && (this.pointDistance(obstacle.currentclickpoints, this.currentclickpoints) > ((this.r + obstacle.r) ** 2) - (this.r+obstacle.r))
+                    console.log((this.pointDistance(obstacle.currentclickpoints, this.currentclickpoints) < ((this.r + obstacle.r) ** 2) + 100),
+                    (this.pointDistance(obstacle.currentclickpoints, this.currentclickpoints) > ((this.r + obstacle.r) ** 2) - 100),
+                    obstacle.stable,this._id,obstacle._id )
+                    if ((this.pointDistance(obstacle.currentclickpoints, this.currentclickpoints) < ((this.r + obstacle.r) ** 2) + 100)
+                         && (this.pointDistance(obstacle.currentclickpoints, this.currentclickpoints) > ((this.r + obstacle.r) ** 2) - 100)
                          &&(obstacle.stable)) {
 		                //
                        console.log('调整成功')
@@ -705,8 +713,9 @@ export class Tank {
 
         //假设朝向终点的seekforce与物体到终点的长度成正比?
         this.seekforce = {
-            x: destination.x - this.velocity.x,
-            y: destination.y - this.velocity.y
+            x: 10*(destination.x - this.velocity.x),
+            y: 10*(destination.y - this.velocity.y)
+            //TODO--控制力太小了？？x10
         }
         //上述假设不成立  假设牵引力大小始终为恒定值？
         //    this.seekforce = {
@@ -830,14 +839,14 @@ export class Tank {
     //实时更新位移
     updatingDisplacement() {
         //如果快到边边了 返回去
-        if (this.currentclickpoints.x > 700 || this.currentclickpoints.y > 700 || this.currentclickpoints.x < 0 || this.currentclickpoints.y < 0) {
-            this.velocity = {
+        // if (this.currentclickpoints.x > 700 || this.currentclickpoints.y > 700 || this.currentclickpoints.x < 0 || this.currentclickpoints.y < 0) {
+        //     this.velocity = {
 
-                x: -this.velocity.x,
-                y: -this.velocity.y
-            }
+        //         x: -this.velocity.x,
+        //         y: -this.velocity.y
+        //     }
 
-        }
+        // }
         if((this.currentclickpoints.x-this.targetpoint.x)**2+(this.currentclickpoints.y-this.targetpoint.y)**2<1){
             this.handleEntityisinstable(true);
         }else{

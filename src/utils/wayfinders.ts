@@ -91,8 +91,8 @@ class Astar {
             this.startPoint.x = x;
             this.startPoint.y = y;
             this.map[this.startmatrix.x][this.startmatrix.y] = 0;
-            let stepx = parseInt((this.startPoint.x / 5).toString())
-            let stepy = parseInt((this.startPoint.y / 5).toString())
+            let stepx = parseInt((this.startPoint.x / 10).toString())
+            let stepy = parseInt((this.startPoint.y / 10).toString())
             this.map[stepx][stepy] = 1;
             this.startmatrix = {
                 x: stepx,
@@ -102,8 +102,8 @@ class Astar {
             this.endPoint.x = x;
             this.endPoint.y = y;
             this.map[this.endmatrix.x][this.endmatrix.x] = 0;
-            let stepx = parseInt((this.endPoint.x / 5).toString())
-            let stepy = parseInt((this.endPoint.y / 5).toString())
+            let stepx = parseInt((this.endPoint.x / 10).toString())
+            let stepy = parseInt((this.endPoint.y / 10).toString())
             this.map[stepx][stepy] = 1;
             this.endmatrix = {
                 x: stepx,
@@ -113,8 +113,8 @@ class Astar {
     }
     //是否为障碍物
     IsBar(x: number, y: number): boolean {
-        let xshrink = parseInt((x / 5).toString())
-        let Yshrink = parseInt((y / 5).toString())
+        let xshrink = parseInt((x / 10).toString())
+        let Yshrink = parseInt((y / 10).toString())
         try {
             if (this.map[xshrink][Yshrink] == 3 || this.map[xshrink][Yshrink] == 33 || this.map[xshrink][Yshrink] == 333) {
 
@@ -155,7 +155,7 @@ class Astar {
         if (p.father == null) {
             return 0;
         }
-        return p.father.G + (isleans ? 7 : 5);
+        return p.father.G + (isleans ? 14 : 10);
     }
     //计算H值
     GetH(p: Point, pb: Point) {
@@ -164,12 +164,12 @@ class Astar {
     //添加当前点的上下左右相邻的方格到Open列表中
     AddNeiToOpenList(curPoint: Point) {
         //  console.log(curPoint,"666666")
-        for (var x = curPoint.x - 5; x <= curPoint.x + 5; x += 5) {
-            for (var y = curPoint.y - 5; y <= curPoint.y + 5; y += 5) {
+        for (var x = curPoint.x - 10; x <= curPoint.x + 10; x += 10) {
+            for (var y = curPoint.y - 10; y <= curPoint.y + 10; y += 10) {
                 //排除自身以及超出下标的点
                 if ((x >= 0 && x < this.rowCount && y >= 0 && y < this.colCount) && !(curPoint.x == x && curPoint.y == y)) {
                     //非斜对角
-                    if (Math.abs(x - curPoint.x) + Math.abs(y - curPoint.y) == 5) {
+                    if (Math.abs(x - curPoint.x) + Math.abs(y - curPoint.y) == 10) {
                         //不是障碍物且不在关闭列表中
                         if (this.IsBar(x, y) == false && this.IsInCloseList(x, y) == false) {
                             //不存在Open列表
@@ -241,6 +241,7 @@ class Astar {
         let timerstart = new Date().getTime();
         while (this.IsInOpenList(this.endPoint.x, this.endPoint.y) == false || this.openList.length == 0) {
             let endtime = new Date().getTime();
+            //超过4秒被认为体验不佳
             if (endtime - timerstart > 4000) {
                 console.log("没有路,跳出");
                 curPoint = null
@@ -261,8 +262,8 @@ class Astar {
 
         while (p.father != null) {
             p = p.father;
-            let xshrink = parseInt((p.x / 5).toString());
-            let Yshrink = parseInt((p.y / 5).toString());
+            let xshrink = parseInt((p.x / 10).toString());
+            let Yshrink = parseInt((p.y / 10).toString());
             this.map[xshrink][Yshrink] = 4;
             this.lastwaysmatrixlist.push({
                 x: xshrink,
@@ -270,8 +271,8 @@ class Astar {
             })
         }
         //把终结点也设置成4
-        let endxshrink = parseInt((this.endPoint.x / 5).toString());
-        let endYshrink = parseInt((this.endPoint.y / 5).toString());
+        let endxshrink = parseInt((this.endPoint.x / 10).toString());
+        let endYshrink = parseInt((this.endPoint.y / 10).toString());
         this.map[endxshrink][endYshrink] = 4;
         this.lastwaysmatrixlist.push({
             x: endxshrink,
@@ -355,8 +356,8 @@ class Astar {
             return false;
         }
         function IsBar(x: number, y: number): boolean {
-            let xshrink = parseInt((x / 5).toString())
-            let Yshrink = parseInt((y / 5).toString())
+            let xshrink = parseInt((x / 10).toString())
+            let Yshrink = parseInt((y / 10).toString())
             try {
                 if (map[xshrink][Yshrink] == 3 || map[xshrink][Yshrink] == 33 || map[xshrink][Yshrink] == 333) {
 
@@ -373,12 +374,12 @@ class Astar {
         }
         function AddNeiToOpenList(curPoint: Point) {
             //  console.log(curPoint,"666666")
-            for (var x = curPoint.x - 5; x <= curPoint.x + 5; x += 5) {
-                for (var y = curPoint.y - 5; y <= curPoint.y + 5; y += 5) {
+            for (var x = curPoint.x - 10; x <= curPoint.x + 10; x += 10) {
+                for (var y = curPoint.y - 10; y <= curPoint.y + 10; y += 10) {
                     //排除自身以及超出下标的点
                     if ((x >= 0 && x < rowCount && y >= 0 && y < colCount) && !(curPoint.x == x && curPoint.y == y)) {
                         //非斜对角
-                        if (Math.abs(x - curPoint.x) + Math.abs(y - curPoint.y) == 5) {
+                        if (Math.abs(x - curPoint.x) + Math.abs(y - curPoint.y) == 10) {
                             //不是障碍物且不在关闭列表中
                             if (IsBar(x, y) == false && IsInCloseList(x, y) == false) {
                                 //不存在Open列表
@@ -415,7 +416,7 @@ class Astar {
             if (p.father == null) {
                 return 0;
             }
-            return p.father.G + (isleans ? 7 : 5);
+            return p.father.G + (isleans ? 14 : 10);
         }
         function GetH(p: Point, pb: Point) {
             return Math.abs(p.x - pb.x) + Math.abs(p.y - pb.y);
@@ -424,11 +425,11 @@ class Astar {
 
         while (IsInOpenList(endPoint.x, endPoint.y) == false || openList.length == 0) {
             let endtime = new Date().getTime();
-            if (endtime - timerstart > 4000) {
-                console.log("没有路,跳出");
-                curPoint = null
-                return;
-            }
+            // if (endtime - timerstart > 4000) {
+            //     console.log("没有路,跳出");
+            //     curPoint = null
+            //     return;
+            // }
             var curPoint = GetMinFFromOpenList().minPoint;
             //   console.log(curPoint,"当前点")
             var index = GetMinFFromOpenList().index;
@@ -444,8 +445,8 @@ class Astar {
 
         while (p.father != null) {
             p = p.father;
-            let xshrink = parseInt((p.x / 5).toString());
-            let Yshrink = parseInt((p.y / 5).toString());
+            let xshrink = parseInt((p.x / 10).toString());
+            let Yshrink = parseInt((p.y / 10).toString());
             map[xshrink][Yshrink] = 4;
             lastwaysmatrixlist.push({
                 x: xshrink,
@@ -453,8 +454,8 @@ class Astar {
             })
         }
         //把终结点也设置成4
-        let endxshrink = parseInt((endPoint.x / 5).toString());
-        let endYshrink = parseInt((endPoint.y / 5).toString());
+        let endxshrink = parseInt((endPoint.x / 10).toString());
+        let endYshrink = parseInt((endPoint.y / 10).toString());
         map[endxshrink][endYshrink] = 4;
         lastwaysmatrixlist.push({
             x: endxshrink,

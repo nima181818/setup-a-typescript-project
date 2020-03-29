@@ -23,6 +23,7 @@ export class World{
       let img = transformimg(map.default);
       this.worldimg = img
       this.worldimg.onload = function() {
+        // 960-464
         this.ctx.drawImage(this.worldimg,0,0,960,464)
       }.bind(this)
 
@@ -31,8 +32,8 @@ export class World{
       let temp =[];//下方的循环是为了转换坐标系，寻路系统的x,y互换
       for(let j=0;j<mapobstacle.obstacle.length;j++){
         temp.push({
-          x:mapobstacle.obstacle[j].y,
-          y:mapobstacle.obstacle[j].x
+          x:parseInt((mapobstacle.obstacle[j].y/2).toString()),
+          y:parseInt((mapobstacle.obstacle[j].x/2).toString())
         })
       }
       

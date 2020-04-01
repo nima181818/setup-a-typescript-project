@@ -6,43 +6,53 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
-    <style>
-        * {
-            margin: 0
-        }
-
-        #back {
-          
-            height: 1000px;
-            width: 1000px;
-            position: absolute;
-            top: 0;
-            left: 0;
-            z-index: -1;
-            display: flex;
-            flex-wrap: wrap;
-            /* flex-direction: row; */
-            box-sizing: border-box;
-            padding-bottom: 520px;
-        }
-
-        #back>div {
-            flex-shrink: 0;
-        }
+    <style >
+        @import url('./index.css');
+      
     </style>
 </head>
 
 <body>
+    <div class="leftwrapper">
     <canvas width="2128" height="1259" id="canvas1"></canvas>
-    <canvas width="2128" height="1259" style="position: relative;top:-1262px" height="600" id="canvas2"></canvas>
+    <canvas width="2128" height="1259" style="position: relative;top:-1263px" id="canvas2"></canvas>
     <div id="back"></div>
-    <div id="basecontrol"></div>
+    <div id="basecontrol">
+       
+    </div>
+    </div>
+    <div class="rightcontainer">
+        <div class="tops">
+            1999
+        </div>
+        <div class="playground">
+            <div class="wrappers"></div>
+        </div>
+        <div class="bars">
+            <div class="items">
+                
+            </div>
+            <div class="items"></div>
+            <div class="items"></div>
+            <div class="items"></div>
+        </div>
+        <div class="stlist">
+          <div id="stpowertation"></div>
+          <div id="stoil"></div>
+          <div id="stinfantry"></div>
+          <div id="stwcf"></div>
+          
+        </div>
+        <div class="guardlist">guardlist</div>
+        <div class="soilderlist">soilderlist</div>
+        <div class="wartanklist">wartanklist</div>
+    </div>
     <script src="./src/utils/ROV.js"></script>
     <script src="./src/utils/mutithread.js"></script>
     <script src="app.js" type="text/javascript"></script>
    
     <script>
-        //  console.log=()=>{}
+      
     </script>
 </body>
 

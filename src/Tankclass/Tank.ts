@@ -653,8 +653,8 @@ export class Tank {
                     console.log((this.pointDistance(obstacle.currentclickpoints, this.currentclickpoints) < ((this.r + obstacle.r) ** 2) + 100),
                     (this.pointDistance(obstacle.currentclickpoints, this.currentclickpoints) > ((this.r + obstacle.r) ** 2) - 100),
                     obstacle.stable,this._id,obstacle._id )
-                    if ((this.pointDistance(obstacle.currentclickpoints, this.currentclickpoints) < ((this.r + obstacle.r) ** 2) + 100)
-                         && (this.pointDistance(obstacle.currentclickpoints, this.currentclickpoints) > ((this.r + obstacle.r) ** 2) - 100)
+                    if ((this.pointDistance(obstacle.currentclickpoints, this.currentclickpoints) < ((this.r + obstacle.r) ** 2) + 10)
+                         && (this.pointDistance(obstacle.currentclickpoints, this.currentclickpoints) > ((this.r + obstacle.r) ** 2) - 10)
                          &&(obstacle.stable)) {
 		                //
                        console.log('调整成功')

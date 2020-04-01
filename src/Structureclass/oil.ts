@@ -6,7 +6,7 @@ const oil4 = require('../assets/oilstructure/oil4.png')
 const oil5 = require('../assets/oilstructure/oil5.png')
 const oil6 = require('../assets/oilstructure/oil6.png');
 const oil7 = require('../assets/oilstructure/oil7.png');
-const oil8 = require('../assets/oilstructure/oil8.png');
+// const oil8 = require('../assets/oilstructure/oil8.png');
 
 export class Oil extends Structure{
     constructor(bl: number, owner: string, position: { x: number, y: number }, name: string, ctx: HTMLCanvasElement,size:{x:number,y:number}) {
@@ -20,8 +20,8 @@ export class Oil extends Structure{
             oil5.default,
             oil6.default,
             oil7.default,
-            oil8.default,
-            oil7.default,
+            // oil8.default,
+            // oil7.default,
             oil6.default,
             oil5.default,
             oil4.default,

@@ -101,7 +101,7 @@ class Structure{
                 index = start
             }
           
-      //      this.ctx.clearRect( this.positions.x,this.positions.y, this.size.x/6, this.size.y/6);
+      //     this.ctx.clearRect( this.positions.x,this.positions.y, this.size.x/6, this.size.y/6);
              this.ctx.drawImage(this.imgList[index-1], this.positions.x,this.positions.y, this.size.x/6, this.size.y/6);
                       
              },this.circletime)
@@ -109,7 +109,7 @@ class Structure{
         this.animationtimer = window.setInterval(()=>{
             index = this.imgList.length;
             //TODO-- 这里不清除效果好一点点 ，但是对于上面需要自身更新的怎么办？
-         ///   this.ctx.clearRect( this.positions.x,this.positions.y, this.size.x/6, this.size.y/6);
+         //  this.ctx.clearRect( this.positions.x,this.positions.y, this.size.x/6, this.size.y/6);
             this.ctx.drawImage(this.imgList[index-1], this.positions.x,this.positions.y, this.size.x/6, this.size.y/6);
             
         },16.6)

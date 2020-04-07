@@ -109,11 +109,12 @@ export class Tank {
 
         // globalAstarmanage.setStartpointandendpoint(this.closeFunc(this.currentclickpoints.y), this.closeFunc(this.currentclickpoints.x), 'startpoint')
         // this.initStartpointendpoint();
-
+     
+             
     }
     //处理目标点变化
     targetpointTrigger() {
-        console.log('监听成功');
+    
         rvosystem.dynamicUpdategoals(this, 'np')
     }
     //动态的改变自己的

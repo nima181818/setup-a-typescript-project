@@ -14,6 +14,8 @@ const s1 = require('../assets/rightbar/s1.png'),
     stwcf = require('../assets/buildings-structure/wcf.png'),
     $id = document.getElementById.bind(document),
     $cls = document.getElementsByClassName.bind(document);
+import  {stlistMask,guardlistMask,soilderlistMask,wartanklistMask} from './masks';
+let maskListall = [stlistMask,soilderlistMask,guardlistMask,wartanklistMask]
 export class Rightbars {
     currentpageIndex: number = 0
     alllist: Array<HTMLDivElement> = []
@@ -119,7 +121,7 @@ export class Rightbars {
             stinfantry = $id('stinfantry'),
             stoil = $id('stoil'),
             stwcf = $id('stwcf');
-        this.structurelist = [stpowertation, stinfantry, stoil, stwcf];
+        this.structurelist = [stpowertation, stoil,stinfantry,stwcf];
         this.initStructureimg();
     }
     //初始化 建筑图片
@@ -154,16 +156,21 @@ export class Rightbars {
     bindingStructureevent() {
         for (let j = 0; j < this.structurelist.length; j++) {
             this.structurelist[j].appendChild(this.structureimg[j]);
+            //左键建造，
             this.structurelist[j].onclick = function () {
-
-                if (this.structureinbuiding) {
-                    return;
-                }
-                this.structureinbuiding = true
-                setTimeout(() => {
-                    this.structureinbuiding = false;
-                    console.log('修建完成')
-                }, 4000)
+                maskListall[0].analyseCommander('building',j);
+                // if (this.structureinbuiding) {
+                //     return;
+                // }
+                // this.structureinbuiding = true
+                // setTimeout(() => {
+                //     this.structureinbuiding = false;
+                //     console.log('修建完成')
+                // }, 4000)
+                 
+            }.bind(this)
+            //右键取消
+            this.structurelist[j].oncontextmenu =function(){
 
             }.bind(this)
         }

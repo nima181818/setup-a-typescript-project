@@ -25,6 +25,7 @@ body{
     width:100%;
     display: flex;
     flex-wrap: wrap;
+    position: relative;
 }
 .stlist>div{
     width:100px;
@@ -32,6 +33,7 @@ body{
     background: rgb(0,0,0,0.8);
     box-sizing: border-box;
     padding:2px;
+    
 }
 .stlist>div>img{
     width:100%;

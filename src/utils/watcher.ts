@@ -46,7 +46,7 @@ class Watcher<T>{
          
           if(key==this.eventHandlers[j].name){
               if(key!='currentclickpointsTrigger'){
-                console.log(key,this,"监听器")
+             
               }
           
               this.eventHandlers[j].handlerfunction.call(targrt);

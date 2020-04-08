@@ -29,7 +29,7 @@ class Masks {
     constructor(type: string) {
 
         this.type = type;
-        this.buildingrate = 1 //TODO--
+        this.buildingrate = 0.2 //TODO--
         this.watcher = new Watcher();
         //this.watcher.register('currentbuildingindexTrigger', this.currentbuildingindexTrigger);
         //this.watcher.responseMode(this, 'currentbuildingindex');
@@ -306,6 +306,8 @@ class Masks {
            // stlist guardlist soilderlist wartanklist
      if(this.type=='stlist'||this.type=='guardlist'){
            console.log(66666);
+           //
+           buildinglayer.setType('')
            buildinglayer.bindCanvas();
      }
     }

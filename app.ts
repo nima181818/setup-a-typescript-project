@@ -149,7 +149,5 @@ window.onload = function () {
         }
         back.appendChild(bodys)
     }
-   setInterval(()=>{
-       console.log(obstacles)
-   },5000)
+ 
 }

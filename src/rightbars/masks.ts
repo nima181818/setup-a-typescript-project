@@ -89,19 +89,23 @@ class Masks {
                     alert('正在建造中');
                     return;
                 }
-            
+               
                 switch (typeNum) {
                     case 0:
                         this.handlePositions(0, 0);
+                        this.type_name = 'stpowertation'
                         break;
                     case 1:
                         this.handlePositions(0, 100);
+                        this.type_name = 'stinfantry'
                         break;
                     case 2:
                         this.handlePositions(100, 0);
+                        this.type_name = 'stoil'
                         break;
                     case 3:
                         this.handlePositions(100, 100);
+                        this.type_name = 'stwcf'
                         break;
                     default:
 
@@ -307,7 +311,7 @@ class Masks {
      if(this.type=='stlist'||this.type=='guardlist'){
            console.log(66666);
            //
-           buildinglayer.setType('')
+           buildinglayer.setType(this.type,this.type_name)
            buildinglayer.bindCanvas();
      }
     }

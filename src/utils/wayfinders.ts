@@ -49,7 +49,7 @@ class Astar {
             this.map[obstacle[j].x][obstacle[j].y] = type;
 
         }
-        console.log(this.map, "寻路算法的map")
+       
     }
     //初始化地图
     initGlobalMap(obstacle: Obstacle) {

@@ -2,6 +2,10 @@ interface positions{
    x:number
    y:number
 }
+/*
+  军营的基础计算位置是按照{ x: 100, y: 0 }参考的
+
+*/
 console.log(Multithread,"wocao")
 import { globalAstarmanage } from '../utils/wayfinders';
 import { eventlist } from '../Tankclass/Eventlist';
@@ -36,7 +40,7 @@ class Structure{
         this.blood = this.blood - bollet
         
     }
-    //maybe I have to destroy this？？
+    //maybe I have to destroy this？？--死亡状态
     destroy(){
         clearInterval(this.animationtimer);
         //地图上销毁障碍?这点还要反应到各个机车上？？？--代价应该不大 因为现在已明确找到了不用遍历直接操作map的方式
@@ -47,6 +51,7 @@ class Structure{
              }
          } 
     }
+   
     initImgelement(){
         return new Promise((res,rej)=>{
             let counts = 0;
@@ -124,14 +129,26 @@ class Structure{
     //初始化自身的地图
     initStructureobstacle(obstacle:positions[]){
         let temp = []
-         for(let j=0;j<obstacle.length;j++){
-             let item = {
-                 x:obstacle[j].y,
-                 y:obstacle[j].x
-               }
-               temp.push(item)
+        
+         //TODO-- 这里还没有结合自己的位置
+         if(this.name=='soliderfactory'){
+            for(let j=0;j<obstacle.length;j++){
+                let item = {
+                    x:obstacle[j].y+this.closeFunc(this.positions.y-0),
+                    y:obstacle[j].x+this.closeFunc(this.positions.x-100)
+                  }
+                  temp.push(item)
+            }
+            console.log('已走')
          }
          globalAstarmanage.addObstacle(temp,333);
+         //当建筑出生的时候 动态映射到真实地图和每个坦克的地图上
+         for(let j=0;j<eventlist.tanklist.length;j++){
+         
+               eventlist.tanklist[j].globalAstarmanage.addObstacle(temp,333)
+              
+        
+        } 
     }
     //处理自身位置的障碍
     handleSelfobstacle(obstacle:positions[]){

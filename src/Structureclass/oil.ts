@@ -41,6 +41,6 @@ export class Oil extends Structure{
         this.initImgelement().then(res=>{
             this.paint(position)
         })
-       
+        //TODO--未添加发电厂的障碍
     }
 }

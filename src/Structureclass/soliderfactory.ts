@@ -29,7 +29,8 @@ export class Soliderfactory extends Structure{
         this.initImgelement().then(res=>{
             this.paint(position)
         })
-       this.handleSelfobstacle(structurepbstacle.obstacle)
+       this.handleSelfobstacle(structurepbstacle.obstacle);
+    //  this.burn();
     }
     
 }

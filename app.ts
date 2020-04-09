@@ -12,7 +12,7 @@ let canvas2: HTMLCanvasElement = document.getElementById('canvas2') as HTMLCanva
 
 let world = new World({ x: 0, y: 0 }, canvas1);  //world的生成顺序至关重要，因为地图障碍物会在此生成，
 let baseControl1 = new BaseControl(10, '20', { x: 100, y: 200 }, 'base', canvas2, { x: 98.9 * 1.5, y: 58.5 * 1.5 });
-let soliderfactory1 = new Soliderfactory(10, '20', { x: 100, y: 0 }, 'soliderfactory1', canvas2, { x: 89.6, y: 86.7 });
+let soliderfactory1 = new Soliderfactory(10, '20', { x: 100, y: 0 }, 'soliderfactory', canvas2, { x: 89.6, y: 86.7 });
 let powerstation = new Powerstation(10, '20', { x: 200, y: 300 }, 'powerstation', canvas2, { x: 89.6, y: 86.7 });
 let oil = new Oil(10, '20', { x: 400, y: 400 }, 'oil1', canvas2, { x: 89.6, y: 86.7 });
 let rightbars = new Rightbars()

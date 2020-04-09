@@ -2,6 +2,7 @@
 //引入 tank中的一个
 import { eventlist } from '../Tankclass/Eventlist';
 import { globalAstarmanage as realAstarmanage, globalAstarmanage } from '../utils/wayfinders'
+import {Powerstation,Soliderfactory,Oil} from '../Structureclass/allStructureslist'
 class Buildinglayer {
     timer: number = null
     drawTimer: number = null
@@ -15,6 +16,7 @@ class Buildinglayer {
     obstaclemap: { x: number, y: number }[] = []
     oldobstaclemap: { x: number, y: number }[] = []
     size: { width: number, height: number }
+    canBuild: boolean = false //能够在此修建
     constructor() {
 
 
@@ -49,12 +51,20 @@ class Buildinglayer {
                     width: 106,
                     height: 91
                 }
+
+                break;
+            case 'stwcf':   //TODO--
+                this.size = {
+                    width: 106,
+                    height: 91
+                }
+
                 break;
             default:
                 break;
         }
     }
-
+    //TODO-- 连续建造存在初始换问题 需要注意 
     mouseMovehandler(e: MouseEvent) {
         console.log('卧槽无情');
         //节流
@@ -74,9 +84,47 @@ class Buildinglayer {
     mouseClickhandler(e: MouseEvent) {
         if (this.validationAreasafe()) {
             this.finish = true;
-
+            let buildinglocation = {
+                x:this.positions.x-this.size.width*0.5,
+                y:this.positions.y-this.size.height*0.5,
+            }
             this.canvas.removeEventListener('mousemove', this.mouseMovehandler);
             this.canvas.removeEventListener('click', this.mouseClickhandler);
+            //清楚绿色待建造区
+            this.context.clearRect(buildinglocation.x,buildinglocation.y,this.size.width,this.size.height)
+            //开始建造了
+            this.newStructures();
+        }
+    }
+    //TODO-- 得阻止 物体的选择
+    //新建筑物
+    newStructures() {
+        
+     let buildinglocation = {
+         x:this.positions.x-this.size.width*0.5,
+         y:this.positions.y-this.size.height*0.5,
+     },
+     size = {
+         x:this.size.width,
+         y:this.size.height
+     }
+     
+        // Powerstation,Soliderfactory,Oil
+        switch (this.type_name) {
+            case 'stpowertation':
+                let powerstation = new Powerstation(10, '20',buildinglocation, 'powerstation', this.canvas,size ); 
+                break;
+            case 'stinfantry':
+                let soliderfactory1 = new Soliderfactory(10, '20',buildinglocation, 'soliderfactory', this.canvas,size);
+                break;
+            case 'stoil':
+                let oil = new Oil(10, '20',buildinglocation, 'oil1', this.canvas, size);
+                break;
+            case 'stwcf':
+
+                break;
+            default:
+                break;
         }
     }
     //绑定滑动，游击事件
@@ -110,7 +158,6 @@ class Buildinglayer {
     calculateObstacles(othermap: any, atankmap: any) {
         let lastmap = [];
         for (let j = 0; j < 200; j++) {
-
             for (let k = 0; k < 200; k++) {
                 if (othermap[j][k] == 33 || othermap[j][k] == 333 || atankmap[j][k] == 3) {
                     // lastmap[j][k] = 9 //假设9为不允许建造
@@ -126,7 +173,7 @@ class Buildinglayer {
     //校验是否选择的区域是平坦的
     validationAreasafe(): boolean {
         //TODO--
-        return true
+        return this.canBuild
     }
     // //绘制绿色部分
     draw() {
@@ -143,14 +190,14 @@ class Buildinglayer {
             endx = startx + this.size.width,
             endy = starty + this.size.height;
         for (let j = 0; j < this.oldobstaclemap.length; j++) {
-            if (startx <= this.oldobstaclemap[j].y * 10
-                && starty <= this.oldobstaclemap[j].x * 10
-                && endx >= this.oldobstaclemap[j].y * 10
-                && endy >= this.oldobstaclemap[j].x * 10) {
-                this.context.clearRect(this.oldobstaclemap[j].y * 10, this.oldobstaclemap[j].x * 10, 10, 10);
-
-           }
+            this.context.clearRect(this.oldobstaclemap[j].y * 10, this.oldobstaclemap[j].x * 10, 10, 10);
         }
+        if (this.oldobstaclemap.length == 0) {
+            this.canBuild = true
+        } else {
+            this.canBuild = false  //这里有一个时效性问题 webworker为异步的TODO--,目前表现还良好
+        }
+        this.oldobstaclemap = [];
         for (let j = 0; j < this.obstaclemap.length; j++) {
             if (startx <= this.obstaclemap[j].y * 10
                 && starty <= this.obstaclemap[j].x * 10
@@ -158,10 +205,14 @@ class Buildinglayer {
                 && endy >= this.obstaclemap[j].x * 10) {
                 this.context.fillStyle = 'rgb(220,0,0)';
                 this.context.fillRect(this.obstaclemap[j].y * 10, this.obstaclemap[j].x * 10, 10, 10);
-
+                this.oldobstaclemap.push({
+                    x: this.obstaclemap[j].x,
+                    y: this.obstaclemap[j].y,
+                })
             }
         }
-        this.oldobstaclemap = JSON.parse(JSON.stringify(this.obstaclemap));
+
+
 
     }
 

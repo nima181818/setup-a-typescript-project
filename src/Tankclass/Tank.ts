@@ -7,7 +7,8 @@ import { globalAstarmanage as realAstarmanage } from '../utils/wayfinders'
 import { Watcher } from '../utils/watcher';
 import { eventlist } from './Eventlist';
 import { transformimg } from '../assets/imgurltransform';
-import { rvosystem } from '../utils/rovpathfindinghelper'
+import { rvosystem } from '../utils/rovpathfindinghelper';
+import {tankmoving_audio,waitingorders_audio} from '../assets/audios/audio'
 console.log(rvosystem)
 class Bullet<T>{
 
@@ -29,6 +30,7 @@ export class Tank {
     _id: number
     r: number = 20
     dt: number = 0.08
+    startmoving:boolean=false
     obstaclematrix: Position1 = { x: 0, y: 0 }
     avoidforce: Position1 = { x: 0, y: 0 }
     seekforce: Position1 = { x: 0, y: 0 }
@@ -54,6 +56,7 @@ export class Tank {
     imgList: string[]
     baseimg: HTMLImageElement
     blood: number
+    maxblood:number
     matrixposition: Position1 = { x: 0, y: 0 }
     watcher: Watcher<Tank> = new Watcher<this>()
     autofirecurrency: number = 200
@@ -136,12 +139,31 @@ export class Tank {
         this.realUpdatingownerobstacle(3)
         //     this.initStartpointendpoint();
     }
+    //单选改变
+    selectedTrigger(){
+      if(this.selected){
+        // tankmoving_audio
+        waitingorders_audio.playAudio();
+      }
+    }
+    //多选改变
+    multiselectTrigger(){
+      if(this.multiselect){
+        waitingorders_audio.playAudio();
+      }
+    }
+    //去目的地改变
+    startmovingTrigger(){
+        if(this.startmoving){
+            tankmoving_audio.playAudio();
+        }
+    }
     //
     //实时更新自己本身的障碍点
     realUpdatingownerobstacle(value: number) {
         // alert('wocao')
         // setTimeout(()=>{
-            //TODO--
+            
         for (let k = 0; k < realAstarmanage.fakemap.length; k++) {
             for (let u = 0; u < realAstarmanage.fakemap[k].length; u++) {
                 if (
@@ -185,6 +207,7 @@ export class Tank {
         return k * 10
     }
     setTankspoints(x: number, y: number, type: string, movingcommander: boolean = false) {
+        this.startmoving = false
         if (type == 'setstartpoints') {
             let { x, y } = this.currentclickpoints;
             this.startpoint = { x, y }
@@ -202,7 +225,7 @@ export class Tank {
         
             for (let k = 0; k < this.globalAstarmanage.map.length; k++) {
                 for (let u = 0; u < this.globalAstarmanage.map[k].length; u++) {
-                    //TODO-- 这里处理了地图障碍物，还有建筑障碍物未处理
+                    //-- 这里处理了地图障碍物，还有建筑障碍物未处理
                     if(this.globalAstarmanage.map[k][u] !=33&&this.globalAstarmanage.map[k][u] !=333){
                         this.globalAstarmanage.map[k][u] = 0
                     }
@@ -214,13 +237,14 @@ export class Tank {
             this.obstacleRepailie();
             //开始寻路
              var MT = new Multithread(4);//web worker
-           /*
-             
-           */
-          
+         
+              
           let handle = MT.process(this.globalAstarmanage.prepareForwebworker,(e)=>{
+              this.startmoving=true
             this.globalAstarmanage.map = e.map;
             this.globalAstarmanage.lastwaysmatrixlist = e.lastwaysmatrixlist;
+           console.log(this.globalAstarmanage.map);
+         //   return;
             this.movingfunc('tank', this.currentclickpoints, this.height, this.width, this.speed, this)
              });
           let sp = {
@@ -235,10 +259,15 @@ export class Tank {
                 
           handle(this.globalAstarmanage.map,sp,ep)
            
+          
+         
                /*
+               
                  this.globalAstarmanage.FindPoint();
               this.movingfunc('tank', this.currentclickpoints, this.height, this.width, this.speed, this)
                */
+               
+          
             
             
             
@@ -264,7 +293,7 @@ export class Tank {
                             &&
                             u * 10 <= eventlist.tanklist[j].ownobstacles[1].x
                         ) {
-                          //TODO-- 还有建筑物生成的障碍物未处理
+                          //-- 还有建筑物生成的障碍物未处理
                           if(this.globalAstarmanage.map[k][u]!=33&&this.globalAstarmanage.map[k][u]!=333){
                             this.globalAstarmanage.map[k][u] = 3
                           }
@@ -276,7 +305,7 @@ export class Tank {
 
         }
        console.log(this.globalAstarmanage.map,"寻路算法之前的地图")
-       //TODO-- 要采用webworker异步 但似乎遇到了困难
+       //
     //   
      
     }
@@ -429,35 +458,56 @@ export class Tank {
         if (positionarrays.length == 0) {
             return;
         }
-        that.timer = setInterval(() => {
+        that.timer = window.setInterval(() => {
+          
             //p为当前点，a为寻路算法当前点，b为寻路算法下一点
             let PA = {
                 x: positionarrays[currentindex].x * 10 - this.currentclickpoints.x,
                 y: positionarrays[currentindex].y * 10 - this.currentclickpoints.y
             }
-            let AB = {
-                x: positionarrays[currentindex + 1].x * 10 - positionarrays[currentindex].x * 10,
-                y: positionarrays[currentindex + 1].y * 10 - positionarrays[currentindex].y * 10,
+            let AB;
+            try{
+                 AB = {
+                    x: positionarrays[currentindex + 1].x * 10 - positionarrays[currentindex].x * 10,
+                    y: positionarrays[currentindex + 1].y * 10 - positionarrays[currentindex].y * 10,
+                }
+                if (PA.x * AB.x + PA.y * AB.y < 0) {
+                    //已经越过当前寻路点
+                    currentindex++
+                }
+            }catch(e){
+                AB = {
+                    x: positionarrays[currentindex].x * 10 - positionarrays[currentindex-1].x * 10,
+                    y: positionarrays[currentindex].y * 10 - positionarrays[currentindex-1].y * 10,
+                }
             }
-            if (PA.x * AB.x + PA.y * AB.y < 0) {
-                //已经越过当前寻路点
-                currentindex++
-            }
-
-            this.destinationpoint = {
-                x: positionarrays[currentindex + 1].x * 10,
-                y: positionarrays[currentindex + 1].y * 10
-            }
+           
+              try{
+                this.destinationpoint = {
+                    x: positionarrays[currentindex + 1].x * 10,
+                    y: positionarrays[currentindex + 1].y * 10
+                }
+              }catch(e){
+                  console.log(e,'出错')
+                this.destinationpoint = {
+                    x: positionarrays[currentindex].x * 10,
+                    y: positionarrays[currentindex].y * 10
+                }
+              }
+            // this.destinationpoint = {
+            //     x: positionarrays[currentindex + 1].x * 10,
+            //     y: positionarrays[currentindex + 1].y * 10
+            // }
             let temp = {
                 x: this.velocity.x * this.dt,
                 y: this.velocity.y * this.dt
             }
 
 
-            if (currentindex == positionarrays.length - 2) {
+            if (currentindex >= positionarrays.length - 2) {
                 this.startpoint.x = position.x;
                 this.startpoint.y = position.y;
-                clearInterval(that.timer)
+                window.clearInterval(that.timer)
                 this.velocity = {
                     x: 0,
                     y: 0
@@ -628,44 +678,48 @@ export class Tank {
     //handle multi-entitys have the same destination
 		handleDestinations() {
 		    if (this.multiselect) {
-                console.log()
+                // console.log(this.pointDistance(this.currentclickpoints, this.targetpoint,true),this.r,"呵呵呵")
                 //当前位置已抵达终点
-		        if (((this.currentclickpoints.x-this.targetpoint.x)**2+(this.currentclickpoints.y-this.targetpoint.y)**2)**0.5<(this.r*1)) {
+          
+		        if (this.pointDistance(this.currentclickpoints, this.targetpoint,true)>(this.r*1)-50&&this.pointDistance(this.currentclickpoints, this.targetpoint,true)<(this.r*1)+50) {
                          this.stable = true
-		            let obstacle = this.minDistancefromcenter();
-		            if ((this.pointDistance(obstacle.currentclickpoints, this.currentclickpoints) < ((this.r + obstacle.r) ** 2) + 1)
-		                 && (this.pointDistance(obstacle.currentclickpoints, this.currentclickpoints) > ((this.r + obstacle.r) ** 2) - 1)) {
-		                //
-                       console.log('成功抵达1')
-		                obstacle.destinationpoint.x = obstacle.currentclickpoints.x;
-		                obstacle.destinationpoint.y = obstacle.currentclickpoints.y;
-                        clearInterval(obstacle.timer);
-                        obstacle.timer = null;
-                        obstacle.stable = true
-                       // this.timer = null;
-		            }
+                    let obstacle = this.minDistancefromcenter();
+                    if(obstacle){
+                        if ((this.pointDistance(obstacle.currentclickpoints, this.currentclickpoints) < ((this.r + obstacle.r) ** 2) + 100)
+                        && (this.pointDistance(obstacle.currentclickpoints, this.currentclickpoints) > ((this.r + obstacle.r) ** 2) - 100)) {
+                       //
+            
+                       obstacle.destinationpoint.x = obstacle.currentclickpoints.x;
+                       obstacle.destinationpoint.y = obstacle.currentclickpoints.y;
+                       clearInterval(obstacle.timer);
+                       obstacle.timer = null;
+                       obstacle.stable = true
+                      // this.timer = null;
+                   }
+                    }
+		         
 
 		        } else {
-                    //当前位置未到达终点
+                    //当前位置未到达终点TODO--  有点问题
                     let obstacle = this.minDistancefromcenter();
                     console.log('调整中');
-                  
+                    if(obstacle){
+                        if ((this.pointDistance(obstacle.currentclickpoints, this.currentclickpoints) < ((this.r + obstacle.r) ** 2) + 100)
+                        && (this.pointDistance(obstacle.currentclickpoints, this.currentclickpoints) > ((this.r + obstacle.r) ** 2) - 100)
+                        &&(obstacle.stable)) {
+                       //
+                      console.log('调整成功')
+                     
+                       this.destinationpoint.x = this.currentclickpoints.x;
+                       this.destinationpoint.y = this.currentclickpoints.y;
+                       clearInterval(this.timer)
+                       this.timer = null;
+                       this.stable = true
+                   }
+                    }
                    
-                    console.log((this.pointDistance(obstacle.currentclickpoints, this.currentclickpoints) < ((this.r + obstacle.r) ** 2) + 100),
-                    (this.pointDistance(obstacle.currentclickpoints, this.currentclickpoints) > ((this.r + obstacle.r) ** 2) - 100),
-                    obstacle.stable,this._id,obstacle._id )
-                    if ((this.pointDistance(obstacle.currentclickpoints, this.currentclickpoints) < ((this.r + obstacle.r) ** 2) + 10)
-                         && (this.pointDistance(obstacle.currentclickpoints, this.currentclickpoints) > ((this.r + obstacle.r) ** 2) - 10)
-                         &&(obstacle.stable)) {
-		                //
-                       console.log('调整成功')
-		              
-		                this.destinationpoint.x = this.currentclickpoints.x;
-		                this.destinationpoint.y = this.currentclickpoints.y;
-                        clearInterval(this.timer)
-                        this.timer = null;
-                        this.stable = true
-		            }
+                    
+                   
 				}
 
 		    }
@@ -874,11 +928,38 @@ export class Tank {
     //////////////////////steering behavior↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑
     //选中时显示血量
     showBloodlength(x: number = this.currentclickpoints.x, y: number = this.currentclickpoints.y) {
-        this.currentctx.beginPath()
-        this.currentctx.fillStyle = "green";
-        this.currentctx.clearRect(x - 10, y - 10 - 5, 50 + 2, 10 + 2);
-        this.currentctx.fillRect(this.currentclickpoints.x - 10, this.currentclickpoints.y - 10 - 5, 50, 10)
-        this.currentctx.stroke();
+        let ablood = this.width/this.maxblood;
+        this.currentctx.clearRect(this.currentclickpoints.x - this.velocity.x * this.dt-this.width*0.5-3,this.currentclickpoints.y - this.velocity.y * this.dt-this.height*0.5-11-3,this.width+(1/5)*ablood+6,7+6);
+
+        if(this.selected||this.multiselect){
+            this.currentctx.fillStyle='white'
+            this.currentctx.fillRect(this.currentclickpoints.x-this.width*0.5,this.currentclickpoints.y-this.height*0.5-11,this.width+(1/5)*ablood,7);
+
+            for(let j=0;j<this.maxblood;j++){
+                this.currentctx.fillStyle='white';
+                this.currentctx.fillRect(j*ablood+this.currentclickpoints.x-this.width*0.5,this.currentclickpoints.y-this.height*0.5-10,ablood*(1/5),5);
+
+                this.currentctx.fillStyle='rgb(16,201,19)';
+                this.currentctx.fillRect(j*ablood+this.currentclickpoints.x-this.width*0.5+(1/5)*ablood,this.currentclickpoints.y-this.height*0.5-10,(4/5)*ablood,5);
+
+                if(j>=10){
+                    this.currentctx.fillStyle='gray';
+                    this.currentctx.fillRect(j*ablood+this.currentclickpoints.x-this.width*0.5,this.currentclickpoints.y-this.height*0.5-10,(4/5)*ablood,5);
+    
+                    this.currentctx.fillStyle='black';
+                    this.currentctx.fillRect(j*ablood+this.currentclickpoints.x-this.width*0.5+(1/5)*ablood,this.currentclickpoints.y-this.height*0.5-10,(4/5)*ablood,5);
+    
+                }
+              
+              }
+
+           
+            // this.currentctx.fillStyle = "green";
+            // this.currentctx.clearRect(x - 10, y - 10 - 5, 50 + 2, 10 + 2);
+            // this.currentctx.fillRect(this.currentclickpoints.x - 10, this.currentclickpoints.y - 10 - 5, 50, 10)
+            
+        }
+     
     }
     paint(canvas: HTMLCanvasElement): void {
 
@@ -904,6 +985,7 @@ export class Tank {
         }
         setInterval(() => {
             this.paintAgain();
+            this.showBloodlength();
         }, 16.6)
         // this.select(canvas)
     }

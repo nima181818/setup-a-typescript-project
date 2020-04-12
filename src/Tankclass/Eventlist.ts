@@ -1,3 +1,5 @@
+let {border} = require('../map-border.json');
+console.log(border,"888888")
 interface Positions {
     x: number
     y: number
@@ -26,12 +28,22 @@ class Eventlist {
     windowmousemoveeventlist: Function[] = []
     incommunication: tankobject[] = []
     tanklist: tankobject[] = []
+    mapborder:number[][]=[]
+    constructor(){
+        this.initMapborder()
+    }
+    initMapborder(){
+            for(let j=0;j<border.length;j++){
+                this.mapborder.push([border[j].x,border[j].y])
+            }
+    }
     movingjudge(e: MouseEvent) {
+      console.log(e)
         let currentclick = null,
         beforehasselected = false, //存在之前选中的
-        selectnoarea = true; //未选中任何机车
+        selectnoarea = true;//未选中任何机车
         for (let k = 0; k < this.tanklist.length; k++) {
-            if ((e.pageX - this.tanklist[k].currentclickpoints.x) ** 2 < ((this.tanklist[k].width/2) ** 2) && (e.pageY - this.tanklist[k].currentclickpoints.y) ** 2 < ((this.tanklist[k].height/2) ** 2)){
+            if ((e.offsetX - this.tanklist[k].currentclickpoints.x) ** 2 < ((this.tanklist[k].width/2) ** 2) && (e.offsetY - this.tanklist[k].currentclickpoints.y) ** 2 < ((this.tanklist[k].height/2) ** 2)){
                 selectnoarea = false;
                 currentclick = k
             }
@@ -46,8 +58,12 @@ class Eventlist {
                 if(this.tanklist[j].multiselect){
                     this.tanklist[j].stable = false;
                 }
-                
-                this.tanklist[j].setTankspoints(e.pageX, e.pageY, 'setendpoints', true)
+                let isuseful = this.inside([parseInt((e.offsetX/10).toString()),parseInt((e.offsetY/10).toString())],this.mapborder);
+                if(!isuseful){
+                    console.log('点击无效')
+                   return;
+                }
+                this.tanklist[j].setTankspoints(e.offsetX, e.offsetY, 'setendpoints', true)
             }
           
         }
@@ -66,61 +82,28 @@ class Eventlist {
      
       }
 
-        /*
-         let currentclick: number = null,
-            hastankselect: number = null;
-        //若hastankselect不为null，那么说明之前有选中的,为null则说明为第一次选中或者未选中
-        for (let j = 0; j < this.tanklist.length; j++) {
-            if (this.tanklist[j].selected) {
-                hastankselect = j
-            }
-        }
-        //找出通过点击选中的那一个
-        for (let k = 0; k < this.tanklist.length; k++) {
-            if ((e.pageX - this.tanklist[k].currentclickpoints.x) ** 2 < this.tanklist[k].width ** 2 && (e.pageY - this.tanklist[k].currentclickpoints.y) ** 2 < this.tanklist[k].height ** 2) {
-                this.tanklist[k].selected = true;
-                currentclick = k;
-                this.multimode = false
-            }
-        }
-        console.log(currentclick, hastankselect)
-        if (currentclick !== null) {
-            if (hastankselect !== null) {
-                if (hastankselect !== currentclick) {
-                    this.tanklist[hastankselect].selected = false
-                }
-            }
-            // this.tanklist[currentclick].movingcommander = true;
-            this.tanklist[currentclick].setTankspoints(e.pageX, e.pageY, 'setstartpoints', false)
-        } else {
-            //未点击选中任何目标，则如果有当前选中的则执行moving的相关方法
-            if (hastankselect !== null) {
-                //非多选
-                if (!this.multimode) {
-                    let currentitem = this.tanklist[hastankselect];
-                    console.log(currentitem._id);
-                    currentitem.movingcommander = true;
-                    currentitem.setTankspoints(e.pageX, e.pageY, 'setendpoints', true)
-                }
-
-
-            } else {
-                //多选
-                if (this.multimode) {
-                    for (let j = 0; j < this.tanklist.length; j++) {
-                        if (this.tanklist[j].selected) {
-                            this.tanklist[j].setTankspoints(e.pageX, e.pageY, 'setendpoints', true)
-                        }
-                    }
-                }
-            }
-        }
-
-        */
        
 
     }
+   inside(points:number[],vs:number[][]):boolean{
+    var x = points[0], y = points[1];
 
+    var inside = false;
+    for (var i = 0, j = vs.length - 1; i < vs.length; j = i++) {
+        var xi = vs[i][0], yi = vs[i][1];
+        var xj = vs[j][0], yj = vs[j][1];
+
+        var intersect = ((yi > y) != (yj > y))
+            && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+			if(intersect){
+			 console.log(xi,yi,xj,yj)
+			}
+        if (intersect) inside = !inside;
+    }
+
+    return inside;
+
+   }
     //多选
     multiSelection(start: Positions, end: Positions) {
 

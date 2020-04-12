@@ -27,12 +27,12 @@ class Astar {
     openList: Point[] = []
     closeList: Point[] = []
     constructor() {
-        this.rowCount = 1000;
-        this.colCount = 1000;
-        for (let j = 0; j < 200; j++) {
+        this.colCount = 4480;
+        this.rowCount = 1400;
+        for (let j = 0; j < 140; j++) {
             this.map[j] = []
             this.fakemap[j] = []
-            for (let k = 0; k < 200; k++) {
+            for (let k = 0; k < 448; k++) {
                 this.map[j][k] = 0
                 this.fakemap[j][k] = 0
             }
@@ -125,7 +125,6 @@ class Astar {
                 return false;
             }
         } catch (e) {
-            debugger
         }
 
     }
@@ -286,8 +285,8 @@ class Astar {
     prepareForwebworker(maps: any, startPoints: Point, endPoints: Point) {
         let openList = [],
             closeList = [],
-            rowCount = 1000,
-            colCount = 1000,
+             colCount = 4480,
+            rowCount  = 1400,
             lastwaysmatrixlist = [],
             timerstart = new Date().getTime(),
             map = maps,
@@ -368,12 +367,12 @@ class Astar {
                     return false;
                 }
             } catch (e) {
-                debugger
+                
             }
 
         }
         function AddNeiToOpenList(curPoint: Point) {
-            //  console.log(curPoint,"666666")
+           //   console.log(curPoint.x,curPoint.y,"666666")
             for (var x = curPoint.x - 10; x <= curPoint.x + 10; x += 10) {
                 for (var y = curPoint.y - 10; y <= curPoint.y + 10; y += 10) {
                     //排除自身以及超出下标的点
@@ -387,6 +386,7 @@ class Astar {
                                     var point = new Point();
                                     point.x = x;
                                     point.y = y;
+                                    
                                     point.father = curPoint;
                                     point.G = GetG(point, false);
                                     point.H = GetH(point, endPoint);
@@ -416,7 +416,7 @@ class Astar {
             if (p.father == null) {
                 return 0;
             }
-            return p.father.G + (isleans ? 14 : 10);
+            return (p.father.G?p.father.G:0)+ (isleans ? 14 : 10);
         }
         function GetH(p: Point, pb: Point) {
             return Math.abs(p.x - pb.x) + Math.abs(p.y - pb.y);
@@ -444,6 +444,7 @@ class Astar {
         var p = GetPointFromOpenList(endPoint.x, endPoint.y);
 
         while (p.father != null) {
+            
             p = p.father;
             let xshrink = parseInt((p.x / 10).toString());
             let Yshrink = parseInt((p.y / 10).toString());

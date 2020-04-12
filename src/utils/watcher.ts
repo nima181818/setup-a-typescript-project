@@ -17,27 +17,40 @@ class Watcher<T>{
         let tempx = 0;
         let tempy=0
         let that = this
-        
-        Object.defineProperty(targrt[key],'x',{
-            get:function(){
-               return tempx
-            },
-            set:function(val){
-           
-                tempx = val;
-               that.notify(key+'Trigger',targrt)
-            }
-        })
-        Object.defineProperty(targrt[key],'y',{
-            get:function(){
-               return tempy
-            },
-            set:function(val){
-             
-                tempy = val;
-               that.notify(key+'Trigger',targrt)
-            }
-        })
+        if(typeof targrt[key]=='object'){
+            Object.defineProperty(targrt[key],'x',{
+                get:function(){
+                   return tempx
+                },
+                set:function(val){
+               
+                    tempx = val;
+                   that.notify(key+'Trigger',targrt)
+                }
+            })
+            Object.defineProperty(targrt[key],'y',{
+                get:function(){
+                   return tempy
+                },
+                set:function(val){
+                 
+                    tempy = val;
+                   that.notify(key+'Trigger',targrt)
+                }
+            })
+        }else{
+            Object.defineProperty(targrt,key,{
+                get:function(){
+                   return tempx
+                },
+                set:function(val){
+               
+                    tempx = val;
+                   that.notify(key+'Trigger',targrt)
+                }
+            })
+        }
+       
     }
     //发布
     notify(key,targrt:T){

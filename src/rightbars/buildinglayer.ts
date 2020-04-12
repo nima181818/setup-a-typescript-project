@@ -2,9 +2,11 @@
 //引入 tank中的一个
 import { eventlist } from '../Tankclass/Eventlist';
 import { globalAstarmanage as realAstarmanage, globalAstarmanage } from '../utils/wayfinders'
-import {Powerstation,Soliderfactory,Oil} from '../Structureclass/allStructureslist'
+import {Powerstation,Soliderfactory,Oil,Wcf} from '../Structureclass/allStructureslist'
+import {cannotplayhere_audio} from '../assets/audios/audio'
 class Buildinglayer {
     timer: number = null
+    debouncetimer:number=null
     drawTimer: number = null
     type: string
     type_name: string
@@ -16,7 +18,8 @@ class Buildinglayer {
     obstaclemap: { x: number, y: number }[] = []
     oldobstaclemap: { x: number, y: number }[] = []
     size: { width: number, height: number }
-    canBuild: boolean = false //能够在此修建
+    canBuild: boolean = false //能够在此修建 条件之一
+    inarea:boolean=false //在基地范围内
     constructor() {
 
 
@@ -71,8 +74,8 @@ class Buildinglayer {
         if (!this.timer) {
             this.timer = window.setTimeout(() => {
                 this.positions = {
-                    x: e.pageX,
-                    y: e.pageY
+                    x: e.offsetX,
+                    y: e.offsetY
                 }
                 this.draw();
                 this.getObstacles();
@@ -91,9 +94,11 @@ class Buildinglayer {
             this.canvas.removeEventListener('mousemove', this.mouseMovehandler);
             this.canvas.removeEventListener('click', this.mouseClickhandler);
             //清楚绿色待建造区
-            this.context.clearRect(buildinglocation.x,buildinglocation.y,this.size.width,this.size.height)
+            this.context.clearRect(buildinglocation.x,buildinglocation.y,this.size.width+2,this.size.height)
             //开始建造了
             this.newStructures();
+        }else{
+            cannotplayhere_audio.playAudio();
         }
     }
     //TODO-- 得阻止 物体的选择
@@ -121,7 +126,7 @@ class Buildinglayer {
                 let oil = new Oil(10, '20',buildinglocation, 'oil1', this.canvas, size);
                 break;
             case 'stwcf':
-
+                let wcf = new Wcf(10, '20',buildinglocation, 'oil1', this.canvas, size);
                 break;
             default:
                 break;
@@ -138,11 +143,18 @@ class Buildinglayer {
     //获取其中一个坦克的地图
     //障碍区= fakeMap（自身障碍物）+其他障碍物
     getObstacles() {
-        let othermap = eventlist.tanklist[0].globalAstarmanage.map,//其他障碍物
+        //用防抖来校验？？？ 当停下的时候计算最后一次是否符合规范
+        if(this.debouncetimer){
+            clearTimeout(this.debouncetimer);
+            this.debouncetimer = null
+        }
+        this.debouncetimer = window.setTimeout(()=>{
+            let othermap = eventlist.tanklist[0].globalAstarmanage.map,//其他障碍物
             atankmap = globalAstarmanage.fakemap, //（自身障碍物）
             MT = new Multithread(4);//web worker
+            console.log(othermap,"其他地图")
         return new Promise((resolve, reject) => {
-            ///   console.log('呵呵')
+            ///   console.log('呵呵') TODO--这里应该可以优化一下 如果上次的map与本次的相同 就没必要使用webwer计算 直接返回这个值
             let handle = MT.process(this.calculateObstacles, (e) => {
                 this.obstaclemap = e;
                 resolve();
@@ -150,6 +162,8 @@ class Buildinglayer {
             });
             handle(othermap, atankmap)
         })
+        },100)
+      
 
 
 
@@ -157,8 +171,9 @@ class Buildinglayer {
     //计算障碍物
     calculateObstacles(othermap: any, atankmap: any) {
         let lastmap = [];
-        for (let j = 0; j < 200; j++) {
-            for (let k = 0; k < 200; k++) {
+        console.time()
+        for (let j = 0; j < 140; j++) {
+            for (let k = 0; k < 448; k++) {
                 if (othermap[j][k] == 33 || othermap[j][k] == 333 || atankmap[j][k] == 3) {
                     // lastmap[j][k] = 9 //假设9为不允许建造
                     lastmap.push({
@@ -168,17 +183,32 @@ class Buildinglayer {
                 }
             }
         }
+        console.timeEnd()
         return lastmap
     }
     //校验是否选择的区域是平坦的
     validationAreasafe(): boolean {
-        //TODO--
-        return this.canBuild
+        //TODO--  基地区域内的校验
+        let startx = 835,
+            starty = 364,
+            endx = 835 + 580,
+           
+            endy =364+580;
+            this.inarea = false;
+            if(startx<=this.positions.x-this.size.width*0.5
+            &&starty<=this.positions.y-this.size.height*0.5
+            &&endx>=this.positions.x+this.size.width*0.5
+            &&endy>=this.positions.y+this.size.height*0.5){
+                this.inarea = true
+            }
+        return this.canBuild&&this.inarea
     }
-    // //绘制绿色部分
+   
     draw() {
-        this.context.clearRect(this.oldpositions.x - this.size.width * 0.5, this.oldpositions.y - this.size.height * 0.5, this.size.width, this.size.height);
-        this.context.fillStyle = 'rgb(0,220,0)';
+        this.validationAreasafe();
+        this.context.clearRect(this.oldpositions.x - this.size.width * 0.5, this.oldpositions.y - this.size.height * 0.5-1, this.size.width+2, this.size.height+2);
+        // //绘制绿色部分
+        this.context.fillStyle = this.inarea?'rgb(0,220,0)':'rgb(220,0,0)';
         this.context.fillRect(this.positions.x - this.size.width * 0.5, this.positions.y - this.size.height * 0.5, this.size.width, this.size.height);
         this.oldpositions = {
             x: this.positions.x,
@@ -193,7 +223,12 @@ class Buildinglayer {
             this.context.clearRect(this.oldobstaclemap[j].y * 10, this.oldobstaclemap[j].x * 10, 10, 10);
         }
         if (this.oldobstaclemap.length == 0) {
-            this.canBuild = true
+            if(this.inarea){
+                this.canBuild = true
+            }else{
+                this.canBuild = false
+            }
+           
         } else {
             this.canBuild = false  //这里有一个时效性问题 webworker为异步的TODO--,目前表现还良好
         }
@@ -203,6 +238,7 @@ class Buildinglayer {
                 && starty <= this.obstaclemap[j].x * 10
                 && endx >= this.obstaclemap[j].y * 10
                 && endy >= this.obstaclemap[j].x * 10) {
+                
                 this.context.fillStyle = 'rgb(220,0,0)';
                 this.context.fillRect(this.obstaclemap[j].y * 10, this.obstaclemap[j].x * 10, 10, 10);
                 this.oldobstaclemap.push({

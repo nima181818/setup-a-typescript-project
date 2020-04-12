@@ -8,8 +8,8 @@ body{
     max-width:750px;
     height:600px;
     overflow:scroll;
+    position: relative;
 }
-
 .tops{
     height:20px;
     text-align: center;

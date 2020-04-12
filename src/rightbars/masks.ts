@@ -1,5 +1,6 @@
 import { Watcher } from '../utils/watcher';
 import {buildinglayer} from './buildinglayer'
+import {buiding_audio,buidinginprogress_audio} from '../assets/audios/audio'
 //总共要导出4个 分别对应建筑，防御，士兵，坦克
 interface positions {
     x: number,
@@ -86,10 +87,10 @@ class Masks {
             if (this.type == 'stlist') {
                 //建筑的建造均为单一的没有队列，做完一个 弹出队列？但是我是根据运行一个 走下一个？？
                 if (this.taskqueue.length) {
-                    alert('正在建造中');
+                    buidinginprogress_audio.playAudio();
                     return;
                 }
-               
+                buiding_audio.playAudio();
                 switch (typeNum) {
                     case 0:
                         this.handlePositions(0, 0);

@@ -15,6 +15,7 @@ const s1 = require('../assets/rightbar/s1.png'),
     $id = document.getElementById.bind(document),
     $cls = document.getElementsByClassName.bind(document);
 import  {stlistMask,guardlistMask,soilderlistMask,wartanklistMask} from './masks';
+
 let maskListall = [stlistMask,soilderlistMask,guardlistMask,wartanklistMask]
 export class Rightbars {
     currentpageIndex: number = 0
@@ -158,6 +159,7 @@ export class Rightbars {
             this.structurelist[j].appendChild(this.structureimg[j]);
             //左键建造，
             this.structurelist[j].onclick = function () {
+              
                 maskListall[0].analyseCommander('building',j);
                 // if (this.structureinbuiding) {
                 //     return;

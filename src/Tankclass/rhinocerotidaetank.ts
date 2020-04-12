@@ -48,6 +48,9 @@ export class Rhinocerotidaetank extends Tank{
         // console.log('当前id',this._id)
         this.width = 40; //覆盖父的
         this.height = 40; //覆盖父的
+
+        this.blood = 20;
+        this.maxblood = 20
         this.autoFire();
         eventlist.tanklist.push(this);
         this.watcher = new Watcher();
@@ -55,7 +58,24 @@ export class Rhinocerotidaetank extends Tank{
         this.watcher.responseMode(this, 'currentclickpoints');
         this.watcher.register('targetpointTrigger', this.targetpointTrigger);
         this.watcher.responseMode(this, 'targetpoint');
-     
+        
+        this.watcher.register('targetpointTrigger', this.targetpointTrigger);
+        this.watcher.responseMode(this, 'targetpoint');
+
+
+
+        this.watcher.register('selectedTrigger', this.selectedTrigger);
+        this.watcher.responseMode(this, 'selected');
+
+        this.watcher.register('multiselectTrigger', this.multiselectTrigger);
+        this.watcher.responseMode(this, 'multiselect');
+
+       
+        this.watcher.register('startmovingTrigger', this.startmovingTrigger);
+        this.watcher.responseMode(this, 'startmoving');
+
+
+
         this.currentclickpoints.x = position.x;
         this.currentclickpoints.y = position.y;
         this.position.x = position.x;

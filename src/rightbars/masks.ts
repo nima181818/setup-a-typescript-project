@@ -1,6 +1,6 @@
 import { Watcher } from '../utils/watcher';
 import {buildinglayer} from './buildinglayer'
-import {buiding_audio,buidinginprogress_audio} from '../assets/audios/audio'
+import {buiding_audio,buidinginprogress_audio,constructionalcomplete_audio} from '../assets/audios/audio'
 //总共要导出4个 分别对应建筑，防御，士兵，坦克
 interface positions {
     x: number,
@@ -314,6 +314,7 @@ class Masks {
            //
            buildinglayer.setType(this.type,this.type_name)
            buildinglayer.bindCanvas();
+           constructionalcomplete_audio.playAudio();
      }
     }
 

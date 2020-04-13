@@ -3,7 +3,7 @@
 import { eventlist } from '../Tankclass/Eventlist';
 import { globalAstarmanage as realAstarmanage, globalAstarmanage } from '../utils/wayfinders'
 import {Powerstation,Soliderfactory,Oil,Wcf} from '../Structureclass/allStructureslist'
-import {cannotplayhere_audio} from '../assets/audios/audio'
+import {cannotplayhere_audio,constructionalnoctions_audio} from '../assets/audios/audio'
 class Buildinglayer {
     timer: number = null
     debouncetimer:number=null
@@ -32,7 +32,7 @@ class Buildinglayer {
         this.type = type;
         this.type_name = type_name;
         this.sizeJudge();
-
+        this.cancelTankselectormultiselect();
     }
     //种类判别 建筑的大小是不同的
     sizeJudge() {
@@ -131,6 +131,21 @@ class Buildinglayer {
             default:
                 break;
         }
+        //迎合图片加载的时间
+        setTimeout(()=>{
+            constructionalnoctions_audio.playAudio();
+        },200)
+       
+    }
+    //当鼠标已在滑动的时候 应取消tank的选择或多选状态 对建筑这一方法成立
+    cancelTankselectormultiselect(){
+        if(this.type=='stlist'||this.type=='guardlist'){
+            for(let j=0;j<eventlist.tanklist.length;j++){
+                eventlist.tanklist[j].selected = false;
+                eventlist.tanklist[j].multiselect = false;
+            }
+        }
+        
     }
     //绑定滑动，游击事件
     bindCanvas() {

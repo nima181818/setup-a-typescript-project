@@ -690,6 +690,7 @@ export class Tank {
     //handle multi-entitys have the same destination
 		handleDestinations() {
 		    if (this.multiselect) {
+            
                 // console.log(this.pointDistance(this.currentclickpoints, this.targetpoint,true),this.r,"呵呵呵")
                 //当前位置已抵达终点
           
@@ -714,7 +715,7 @@ export class Tank {
 		        } else {
                     //当前位置未到达终点TODO--  有点问题
                     let obstacle = this.minDistancefromcenter();
-                    console.log('调整中');
+                //    console.log('调整中');
                     if(obstacle){
                         if ((this.pointDistance(obstacle.currentclickpoints, this.currentclickpoints) < ((this.r + obstacle.r) ** 2) + 100)
                         && (this.pointDistance(obstacle.currentclickpoints, this.currentclickpoints) > ((this.r + obstacle.r) ** 2) - 100)
@@ -733,7 +734,7 @@ export class Tank {
                     
                    
 				}
-
+               
 		    }
 
 		}

@@ -14,9 +14,11 @@ const s1 = require('../assets/rightbar/s1.png'),
     stwcf = require('../assets/buildings-structure/wcf.png'),
     $id = document.getElementById.bind(document),
     $cls = document.getElementsByClassName.bind(document);
-import  {stlistMask,guardlistMask,soilderlistMask,wartanklistMask} from './masks';
-
-let maskListall = [stlistMask,soilderlistMask,guardlistMask,wartanklistMask]
+import { stlistMask, guardlistMask, soilderlistMask, wartanklistMask } from './masks';
+import { littlewindow } from './littlewindow';
+littlewindow.initCanvas();
+littlewindow.draw();
+let maskListall = [stlistMask, soilderlistMask, guardlistMask, wartanklistMask]
 export class Rightbars {
     currentpageIndex: number = 0
     alllist: Array<HTMLDivElement> = []
@@ -42,13 +44,13 @@ export class Rightbars {
     //初始化下方类型框container
     initContainerlist() {
         let stlist = $cls('stlist')[0] as HTMLDivElement,
-        guardlist = $cls('guardlist')[0] as HTMLDivElement,
-        soilderlist = $cls('soilderlist')[0] as HTMLDivElement,
-        wartanklist = $cls('wartanklist')[0] as HTMLDivElement;
-          
-        this.alllist = [stlist,guardlist,soilderlist,wartanklist];
-        for(let j=1;j<this.alllist.length;j++){
-            this.alllist[j].style.display='none'
+            guardlist = $cls('guardlist')[0] as HTMLDivElement,
+            soilderlist = $cls('soilderlist')[0] as HTMLDivElement,
+            wartanklist = $cls('wartanklist')[0] as HTMLDivElement;
+
+        this.alllist = [stlist, guardlist, soilderlist, wartanklist];
+        for (let j = 1; j < this.alllist.length; j++) {
+            this.alllist[j].style.display = 'none'
         }
     }
     //初始化bar的div元素
@@ -122,7 +124,7 @@ export class Rightbars {
             stinfantry = $id('stinfantry'),
             stoil = $id('stoil'),
             stwcf = $id('stwcf');
-        this.structurelist = [stpowertation, stoil,stinfantry,stwcf];
+        this.structurelist = [stpowertation, stoil, stinfantry, stwcf];
         this.initStructureimg();
     }
     //初始化 建筑图片
@@ -159,8 +161,8 @@ export class Rightbars {
             this.structurelist[j].appendChild(this.structureimg[j]);
             //左键建造，
             this.structurelist[j].onclick = function () {
-              
-                maskListall[0].analyseCommander('building',j);
+
+                maskListall[0].analyseCommander('building', j);
                 // if (this.structureinbuiding) {
                 //     return;
                 // }
@@ -169,10 +171,10 @@ export class Rightbars {
                 //     this.structureinbuiding = false;
                 //     console.log('修建完成')
                 // }, 4000)
-                 
+
             }.bind(this)
             //右键取消
-            this.structurelist[j].oncontextmenu =function(){
+            this.structurelist[j].oncontextmenu = function () {
 
             }.bind(this)
         }

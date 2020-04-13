@@ -463,7 +463,7 @@ class Astar {
             y: endYshrink
         });
         deltaFunchandler();
-        console.log('油路')
+        //console.log('油路')
         return {
             map:map,
             lastwaysmatrixlist:lastwaysmatrixlist

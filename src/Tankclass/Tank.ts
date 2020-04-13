@@ -28,6 +28,7 @@ class Bullet<T>{
 export class Tank {
     static id: number = -1
     _id: number
+	workername:string //webwork创造id  因为有时需要去掉不必要的worker
     r: number = 20
     dt: number = 0.08
     startmoving:boolean=false
@@ -235,18 +236,24 @@ export class Tank {
             this.globalAstarmanage.setStartpointandendpoint(this.closeFunc(this.startpoint.y), this.closeFunc(this.startpoint.x), 'startpoint');
             this.globalAstarmanage.setStartpointandendpoint(this.closeFunc(this.targetpoint.y), this.closeFunc(this.targetpoint.x), 'endpoint');
             this.obstacleRepailie();
+			if(this.workername){
+				window[this.workername].terminate();  //去掉正在运行的worker
+			}
+			
             //开始寻路
-             var MT = new Multithread(4);//web worker
+			 this.workername = 'worker'+parseInt((Math.random()*10**10).toString());
+             var MT = new Multithread(4,this.workername);//web worker
          
               
           let handle = MT.process(this.globalAstarmanage.prepareForwebworker,(e)=>{
+			 
               this.startmoving=true
             this.globalAstarmanage.map = e.map;
             this.globalAstarmanage.lastwaysmatrixlist = e.lastwaysmatrixlist;
-           console.log(this.globalAstarmanage.map);
-         //   return;
+		      this.workername = null; //置空
             this.movingfunc('tank', this.currentclickpoints, this.height, this.width, this.speed, this)
              });
+			
           let sp = {
               x:this.globalAstarmanage.startPoint.x,
               y:this.globalAstarmanage.startPoint.y
@@ -304,7 +311,7 @@ export class Tank {
             }
 
         }
-       console.log(this.globalAstarmanage.map,"寻路算法之前的地图")
+     
        //
     //   
      
@@ -441,6 +448,8 @@ export class Tank {
 
     //路径规划 --A*驱动
     movingfunc(type: string, position: Position1, height: number, width: number, speed: number, that: any) {
+		  window.clearInterval(this.timer);
+		   this.timer = null
         //最新的路径规划方案
         let positionarrays = [],
             currentindex = 0;
@@ -458,8 +467,10 @@ export class Tank {
         if (positionarrays.length == 0) {
             return;
         }
+		let calltime=0;
         that.timer = window.setInterval(() => {
-          
+          calltime++;
+	//	  console.log(calltime)
             //p为当前点，a为寻路算法当前点，b为寻路算法下一点
             let PA = {
                 x: positionarrays[currentindex].x * 10 - this.currentclickpoints.x,
@@ -507,7 +518,8 @@ export class Tank {
             if (currentindex >= positionarrays.length - 2) {
                 this.startpoint.x = position.x;
                 this.startpoint.y = position.y;
-                window.clearInterval(that.timer)
+                window.clearInterval(that.timer);
+				that.timer = null
                 this.velocity = {
                     x: 0,
                     y: 0

@@ -9,8 +9,9 @@
 		throw new Error('This browser does not support Web Workers');
 	}
 
-	function Multithread(threads) {
+	function Multithread(threads,workername=null) {
 		this.threads = Math.max(2, threads | 0);
+		this.workername = workername
 		this._queue = [];
 		this._queueSize = 0;
 		this._activeThreads = 0;
@@ -172,6 +173,11 @@
 			this._activeThreads++;
 			var t = (new Date()).valueOf();
 			var worker = new Worker(resource);
+			if(this.workername){
+				
+					window[this.workername] = worker;
+			}
+		
 			var buffer = this._encode[type](args);
 			var decode = this._decode[type];
 			var self = this;

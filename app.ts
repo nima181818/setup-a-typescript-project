@@ -5,12 +5,12 @@ import { BaseControl } from './src/Structureclass/basecontrol'
 import { Soliderfactory } from './src/Structureclass/soliderfactory'
 import { Powerstation } from './src/Structureclass/powerstation'
 import { Oil } from './src/Structureclass/oil'
-import { World } from './src/map'
+import { world } from './src/map'
 import {Rightbars} from './src/rightbars/rightbars'
 let canvas1: HTMLCanvasElement = document.getElementById('canvas1') as HTMLCanvasElement;
 let canvas2: HTMLCanvasElement = document.getElementById('canvas2') as HTMLCanvasElement;
 
-let world = new World({ x: 0, y: 0 }, canvas1);  //world的生成顺序至关重要，因为地图障碍物会在此生成，
+
 let baseControl1 = new BaseControl(10, '20', { x: 900, y: 600 }, 'base', canvas2, { x: 98.9 * 1.5, y: 58.5 * 1.5 });
 let soliderfactory1 = new Soliderfactory(10, '20', { x: 100, y: 0 }, 'soliderfactory', canvas2, { x: 89.6, y: 86.7 });
 let powerstation = new Powerstation(10, '20', { x: 200, y: 300 }, 'powerstation', canvas2, { x: 89.6, y: 86.7 });

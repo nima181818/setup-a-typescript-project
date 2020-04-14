@@ -5,9 +5,10 @@ interface sizes {
 }
 import { transformimg } from './assets/imgurltransform'
 import { globalAstarmanage } from './utils/wayfinders'
+import { littlewindow } from './rightbars/littlewindow'
 const map = require('./assets/map.jpg');
 const mapobstacle = require('./mapobstacle.json');
-export class World {
+ class World {
   size: sizes
   ctx: any
   scrollLeft: number = 0
@@ -15,13 +16,15 @@ export class World {
   // tanks:[]
   worldimg: HTMLImageElement
   pageflowtimer: number
+  controler:string
+  canvascontainer:HTMLDivElement
   worldobstacles: sizes[] = []
   constructor(size: sizes, ctx: HTMLCanvasElement) {
     this.size = size
     this.ctx = ctx.getContext('2d');
     this.initWorldobstacle();
     this.paint()
-    //this.bindScrollmapevent();
+    this.bindScrollmapevent();
   }
   paint() {
     let img = transformimg(map.default);
@@ -43,10 +46,25 @@ export class World {
 
     globalAstarmanage.addObstacle(temp, 33)
   }
+  //改变视口 拖动窗口可以控制，点击littewindow也可以控制
+  changeViewport(e:{offsetX:number,offsetY:number},controler:string){
+       if(controler=='click'){
+         console.log('我先走')
+         this.controler = 'click'
+        this.canvascontainer.scrollLeft = e.offsetX;
+        this.canvascontainer.scrollTop = e.offsetY;
+       }
+       if(controler=='scroll'){
+         //TODO-- 只改变this.scrollLeft和this.scrollTop
+
+       }
+  }
   bindScrollmapevent() {
     let canvascontainer: HTMLDivElement = document.getElementsByClassName('leftwrapper')[0] as HTMLDivElement;
+    this.canvascontainer = canvascontainer;
     let timer;
-    canvascontainer.onmousemove = function (e) {
+    /*
+     canvascontainer.onmousemove = function (e) {
       if (!timer) {
         timer = window.setTimeout(() => {
      //     console.log(e.pageX, e.pageY)
@@ -115,7 +133,31 @@ export class World {
       },50)
       
     }.bind(this)
+    */
+   let scrolltimer,
+      oldcontroler;
+    canvascontainer.onscroll=function(e){
+      oldcontroler = this.controler;
+      this.controler = 'scroll';
+      if(oldcontroler=='click'){
+           return;
+      }
+     
+      console.log('被迫触发')
+      let target:any = e.target;
+      if(!scrolltimer){
+        scrolltimer = setTimeout(()=>{
+          console.log(target.scrollLeft,target.scrollTop)
+          littlewindow.changeFramelocation({offsetX:target.scrollLeft,offsetY:target.scrollTop},'scroll');
+          clearTimeout(scrolltimer);
+          scrolltimer = null
+        },100)
+      }
+    
+    }.bind(this)
 
   }
 
 }
+let canvas1 = document.getElementById('canvas1') as HTMLCanvasElement;
+export let world =  new World({ x: 0, y: 0 }, canvas1);  //world的生成顺序至关重要，因为地图障碍物会在此生成，

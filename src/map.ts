@@ -143,11 +143,11 @@ const mapobstacle = require('./mapobstacle.json');
            return;
       }
      
-      console.log('被迫触发')
+   //   console.log('被迫触发')
       let target:any = e.target;
       if(!scrolltimer){
         scrolltimer = setTimeout(()=>{
-          console.log(target.scrollLeft,target.scrollTop)
+     //     console.log(target.scrollLeft,target.scrollTop)
           littlewindow.changeFramelocation({offsetX:target.scrollLeft,offsetY:target.scrollTop},'scroll');
           clearTimeout(scrolltimer);
           scrolltimer = null

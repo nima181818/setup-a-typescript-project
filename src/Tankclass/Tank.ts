@@ -323,7 +323,7 @@ export class Tank {
     }
     //自动攻击
     autoFire() {
-
+         
     }
     //初始化图片
     initPicimg() {

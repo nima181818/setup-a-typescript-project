@@ -938,6 +938,10 @@ export class Tank {
                 this.currentctx.fillRect(j*ablood+this.currentclickpoints.x-this.width*0.5,this.currentclickpoints.y-this.height*0.5-10,ablood*(1/5),5);
 
                 this.currentctx.fillStyle='rgb(16,201,19)';
+                if(this.blood<100){
+                    //TODO-- 注意血量低于1/2 显示红色
+                    this.currentctx.fillStyle='red';
+                }
                 this.currentctx.fillRect(j*ablood+this.currentclickpoints.x-this.width*0.5+(1/5)*ablood,this.currentclickpoints.y-this.height*0.5-10,(4/5)*ablood,5);
 
                 if(j>=10){

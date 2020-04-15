@@ -91,17 +91,20 @@ export class Rhinocerotidaetank extends Tank {
         // console.log(rvosystem,"rvo系统")
     }
     fire() {
-        let that = this
-        let j = 0
-        let bullet = new Bullet(that, {
-            x: this.currentclickpoints.x,
-            y: this.currentclickpoints.y
-        }, {
-            width: 4,
-            height: 4
-
-        }, 10,
-            { x: 1000, y: 500 }, this.currentctx)
-            bullet.run();
-    }
+        if(this._id==0){
+            let that = this
+            let j = 0
+            let bullet = new Bullet(that, {
+                x: this.currentclickpoints.x,
+                y: this.currentclickpoints.y
+            }, {
+                width: 4,
+                height: 4
+    
+            }, 10,
+                { x: 1000, y: 500 }, this.currentctx,{width:62,height:78})
+                bullet.run();
+        }
+        }
+       
 }

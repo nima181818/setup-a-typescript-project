@@ -7,5 +7,9 @@ declare namespace RVO{
 
 
 }
+declare interface pointerface {
+   x:number,
+   y:number
+}
 declare var Multithread
 

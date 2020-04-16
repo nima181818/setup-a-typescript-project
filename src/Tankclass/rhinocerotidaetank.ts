@@ -21,70 +21,16 @@ interface Position1 {
     y: number
 }
 export class Rhinocerotidaetank extends Tank {
-
-
-    blood: number
-    matrixposition: Position1 = { x: 0, y: 0 }
-    watcher: Watcher<Rhinocerotidaetank>
-    autofirecurrency: number = 200
-    bulletmaxmile: number = 173
-    clicktimestamp: number = new Date().getTime()
-    currentclickpoints: Position1 = { x: null, y: null }
-    targetpoint: Position1 = { x: 0, y: 0 } //目标点
-    startpoint: Position1 = { x: 0, y: 0 } //开始点
-    width: number = 30
-    height: number = 30
-    currentctx: any = null
-    timer: number
-    position: Position1 = { x: null, y: null }
-    selected: false
-    tankbullet: any
     speed: number = 2
     firerange:number=190 //攻击距离 在该区域下会自动攻击 
-    ownobstacles: Position1[] = []
     constructor(position: Position1) {
         super(position)
-        // Tank.id++;
-        // this._id = Tank.id;
-        // console.log('当前id',this._id)
+       
         this.width = 40; //覆盖父的
         this.height = 40; //覆盖父的
-
         this.blood = 20;
         this.maxblood = 20
-        this.autoFire();
-        eventlist.tanklist.push(this);
-        this.watcher = new Watcher();
-        this.watcher.register('currentclickpointsTrigger', this.currentclickpointsTrigger);
-        this.watcher.responseMode(this, 'currentclickpoints');
-        this.watcher.register('targetpointTrigger', this.targetpointTrigger);
-        this.watcher.responseMode(this, 'targetpoint');
-
-        this.watcher.register('targetpointTrigger', this.targetpointTrigger);
-        this.watcher.responseMode(this, 'targetpoint');
-
-
-
-        this.watcher.register('selectedTrigger', this.selectedTrigger);
-        this.watcher.responseMode(this, 'selected');
-
-        this.watcher.register('multiselectTrigger', this.multiselectTrigger);
-        this.watcher.responseMode(this, 'multiselect');
-
-
-        this.watcher.register('startmovingTrigger', this.startmovingTrigger);
-        this.watcher.responseMode(this, 'startmoving');
-
-
-
-        this.currentclickpoints.x = position.x;
-        this.currentclickpoints.y = position.y;
-        this.position.x = position.x;
-        this.position.y = position.y;
-        this.targetpoint.x = this.currentclickpoints.x
-        this.targetpoint.y = this.currentclickpoints.y
-        globalAstarmanage.setStartpointandendpoint(this.closeFunc(this.currentclickpoints.y), this.closeFunc(this.currentclickpoints.x), 'startpoint');
-        this.initStartpointendpoint();
+       
         this.imgList = [imagetop.default, imagert.default, imagerig.default, imagerb.default, imagebot.default, imagelb.default, imagelef.default, imagelt.default, imagetop.default];
         this.initPicimg();
         rvosystem.addVihcles(this);

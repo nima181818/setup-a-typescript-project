@@ -88,20 +88,39 @@ export class Tank {
             }
         }
         
-        // this.autoFire()
-        // eventlist.tanklist.push(this);
-        // console.log( eventlist.tanklist,"坦克")
+        this.autoFire();
+        eventlist.tanklist.push(this);
+        this.watcher = new Watcher();
+        this.watcher.register('currentclickpointsTrigger', this.currentclickpointsTrigger);
+        this.watcher.responseMode(this, 'currentclickpoints');
+        this.watcher.register('targetpointTrigger', this.targetpointTrigger);
+        this.watcher.responseMode(this, 'targetpoint');
+
+        this.watcher.register('targetpointTrigger', this.targetpointTrigger);
+        this.watcher.responseMode(this, 'targetpoint');
 
 
 
-        // this.currentclickpoints.x = position.x;
-        // this.currentclickpoints.y = position.y
-        // this.position.x = position.x;
-        // this.position.y = position.y
+        this.watcher.register('selectedTrigger', this.selectedTrigger);
+        this.watcher.responseMode(this, 'selected');
 
-        // globalAstarmanage.setStartpointandendpoint(this.closeFunc(this.currentclickpoints.y), this.closeFunc(this.currentclickpoints.x), 'startpoint')
-        // this.initStartpointendpoint();
-     
+        this.watcher.register('multiselectTrigger', this.multiselectTrigger);
+        this.watcher.responseMode(this, 'multiselect');
+
+
+        this.watcher.register('startmovingTrigger', this.startmovingTrigger);
+        this.watcher.responseMode(this, 'startmoving');
+
+
+
+        this.currentclickpoints.x = position.x;
+        this.currentclickpoints.y = position.y;
+        this.position.x = position.x;
+        this.position.y = position.y;
+        this.targetpoint.x = this.currentclickpoints.x
+        this.targetpoint.y = this.currentclickpoints.y
+        realAstarmanage.setStartpointandendpoint(this.closeFunc(this.currentclickpoints.y), this.closeFunc(this.currentclickpoints.x), 'startpoint');
+        this.initStartpointendpoint();
              
     }
     //处理目标点变化

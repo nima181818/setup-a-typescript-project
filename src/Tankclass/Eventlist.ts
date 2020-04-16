@@ -17,6 +17,7 @@ interface tankobject {
     width: number
     height: number
     stable:boolean
+    loopMethods():void
     movingcommander: boolean
     pathplaningbyRvo(x: number, y: number)
     closeFunc(x: number)
@@ -29,13 +30,25 @@ class Eventlist {
     incommunication: tankobject[] = []
     tanklist: tankobject[] = []
     mapborder:number[][]=[]
+    
     constructor(){
-        this.initMapborder()
+        this.initMapborder();
+        setTimeout(()=>{
+            this.allTanksanimation();
+        },3000)
+       
     }
     initMapborder(){
             for(let j=0;j<border.length;j++){
                 this.mapborder.push([border[j].x,border[j].y])
             }
+    }
+    allTanksanimation(){
+        
+        for(let j=0;j<this.tanklist.length;j++){
+            this.tanklist[j].loopMethods()
+        }
+        window.requestAnimationFrame(this.allTanksanimation.bind(this))
     }
     movingjudge(e: MouseEvent) {
       console.log(e)

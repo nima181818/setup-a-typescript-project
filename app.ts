@@ -7,6 +7,7 @@ import { Powerstation } from './src/Structureclass/powerstation'
 import { Oil } from './src/Structureclass/oil'
 import { world } from './src/map'
 import {Rightbars} from './src/rightbars/rightbars'
+import {picimgList,Liberationarmy} from './src/Tankclass/liberationarmy'
 let canvas1: HTMLCanvasElement = document.getElementById('canvas1') as HTMLCanvasElement;
 let canvas2: HTMLCanvasElement = document.getElementById('canvas2') as HTMLCanvasElement;
 
@@ -22,9 +23,7 @@ let newTank3 = new Rhinocerotidaetank({ x: 1000, y: 700 });
 let newTank4 = new Rhinocerotidaetank({ x: 0, y: 200 });
 let newTank5 = new Rhinocerotidaetank({ x: 100, y: 200 });
 let newTank6 = new Rhinocerotidaetank({ x: 200, y: 200 });
-
-  
-  
+let soider1 = new Liberationarmy({x:1000,y:1000})
 window.onload = function () {
     
        
@@ -41,7 +40,7 @@ window.onload = function () {
     newTank4.paint(canvas2);
     newTank5.paint(canvas2);
     newTank6.paint(canvas2);
-
+    soider1.paint(canvas2)
 
     canvas2.onmousedown = function (e) {
         pages = {

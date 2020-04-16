@@ -650,7 +650,7 @@ export class Tank {
             }
 
            
-        this.currentctx.clearRect(this.currentclickpoints.x - this.velocity.x * this.dt-this.width*0.5, this.currentclickpoints.y - this.velocity.y * this.dt-this.height*0.5, this.width, this.height);
+        this.currentctx.clearRect(this.currentclickpoints.x - this.velocity.x * this.dt-this.width*0.5-2, this.currentclickpoints.y - this.velocity.y * this.dt-this.height*0.5-2, this.width+3, this.height+3);
         this.currentctx.drawImage(this.picimgList[picindex], this.currentclickpoints.x-this.width*0.5, this.currentclickpoints.y-this.height*0.5, this.width, this.height)
     }
     //////////////////////steering behavior↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
@@ -776,7 +776,7 @@ export class Tank {
         let currentspendlength = ((destination.x) ** 2 + (destination.y) ** 2) ** 0.5;
 
 
-        //假设 seekforce恒定？
+        //这是期望的最大速度
         let destinationvelocity = {
             x: (cons * this.MAX_SPEED) ? (cons * this.MAX_SPEED) : 0,
             y: (sins * this.MAX_SPEED) ? sins * this.MAX_SPEED : 0
@@ -785,8 +785,8 @@ export class Tank {
 
         //假设朝向终点的seekforce与物体到终点的长度成正比?
         this.seekforce = {
-            x: 10*(destination.x - this.velocity.x),
-            y: 10*(destination.y - this.velocity.y)
+            x: (destinationvelocity.x - this.velocity.x),
+            y: (destinationvelocity.y - this.velocity.y)
             //TODO--控制力太小了？？x10
         }
         //上述假设不成立  假设牵引力大小始终为恒定值？
@@ -983,7 +983,7 @@ export class Tank {
      
     }
     paint(canvas: HTMLCanvasElement): void {
-
+        
         const ctx = canvas.getContext('2d');
 
         this.currentctx = ctx
@@ -1004,18 +1004,13 @@ export class Tank {
             x: 10,
             y: 10
         }
-        let a=1;
-        setInterval(() => {
+     //  this.loopMethods();
+        // this.select(canvas)
+    }
+    loopMethods(){
             this.paintAgain();
             this.showBloodlength();
-            a++
-            if(a%300==0){
-                this.fire();
-            }
-          
-
-        }, 16.6)
-        // this.select(canvas)
+      //  window.requestAnimationFrame(this.loopMethods.bind(this))
     }
 
 

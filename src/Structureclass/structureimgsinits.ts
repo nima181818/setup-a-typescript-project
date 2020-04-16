@@ -1,4 +1,5 @@
 function imginits(imgUrllist,imgList){
+   
     for(let j=0;j<imgUrllist.length;j++){
             let img:HTMLImageElement = new Image();
                 img.src = imgUrllist[j]

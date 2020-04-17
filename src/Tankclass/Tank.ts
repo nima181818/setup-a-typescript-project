@@ -14,6 +14,9 @@ console.log(rvosystem)
 export class Tank {
     static id: number = -1
     _id: number
+    bodyposition:boolean= false //身体的动作  为士兵所特有
+    tick:number=0 //一次士兵身体动作改变的index
+    lastpickindex:number=0 //上一次的方向
 	workername:string //webwork创造id  因为有时需要去掉不必要的worker
     r: number = 20
     dt: number = 0.08
@@ -56,8 +59,10 @@ export class Tank {
     targetpoint: Position1 = { x: 0, y: 0 } //目标点
     destinationpoint: Position1 = { x: 0, y: 0 } //目标点的子集 用以寻路
     startpoint: Position1 = { x: 0, y: 0 } //开始点
-    width: number = 54
-    height: number = 54
+    width: number = 54  //绘制宽度
+    height: number = 54 //绘制高度
+    obwidth:number   //障碍宽度
+    obheight:number //障碍高度
     currentctx: any = null
     timer: number
     position: Position1 = { x: null, y: null }
@@ -135,11 +140,11 @@ export class Tank {
         }
     
         this.ownobstacles = [{
-            x: this.currentclickpoints.x - this.width*0.5 <= 0 ? 0 : this.currentclickpoints.x - this.width*0.5,
-            y: this.currentclickpoints.y - this.height*0.5 <= 0 ? 0 : this.currentclickpoints.y - this.height*0.5
+            x: this.currentclickpoints.x - this.obwidth*0.5 <= 0 ? 0 : this.currentclickpoints.x - this.obwidth*0.5,
+            y: this.currentclickpoints.y - this.obheight*0.5 <= 0 ? 0 : this.currentclickpoints.y - this.obheight*0.5
         }, {
-            x: this.currentclickpoints.x + this.width*0.5 >= 600 ? 600 : this.currentclickpoints.x + this.width*0.5,
-            y: this.currentclickpoints.y + this.height*0.5 >= 400 ? 400 : this.currentclickpoints.y + this.height*0.5
+            x: this.currentclickpoints.x + this.obwidth*0.5 >= 600 ? 600 : this.currentclickpoints.x + this.obwidth*0.5,
+            y: this.currentclickpoints.y + this.obheight*0.5 >= 400 ? 400 : this.currentclickpoints.y + this.obheight*0.5
         }];
 
         this.proxycurrentclickpoints.x = this.currentclickpoints.x + Math.random();
@@ -607,7 +612,7 @@ export class Tank {
         let value = (p1.x - p2.x)**2+(p1.y-p2.y)**2;
         return kf?(value**0.5):value
     }
-    //重绘
+    //重绘--自身的图片形状
     paintAgain() {
         // this.currentclickpoints.x += this.velocity.x * this.dt;
         // this.currentclickpoints.y += this.velocity.y * this.dt;
@@ -648,11 +653,37 @@ export class Tank {
                    picindex = j
                }
             }
-
-           
-        this.currentctx.clearRect(this.currentclickpoints.x - this.velocity.x * this.dt-this.width*0.5-2, this.currentclickpoints.y - this.velocity.y * this.dt-this.height*0.5-2, this.width+3, this.height+3);
-        this.currentctx.drawImage(this.picimgList[picindex], this.currentclickpoints.x-this.width*0.5, this.currentclickpoints.y-this.height*0.5, this.width, this.height)
+         
+         if(!this.bodyposition){
+            this.currentctx.clearRect(this.currentclickpoints.x - this.velocity.x * this.dt-this.width*0.5-2, this.currentclickpoints.y - this.velocity.y * this.dt-this.height*0.5-2, this.width+3, this.height+3);
+            this.currentctx.drawImage(this.picimgList[picindex], this.currentclickpoints.x-this.width*0.5, this.currentclickpoints.y-this.height*0.5, this.width, this.height)
+         }else{
+             this.bodypositionChangehandler(picindex);
+         }
+         this.lastpickindex = picindex
     }
+    //身体位置的变化 picindex:方向
+    bodypositionChangehandler(picindex:number){
+        if(picindex!=this.lastpickindex){
+            //方向发生突变，
+            this.tick = 0;
+        }else{
+            this.tick+=0.18;
+           
+            if(this.tick>=5){
+                this.tick = 0
+            }
+        }
+     
+        if(this.squalCaculator(this.velocity,true)<1&&this.pointDistance(this.destinationpoint,this.currentclickpoints,true)<30){
+            this.currentctx.drawImage(this.picimgList[0], this.currentclickpoints.x-this.width*0.5, this.currentclickpoints.y-this.height*0.5, this.width, this.height)
+       
+        }else{
+            this.currentctx.clearRect(this.currentclickpoints.x - this.velocity.x * this.dt-this.width*0.5-2, this.currentclickpoints.y - this.velocity.y * this.dt-this.height*0.5-2, this.width+3, this.height+3);
+            this.currentctx.drawImage(this.picimgList[picindex*5+parseInt(this.tick.toString())], this.currentclickpoints.x-this.width*0.5, this.currentclickpoints.y-this.height*0.5, this.width, this.height)
+       
+        }
+       }
     //////////////////////steering behavior↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
     //计算最近的距离
     calculateDistance(obstacle: any, usemiddle: boolean = false) {
@@ -758,7 +789,7 @@ export class Tank {
         }
       return obstacle;
     }
-    //distance function
+    //distance function 计算两点之间的距离
 		pointDistance(obj1:Position1,obj2:Position1,kf=false):number{
 			let distance =  (obj1.x-obj2.x)**2 +(obj1.y - obj2.y)**2;
             return kf?(distance**0.5):distance			
@@ -800,7 +831,7 @@ export class Tank {
 
     }
 
-    //Square conversion
+    //Square conversion  计算长度本身上
     squalCaculator(obj: Position1, needgh: boolean = false) {
         let value = obj.x ** 2 + obj.y ** 2;
         return needgh ? (value ** 0.5) : value
@@ -945,30 +976,30 @@ export class Tank {
     //////////////////////steering behavior↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑
     //选中时显示血量
     showBloodlength(x: number = this.currentclickpoints.x, y: number = this.currentclickpoints.y) {
-        let ablood = this.width/this.maxblood;
-        this.currentctx.clearRect(this.currentclickpoints.x - this.velocity.x * this.dt-this.width*0.5-3,this.currentclickpoints.y - this.velocity.y * this.dt-this.height*0.5-11-3,this.width+(1/5)*ablood+6,7+6);
+        let ablood = this.obwidth/this.maxblood;
+        this.currentctx.clearRect(this.currentclickpoints.x - this.velocity.x * this.dt-this.obwidth*0.5-3,this.currentclickpoints.y - this.velocity.y * this.dt-this.obheight*0.5-11-3,this.obwidth+(1/5)*ablood+6,7+6);
 
         if(this.selected||this.multiselect){
             this.currentctx.fillStyle='white'
-            this.currentctx.fillRect(this.currentclickpoints.x-this.width*0.5,this.currentclickpoints.y-this.height*0.5-11,this.width+(1/5)*ablood,7);
+            this.currentctx.fillRect(this.currentclickpoints.x-this.obwidth*0.5,this.currentclickpoints.y-this.obheight*0.5-11,this.obwidth+(1/5)*ablood,7);
 
             for(let j=0;j<this.maxblood;j++){
                 this.currentctx.fillStyle='white';
-                this.currentctx.fillRect(j*ablood+this.currentclickpoints.x-this.width*0.5,this.currentclickpoints.y-this.height*0.5-10,ablood*(1/5),5);
+                this.currentctx.fillRect(j*ablood+this.currentclickpoints.x-this.obwidth*0.5,this.currentclickpoints.y-this.obheight*0.5-10,ablood*(1/5),5);
 
                 this.currentctx.fillStyle='rgb(16,201,19)';
-                if(this.blood<100){
+                if(this.blood<=0.5*this.maxblood){
                     //TODO-- 注意血量低于1/2 显示红色
                     this.currentctx.fillStyle='red';
                 }
-                this.currentctx.fillRect(j*ablood+this.currentclickpoints.x-this.width*0.5+(1/5)*ablood,this.currentclickpoints.y-this.height*0.5-10,(4/5)*ablood,5);
+                this.currentctx.fillRect(j*ablood+this.currentclickpoints.x-this.obwidth*0.5+(1/5)*ablood,this.currentclickpoints.y-this.obheight*0.5-10,(4/5)*ablood,5);
 
-                if(j>=10){
+                if(j>this.blood){
                     this.currentctx.fillStyle='gray';
-                    this.currentctx.fillRect(j*ablood+this.currentclickpoints.x-this.width*0.5,this.currentclickpoints.y-this.height*0.5-10,(4/5)*ablood,5);
+                    this.currentctx.fillRect(j*ablood+this.currentclickpoints.x-this.obwidth*0.5,this.currentclickpoints.y-this.obheight*0.5-10,(4/5)*ablood,5);
     
                     this.currentctx.fillStyle='black';
-                    this.currentctx.fillRect(j*ablood+this.currentclickpoints.x-this.width*0.5+(1/5)*ablood,this.currentclickpoints.y-this.height*0.5-10,(4/5)*ablood,5);
+                    this.currentctx.fillRect(j*ablood+this.currentclickpoints.x-this.obwidth*0.5+(1/5)*ablood,this.currentclickpoints.y-this.obheight*0.5-10,(4/5)*ablood,5);
     
                 }
               

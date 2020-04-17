@@ -7,7 +7,7 @@ import { Powerstation } from './src/Structureclass/powerstation'
 import { Oil } from './src/Structureclass/oil'
 import { world } from './src/map'
 import {Rightbars} from './src/rightbars/rightbars'
-import {picimgList,Liberationarmy} from './src/Tankclass/liberationarmy'
+import {Liberationarmy} from './src/Tankclass/liberationarmy'
 let canvas1: HTMLCanvasElement = document.getElementById('canvas1') as HTMLCanvasElement;
 let canvas2: HTMLCanvasElement = document.getElementById('canvas2') as HTMLCanvasElement;
 

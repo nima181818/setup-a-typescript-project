@@ -1,9 +1,14 @@
+import {structuresets} from './Structureclass/structureSet'
+type a = structuresets.constructor 
+function findClass<T>(o:T):type{
+    return structuresets.constructor 
+}
 class Play{
-    unitList:Array<any>=[]
     baseMapcanvas:HTMLCanvasElement
     topUnitscanvas:HTMLCanvasElement
+    structuresets:findClass<structuresets>()
     constructor(){
-
+    //    this.
     }
     //初始化canvas
     initCanvas(){
@@ -12,11 +17,6 @@ class Play{
               this.baseMapcanvas = canvas1;
               this.topUnitscanvas = canvas2;
     }
-    //    
-    initStructures(){
-
-    }
-    addUnit(unit:any){
-        this.unitList.push(unit)
-    }
+   
+    
 }

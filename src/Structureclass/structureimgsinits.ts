@@ -1,17 +1,27 @@
-function imginits(imgUrllist,imgList){
-   
-    for(let j=0;j<imgUrllist.length;j++){
+function imginits(imgUrllist:any[],imgList:any[]){
+   return new Promise((resolve,reject)=>{
+      if(imgUrllist.length==imgList.length){
+          resolve();
+
+      }else{
+        for(let j=0;j<imgUrllist.length;j++){
             let img:HTMLImageElement = new Image();
                 img.src = imgUrllist[j]
                 img.onload = function(){
                    
                     imgList[j] = img;
-                   
+                    if(imgUrllist.length==imgList.length){
+                        resolve();
+              
+                    }
             }
          document.body.appendChild(img)
             
       
     }
+      }
+   })
+    
 }
 
 const oil1 = require('../assets/oilstructure/oil1.png');
@@ -95,8 +105,6 @@ const wcf2 = require('../assets/wcf/wcf2.png')
 const wcf3 = require('../assets/wcf/wcf3.png')
 const wcf4 = require('../assets/wcf/wcf4.png')
 const wcf5 = require('../assets/wcf/wcf5.png');
-
-
 let wcfimgUrllist = [
     wcf1.default,
     wcf2.default,
@@ -106,9 +114,25 @@ let wcfimgUrllist = [
 ],
 wcfimgList=[];
 
-imginits(oilimgUrllist,oilimgList);
-imginits(soilderimgUrllist,soilderimgList);
-imginits(powerstationimgUrllist,powerstationimgList);
-imginits(wcfimgUrllist,wcfimgList);
-export {oilimgList,soilderimgList,powerstationimgList,wcfimgList}
+// imginits(oilimgUrllist,oilimgList);
+// imginits(soilderimgUrllist,soilderimgList);
+// imginits(powerstationimgUrllist,powerstationimgList);
+// imginits(wcfimgUrllist,wcfimgList);
+let oilobj = {
+    oilimgList,
+    oilimgUrllist
+},
+soilderobj = {
+    soilderimgUrllist,
+    soilderimgList
+},
+powerstationobj = {
+    powerstationimgUrllist,
+    powerstationimgList
+},
+wcfobj = {
+    wcfimgUrllist,
+    wcfimgList
+}
+export {oilobj,soilderobj,powerstationobj,wcfobj,imginits}
   

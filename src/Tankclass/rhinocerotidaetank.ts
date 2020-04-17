@@ -25,10 +25,14 @@ export class Rhinocerotidaetank extends Tank {
         super(position)
        
         this.width = 40; //覆盖父的
+        this.obwidth = this.width;
+        
         this.height = 40; //覆盖父的
+        this.obheight = this.height
         this.blood = 20;
         this.maxblood = 20
-        this.MAX_SPEED = 30
+        this.MAX_SPEED = 30;
+        
         this.imgList = [imagetop.default, imagert.default, imagerig.default, imagerb.default, imagebot.default, imagelb.default, imagelef.default, imagelt.default, imagetop.default];
         this.initPicimg();
         rvosystem.addVihcles(this);

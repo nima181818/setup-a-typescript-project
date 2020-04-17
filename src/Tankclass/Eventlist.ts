@@ -1,27 +1,29 @@
 let {border} = require('../map-border.json');
+import {Structure} from '../Structureclass/structure'
+import {Tank}  from './Tank'
 console.log(border,"888888")
 interface Positions {
     x: number
     y: number
 }
-interface tankobject {
-    selected: boolean
-    // nextPoint(x:number,y:number)
-    fire(x: number, y: number)
-    ownobstacles: Positions[]
-    currentclickpoints: Positions
-    targetpoint: Positions
-    globalAstarmanage: any
-    _id: number
-    multiselect:boolean
-    width: number
-    height: number
-    stable:boolean
-    loopMethods():void
-    movingcommander: boolean
-    pathplaningbyRvo(x: number, y: number)
-    closeFunc(x: number)
-    setTankspoints(x: number, y: number, type: string, moving: boolean)
+interface tankobject extends Tank {
+    // selected: boolean
+    // // nextPoint(x:number,y:number)
+    // fire(x: number, y: number)
+    // ownobstacles: Positions[]
+    // currentclickpoints: Positions
+    // targetpoint: Positions
+    // globalAstarmanage: any
+    // _id: number
+    // multiselect:boolean
+    // width: number
+    // height: number
+    // stable:boolean
+    // loopMethods():void
+    // movingcommander: boolean
+    // pathplaningbyRvo(x: number, y: number)
+    // closeFunc(x: number)
+    // setTankspoints(x: number, y: number, type: string, moving: boolean)
 }
 class Eventlist {
     multimode: boolean = false

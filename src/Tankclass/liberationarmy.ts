@@ -2,7 +2,7 @@ import { Tank } from './Tank'
 
 import { rvosystem } from '../utils/rovpathfindinghelper';
 import { Bullet } from './Bullet';
-
+import {imgList,picimgList,pics} from './liberrationimgs'
   
 interface Position1 {
     x: number
@@ -19,17 +19,23 @@ interface Position1 {
     firerange:number=190 //攻击距离 在该区域下会自动攻击 
     constructor(position: Position1) {
         super(position)
-       
-        this.width = 19; //覆盖父的
-        this.height = 24; //覆盖父的
-        this.blood = 12;
+        this.bodyposition = true
+        this.width = 38; //覆盖父的
+        this.obwidth = this.width/3*2
+        this.height = 48; //覆盖父的
+        this.obheight = this.height/3*2
+        this.blood = 1;
         this.maxblood = 12
         this.MAX_SPEED = 18
         // this.imgList = [imagetop.default, imagert.default, imagerig.default, imagerb.default, imagebot.default, imagelb.default, imagelef.default, imagelt.default, imagetop.default];
        // this.initPicimg();
-       this.imgList = imgList
+       this.destinationpoint = JSON.parse(JSON.stringify(this.currentclickpoints))
+       pics(imgList,picimgList).then(()=>{
+        this.imgList = imgList
         this.picimgList = picimgList
         rvosystem.addVihcles(this);
+       })
+      
         // console.log(rvosystem,"rvo系统")
     }
     fire() {

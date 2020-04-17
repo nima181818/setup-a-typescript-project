@@ -11,6 +11,7 @@ import { globalAstarmanage } from '../utils/wayfinders';
 import { eventlist } from '../Tankclass/Eventlist';
 class Structure {
     name: string
+    imginitsuccess:boolean=false
     blood: number
     owner: string
     imgsize: positions
@@ -72,7 +73,9 @@ class Structure {
 
     }
     paint(position: { x: number, y: number }) {
-
+            if(!this.imginitsuccess){
+                return;
+            }
         let index = 0;
         //  setTimeout(()=>{
         let time = setInterval(() => {

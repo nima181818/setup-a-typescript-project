@@ -37,7 +37,7 @@ class Eventlist {
         this.initMapborder();
         setTimeout(()=>{
             this.allTanksanimation();
-        },3000)
+        },5000)
        
     }
     initMapborder(){
@@ -46,11 +46,17 @@ class Eventlist {
             }
     }
     allTanksanimation(){
-        
+    //    console.time()
         for(let j=0;j<this.tanklist.length;j++){
-            this.tanklist[j].loopMethods()
+            this.tanklist[j].loopMethods();
+          
         }
-        window.requestAnimationFrame(this.allTanksanimation.bind(this))
+        for(let j=0;j<this.tanklist.length;j++){
+            this.tanklist[j].showBloodlength(); //保证血量显示不被覆盖掉
+        }
+       
+      //  console.timeEnd()
+        window.setTimeout(this.allTanksanimation.bind(this),16.6666)
     }
     movingjudge(e: MouseEvent) {
       console.log(e)

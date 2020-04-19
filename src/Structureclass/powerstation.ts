@@ -1,5 +1,6 @@
 import {Structure} from './structure';
 import {powerstationobj,imginits} from './structureimgsinits'
+const powerstationobstacle = require('./powerstation.json');
 export class Powerstation extends Structure{
     constructor(bl: number, owner: string, position: { x: number, y: number }, name: string, ctx: HTMLCanvasElement,size:{x:number,y:number}) {
         super(bl, owner, position, name, ctx,size)
@@ -17,7 +18,7 @@ export class Powerstation extends Structure{
             this.paint(position)
         })
         this.needanimation = true
-      
-       //TODO--未添加发电厂的障碍
+        this.handleSelfobstacle(powerstationobstacle.obstacle)
+       //
     }
 }

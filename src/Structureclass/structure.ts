@@ -3,12 +3,15 @@ interface positions {
     y: number
 }
 /*
-  军营的基础计算位置是按照{ x: 100, y: 0 }参考的
+  军营的基础计算位置是按照{ x: 100, y: 0 }参考的 且是5为单位的
+  基地是900 600 10
 
 */
 console.log(Multithread, "wocao")
 import { globalAstarmanage } from '../utils/wayfinders';
 import { eventlist } from '../Tankclass/Eventlist';
+import {structuresets} from './structureSet'
+// import {baseControl} from './basecontrol'
 class Structure {
     name: string
     imginitsuccess:boolean=false
@@ -33,10 +36,19 @@ class Structure {
         this.positions = position
         this.name = name
         this.size = size
-        this.ctx = ctx.getContext('2d')
+        this.ctx = ctx.getContext('2d');
+        structuresets.operationStructure(this.name,'add',this)
         // this.paint(position)
+        if(this.name!='base'){
+            if(structuresets.base.length){
+                
+                structuresets.base[0].newBuildingadded();
+            }
+           
+        }
+        console.log(structuresets)
     }
-
+    
     beAttacked(bollet: number) {
         this.blood = this.blood - bollet
 
@@ -140,16 +152,37 @@ class Structure {
         let temp = []
 
         //TODO-- 这里还没有结合自己的位置
-        if (this.name == 'soliderfactory') {
+     //   if (this.name == 'soliderfactory') {
             for (let j = 0; j < obstacle.length; j++) {
-                let item = {
-                    x: obstacle[j].y + this.closeFunc(this.positions.y - 0),
-                    y: obstacle[j].x + this.closeFunc(this.positions.x - 100)
-                }
+                 let item ={x:null,y:null}
+                  if(this.name=='soliderfactory'){
+                    item = {
+                        x: obstacle[j].y + this.closeFunc(this.positions.y - 0),
+                        y: obstacle[j].x + this.closeFunc(this.positions.x - 100)
+                    }
+                  }
+                  if(this.name=='base'){
+                    item = {
+                        x: obstacle[j].y + this.closeFunc(this.positions.y - 600),
+                        y: obstacle[j].x + this.closeFunc(this.positions.x - 900)
+                    }
+                  }
+                  if(this.name=='oil'){
+                    item = {
+                        x: obstacle[j].y + this.closeFunc(this.positions.y - 400),
+                        y: obstacle[j].x + this.closeFunc(this.positions.x - 400)
+                    }
+                  }
+                  if(this.name=='powertation'){
+                    item = {
+                        x: obstacle[j].y + this.closeFunc(this.positions.y - 300),
+                        y: obstacle[j].x + this.closeFunc(this.positions.x - 200)
+                    }
+                  }
                 temp.push(item)
             }
             console.log('已走')
-        }
+    //    }
         globalAstarmanage.addObstacle(temp, 333);
         //当建筑出生的时候 动态映射到真实地图和每个坦克的地图上
         for (let j = 0; j < eventlist.tanklist.length; j++) {
@@ -166,10 +199,20 @@ class Structure {
         // -(this.closeFunc(this.positions.y))
         //TODO-- 障碍需要又加有减？
         for (let j = 0; j < obstacle.length; j++) {
-            let item = {
-                x: parseInt((obstacle[j].x / 2).toString()),
-                y: parseInt((obstacle[j].y / 2).toString())
+            let item={}
+            if(this.name=='soliderfactory'){
+                item = {
+                    x: parseInt((obstacle[j].x / 2).toString()),
+                    y: parseInt((obstacle[j].y / 2).toString())
+                }
             }
+            if(this.name=='base'||this.name=='oil'||this.name=='powertation'){
+                item = {
+                    x: parseInt((obstacle[j].x).toString()),
+                    y: parseInt((obstacle[j].y).toString())
+                }
+            }
+           
             temp.push(item);
         }
         this.ownobstacles = temp;

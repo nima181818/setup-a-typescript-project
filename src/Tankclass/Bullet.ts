@@ -37,8 +37,12 @@ export class Bullet{
         sin = pt.y/(pt.x**2+pt.y**2)**0.5?pt.y/(pt.x**2+pt.y**2)**0.5:0;
         this.sin = sin
     }
-    //借助贝塞尔曲线充当子弹的弹道
-    run(){
+    //士兵发射子弹—— 不需要弹道
+    run_soilder(){
+      
+    }
+    //借助贝塞尔曲线充当子弹的弹道 对tank有效
+    run_tank(){
       fireout_audio.playAudio();
         let p2={
             x:this.target.x,

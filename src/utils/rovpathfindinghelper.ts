@@ -61,33 +61,7 @@ class Rvosystem {
     }
     //rvo！！！
     rvostart() {
-        setInterval(() => {
-           
-            this.setPreferredVelocities();
-            this.simulator.doStep();
-              
-            for (let j = 0; j < this.simulator.agents.length; j++) {
-                for (let k = 0; k < eventlist.tanklist.length; k++) {
-                    if(eventlist.tanklist[k]._id==this.simulator.agents[j]._uid){
-                  //      if(!eventlist.tanklist[k].movingcommander){
-                      //     this.simulator.agents[j].position = {
-                        //    x:eventlist.tanklist[k].targetpoint.x,
-                          //  y:eventlist.tanklist[k].targetpoint.y
-                     //      }
-                  
-//}else{
-                            eventlist.tanklist[k].pathplaningbyRvo(this.simulator.agents[j].position[0], this.simulator.agents[j].position[1]);
-                  
-                  //    }
-                   
-                        
-                    }
-                 
-                }
-               
-            }
-         //   console.log(this.simulator.agents[1].position,"位置",this.goals[1]);
-        }, 16.6);
+      
     }
 }
 

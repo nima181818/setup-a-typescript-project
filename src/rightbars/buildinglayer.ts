@@ -117,16 +117,16 @@ class Buildinglayer {
         // Powerstation,Soliderfactory,Oil
         switch (this.type_name) {
             case 'stpowertation':
-                let powerstation = new Powerstation(10, '20',buildinglocation, 'powerstation', this.canvas,size ); 
+                let powerstation = new Powerstation(10, '20',buildinglocation, 'powertation', this.canvas,size ); 
                 break;
             case 'stinfantry':
                 let soliderfactory1 = new Soliderfactory(10, '20',buildinglocation, 'soliderfactory', this.canvas,size);
                 break;
             case 'stoil':
-                let oil = new Oil(10, '20',buildinglocation, 'oil1', this.canvas, size);
+                let oil = new Oil(10, '20',buildinglocation, 'oil', this.canvas, size);
                 break;
             case 'stwcf':
-                let wcf = new Wcf(10, '20',buildinglocation, 'oil1', this.canvas, size);
+                let wcf = new Wcf(10, '20',buildinglocation, 'wcf', this.canvas, size);
                 break;
             default:
                 break;
@@ -165,7 +165,7 @@ class Buildinglayer {
         }
         this.debouncetimer = window.setTimeout(()=>{
             let othermap = eventlist.tanklist[0].globalAstarmanage.map,//其他障碍物
-            atankmap = globalAstarmanage.fakemap, //（自身障碍物）
+            atankmap = globalAstarmanage.fakemap, //（自身障碍物）//有问题
             MT = new Multithread(4);//web worker
             console.log(othermap,"其他地图")
         return new Promise((resolve, reject) => {

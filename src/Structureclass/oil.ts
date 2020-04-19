@@ -2,6 +2,7 @@ import {Structure} from './structure';
 
 
 import {oilobj,imginits} from './structureimgsinits'
+const oilobstacle = require('./oil.json');
 export class Oil extends Structure{
     constructor(bl: number, owner: string, position: { x: number, y: number }, name: string, ctx: HTMLCanvasElement,size:{x:number,y:number}) {
         super(bl, owner, position, name, ctx,size)
@@ -21,6 +22,7 @@ export class Oil extends Structure{
             this.imgList = oilobj.oilimgList
             this.paint(position)
         })
-        //TODO--未添加发电厂的障碍
+       
+        this.handleSelfobstacle(oilobstacle.obstacle)
     }
 }

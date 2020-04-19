@@ -6,10 +6,10 @@ import {Oil} from './oil'
 import {Wcf} from './wcf'
 
  export class Structuresets{
-     base:BaseControl
+     base:BaseControl[]=[]
      powertation:Powerstation[]=[]
-     soliderfactory:Soliderfactory[]
-     oil:Oil[]
+     soliderfactory:Soliderfactory[]=[]
+     oil:Oil[]=[]
      wcf:Wcf[]=[]
      unitsList:any={}
      constructor(){
@@ -26,14 +26,14 @@ import {Wcf} from './wcf'
                  if(type=='add'){
                     this.unitsList[name].push(obj)
                  }else{
-                   
+                   //TODO-- 这还没完
                     this.unitsList[name].splice(j,1);
                  }
                  
              }
          }
      }
-     //建筑的动画也均在此完成
+     //建筑的动画也均在此完成 TODO-- 还未实施
      structureAnimation(){
         for(let j in this.unitsList){
             for(let k=0;k<this.unitsList[j].length;k++){

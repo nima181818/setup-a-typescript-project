@@ -23,6 +23,39 @@ function imginits(imgUrllist:any[],imgList:any[]){
    })
     
 }
+const base1 = require('../assets/baseimgs/base1.png');
+const base2 = require('../assets/baseimgs/base2.png');
+const base3 = require('../assets/baseimgs/base3.png');
+const base4 = require('../assets/baseimgs/base4.png');
+const base5 = require('../assets/baseimgs/base5.png');
+const base6 = require('../assets/baseimgs/base6.png');
+const base7 = require('../assets/baseimgs/base7.png');
+const base8 = require('../assets/baseimgs/base8.png');
+const base9 = require('../assets/baseimgs/base9.png');
+const base10 = require('../assets/baseimgs/base10.png');
+const base11 = require('../assets/baseimgs/base11.png');
+const base12 = require('../assets/baseimgs/base12.png');
+const base13 = require('../assets/baseimgs/base13.png');
+const base14 = require('../assets/baseimgs/base14.png');
+let baseimgUrllist = [
+    base1.default,
+    base2.default,
+    base3.default,
+    base4.default,
+    base5.default,
+    base6.default,
+    base7.default,
+    base8.default,
+    base9.default,
+    base10.default,
+    base11.default,
+    base12.default,
+    base13.default,
+    base14.default
+],
+baseimgList = []
+
+
 
 const oil1 = require('../assets/oilstructure/oil1.png');
 const oil2 = require('../assets/oilstructure/oil2.png')
@@ -133,6 +166,10 @@ powerstationobj = {
 wcfobj = {
     wcfimgUrllist,
     wcfimgList
+},
+baseobj = {
+    baseimgUrllist,
+    baseimgList
 }
-export {oilobj,soilderobj,powerstationobj,wcfobj,imginits}
+export {oilobj,soilderobj,powerstationobj,wcfobj,baseobj,imginits}
   

@@ -32,11 +32,14 @@ export class Rhinocerotidaetank extends Tank {
         this.blood = 20;
         this.maxblood = 20
         this.MAX_SPEED = 30;
-        
+        this._name = 'rhinocerotidaetank'
         this.imgList = [imagetop.default, imagert.default, imagerig.default, imagerb.default, imagebot.default, imagelb.default, imagelef.default, imagelt.default, imagetop.default];
         this.initPicimg();
         rvosystem.addVihcles(this);
         // console.log(rvosystem,"rvo系统")
+        setInterval(()=>{
+            this.fire();
+        },3000)
     }
     fire() {
         if(this._id==0){
@@ -51,7 +54,7 @@ export class Rhinocerotidaetank extends Tank {
     
             }, 10,
                 { x: 1000, y: 500 }, this.currentctx,{width:62,height:78})
-                bullet.run();
+                bullet.run_tank();
         }
         }
        

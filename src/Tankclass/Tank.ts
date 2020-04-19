@@ -8,12 +8,14 @@ import { Watcher } from '../utils/watcher';
 import { eventlist } from './Eventlist';
 import { transformimg } from '../assets/imgurltransform';
 import { rvosystem } from '../utils/rovpathfindinghelper';
-import {tankmoving_audio,waitingorders_audio} from '../assets/audios/audio'
+import {tankmoving_audio,waitingorders_audio,howaboutaction_audio,movingnow_audio} from '../assets/audios/audio'
 
 console.log(rvosystem)
 export class Tank {
     static id: number = -1
     _id: number
+    lastobstaclematrix:pointerface[]=[]
+    _name:string
     bodyposition:boolean= false //身体的动作  为士兵所特有
     tick:number=0 //一次士兵身体动作改变的index
     lastpickindex:number=0 //上一次的方向
@@ -43,7 +45,7 @@ export class Tank {
     incollision: boolean = false
     globalAstarmanage: any = {}
     picimgList: HTMLImageElement[] = []
-    imgList: string[]
+    imgList: string[]=[]
     baseimg: HTMLImageElement
     blood: number
     maxblood:number
@@ -135,6 +137,7 @@ export class Tank {
     }
     //动态的改变自己的
     currentclickpointsTrigger() {
+      
         if (this.ownobstacles.length) {
             this.realUpdatingownerobstacle(0)
         }
@@ -143,58 +146,83 @@ export class Tank {
             x: this.currentclickpoints.x - this.obwidth*0.5 <= 0 ? 0 : this.currentclickpoints.x - this.obwidth*0.5,
             y: this.currentclickpoints.y - this.obheight*0.5 <= 0 ? 0 : this.currentclickpoints.y - this.obheight*0.5
         }, {
-            x: this.currentclickpoints.x + this.obwidth*0.5 >= 600 ? 600 : this.currentclickpoints.x + this.obwidth*0.5,
-            y: this.currentclickpoints.y + this.obheight*0.5 >= 400 ? 400 : this.currentclickpoints.y + this.obheight*0.5
+            x: this.currentclickpoints.x + this.obwidth*0.5 >= 4480 ? 4480 : this.currentclickpoints.x + this.obwidth*0.5,
+            y: this.currentclickpoints.y + this.obheight*0.5 >= 1400 ? 1400 : this.currentclickpoints.y + this.obheight*0.5
         }];
 
         this.proxycurrentclickpoints.x = this.currentclickpoints.x + Math.random();
         this.proxycurrentclickpoints.y = this.currentclickpoints.y + Math.random();
         this.realUpdatingownerobstacle(3)
-        //     this.initStartpointendpoint();
+     
+       
     }
     //单选改变
     selectedTrigger(){
       if(this.selected){
         // tankmoving_audio
-        waitingorders_audio.playAudio();
+        if(this._name=='rhinocerotidaetank'){
+            waitingorders_audio.playAudio();
+        }else if(this._name=='liberationarmy'){
+            howaboutaction_audio.playAudio();
+        }else if(this._name==''){
+
+        }
+      
       }
     }
     //多选改变
     multiselectTrigger(){
       if(this.multiselect){
-        waitingorders_audio.playAudio();
+        if(this._name=='rhinocerotidaetank'){
+            waitingorders_audio.playAudio();
+        }else if(this._name=='liberationarmy'){
+            howaboutaction_audio.playAudio();
+        }else if(this._name==''){
+
+        }
+       
       }
     }
     //去目的地改变
     startmovingTrigger(){
+        
         if(this.startmoving){
-            tankmoving_audio.playAudio();
+            if(this._name=='rhinocerotidaetank'){
+                tankmoving_audio.playAudio();
+            }else if(this._name=='liberationarmy'){
+                movingnow_audio.playAudio();
+            }else if(this._name==''){
+    
+            }
+            
         }
     }
     //
     //实时更新自己本身的障碍点
     realUpdatingownerobstacle(value: number) {
-        // alert('wocao')
-        // setTimeout(()=>{
+       
+    let ks =  parseInt((this.ownobstacles[0].y/10).toString()),
+        us =  parseInt((this.ownobstacles[0].x/10).toString()),
+        width = parseInt((this.obwidth/10).toString()),
+        height = parseInt((this.obheight/10).toString());
+         for(let j=0;j<this.lastobstaclematrix.length;j++){
+            realAstarmanage.fakemap[this.lastobstaclematrix[j].y][this.lastobstaclematrix[j].x] = 0;
+         }
+         this.lastobstaclematrix=[]
+        for(let k=ks;k<ks+height;k++){
+            for(let u=us;u<us+width;u++){
+          
+                    realAstarmanage.fakemap[k][u] = value;
+             
             
-        for (let k = 0; k < realAstarmanage.fakemap.length; k++) {
-            for (let u = 0; u < realAstarmanage.fakemap[k].length; u++) {
-                if (
-                    k * 10 >= this.ownobstacles[0].y
-                    &&
-                    k * 10 < this.ownobstacles[1].y
-                    &&
-                    u * 10 >= this.ownobstacles[0].x
-                    &&
-                    u * 10 < this.ownobstacles[1].x
-                ) {
-
-                    realAstarmanage.fakemap[k][u] = value
-                }
+                this.lastobstaclematrix.push({
+                    x:us,
+                    y:ks
+                })
             }
         }
-      
-        this.notifyRVOsystem()
+  
+
     }
     initStartpointendpoint() {
 
@@ -205,7 +233,7 @@ export class Tank {
     }
     //开火
     fire() {
-      
+      //TODO 共
     }
     //监听敌人 是否在攻击范围内 在的话
     detectingEnviromentchange(){
@@ -364,97 +392,7 @@ export class Tank {
         //  rvosystem.rvostart(this);
 
     }
-    //路径规划 --rvo驱动
-    pathplaningbyRvo(x: number, y: number) {
-
-
-    }
-    //下一步根据引擎驱动选择驱动方式
-    nextStepdecide(x: number, y: number) {
-        if (this.oldengineDriver != this.engineDriver) { }
-        this.currentctx.drawImage(this.picimgList[0], x, y, this.width, this.height)
-
-    }
-    //判断rvo position周围是否有障碍 返回true 表示控制权在rvo手上
-    /*
-           /     \
-          /       \
-         /         \
-        /|^^^^|^^^^|\
-       / |    |    | \
-      /  ^^^^^^^^^^^  \
-      \  |    |    |  /
-       \ |    |    | /
-        \^^^^^^^^^^^/
-          \        /
-            \     /   
-          */
-    handleRvopositions(x: number, y: number, invokedby: string = null) {
-        let itemlist = [];
-        for (let j = 0; j < 100; j++) {
-            let theta = j * 2 * Math.PI / 100;
-            let r = 50
-            let item = {
-                x: this.closeFunc(x + r * Math.cos(theta)),
-                y: this.closeFunc(y + r * Math.sin(theta))
-            }
-            itemlist.push(item)
-        }
-
-        let list = this.filterProbooutofborder(itemlist);
-        let incollision = false;
-
-        for (let j = 0; j < list.length; j++) {
-            if (realAstarmanage.fakemap[list[j].y / 10][list[j].x / 10] == 3) {
-                incollision = true
-            }
-        }
-        if (this._id == 0) {
-            console.log('是否在障碍中' + incollision, '被' + invokedby + '调用', '当前的驱动引擎为', this.engineDriver)
-        }
-
-        return incollision
-    }
-    //筛选 过滤探针在边界之外的
-    filterProbooutofborder(list: Array<{ x: number, y: number }>): any {
-        let templist = JSON.parse(JSON.stringify(list))
-        for (let j = 0; j < templist.length; j++) {
-            if (templist[j].x <= 0 || templist[j].y <= 0) {
-                templist.splice(j, 1);
-                j--
-            }
-        }
-        return templist
-    }
-    //当由 rvo转到A*时，此时要对下面的k和j，index做偏移
-    rvoToastar(positionarrays: { x: number, y: number }[], x: number, y: number) {
-        let mostclosestpoint = (positionarrays[0].x * 5 - x) ** 2 + (positionarrays[0].y * 5 - y) ** 2
-        let finalindex = 0;
-        for (let j = 0; j < positionarrays.length; j++) {
-            let distance = (positionarrays[j].x * 5 - x) ** 2 + (positionarrays[j].y * 5 - y) ** 2;
-            if (mostclosestpoint > distance) {
-                mostclosestpoint = distance;
-                finalindex = j
-            }
-        }
-        console.log(finalindex)
-
-        return finalindex
-    }
-    //处理当前运动的点的位置
-    handleCurrenttarget(positionarrays: Position1[]) {
-        let x = parseInt((this.currentclickpoints.x / 10).toString()),
-            y = parseInt((this.currentclickpoints.y / 10).toString()),
-            positionindex = null
-        for (let j = 0; j < positionarrays.length; j++) {
-            if (positionarrays[j].x == y && positionarrays[j].y == x) {
-                positionindex = j;
-                return positionindex
-            }
-        }
-    }
-
-
+    
     //路径规划 --A*驱动
     movingfunc(type: string, position: Position1, height: number, width: number, speed: number, that: any) {
 		  window.clearInterval(this.timer);
@@ -668,7 +606,7 @@ export class Tank {
             //方向发生突变，
             this.tick = 0;
         }else{
-            this.tick+=0.18;
+            this.tick+=0.26;
            
             if(this.tick>=5){
                 this.tick = 0
@@ -976,6 +914,7 @@ export class Tank {
     //////////////////////steering behavior↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑
     //选中时显示血量
     showBloodlength(x: number = this.currentclickpoints.x, y: number = this.currentclickpoints.y) {
+//console.time()
         let ablood = this.obwidth/this.maxblood;
         this.currentctx.clearRect(this.currentclickpoints.x - this.velocity.x * this.dt-this.obwidth*0.5-3,this.currentclickpoints.y - this.velocity.y * this.dt-this.obheight*0.5-11-3,this.obwidth+(1/5)*ablood+6,7+6);
 
@@ -992,8 +931,9 @@ export class Tank {
                     //TODO-- 注意血量低于1/2 显示红色
                     this.currentctx.fillStyle='red';
                 }
+              
                 this.currentctx.fillRect(j*ablood+this.currentclickpoints.x-this.obwidth*0.5+(1/5)*ablood,this.currentclickpoints.y-this.obheight*0.5-10,(4/5)*ablood,5);
-
+               
                 if(j>this.blood){
                     this.currentctx.fillStyle='gray';
                     this.currentctx.fillRect(j*ablood+this.currentclickpoints.x-this.obwidth*0.5,this.currentclickpoints.y-this.obheight*0.5-10,(4/5)*ablood,5);
@@ -1011,7 +951,7 @@ export class Tank {
             // this.currentctx.fillRect(this.currentclickpoints.x - 10, this.currentclickpoints.y - 10 - 5, 50, 10)
             
         }
-     
+    //    console.timeEnd()
     }
     paint(canvas: HTMLCanvasElement): void {
         
@@ -1019,8 +959,11 @@ export class Tank {
 
         this.currentctx = ctx
 
-        ctx.fillStyle = "yellow";
-        ctx.strokeRect(0, 0, 600, 400);
+      
+      
+        if(!this.imgList[0]){
+            return;
+        }
         let img = transformimg(this.imgList[0]);
         this.baseimg = img;
         // ctx.beginPath();
@@ -1040,7 +983,7 @@ export class Tank {
     }
     loopMethods(){
             this.paintAgain();
-            this.showBloodlength();
+          
       //  window.requestAnimationFrame(this.loopMethods.bind(this))
     }
 

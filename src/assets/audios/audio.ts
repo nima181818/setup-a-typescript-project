@@ -7,7 +7,11 @@ const buiding =require('./eva_voice/building.mp3'),
       //犀牛坦克声音
       tankmoving = require('./tank_voice/moving_rank.mp3'),
       waitingorders = require('./tank_voice/waitingorders.mp3'),
-      fireout = require('./tank_voice/fireout.mp3');
+      fireout = require('./tank_voice/fireout.mp3'),
+
+      //解放军的声音
+      howaboutaction = require('./soilder_voice/how about action.mp3'),
+      movingnow = require('./soilder_voice/moving now.mp3')
 console.log(buiding,"啦啦啦啊")
 class Audios{
     audio:HTMLAudioElement
@@ -29,6 +33,10 @@ constructionalnoctions_audio = new Audios(constructionalnoctions.default),
 //犀牛坦克声音
 tankmoving_audio = new Audios(tankmoving.default),
 waitingorders_audio = new Audios(waitingorders.default),
-fireout_audio = new Audios(fireout.default)
+fireout_audio = new Audios(fireout.default),
 
-export {buiding_audio,buidinginprogress_audio,cannotplayhere_audio,tankmoving_audio,waitingorders_audio,constructionalcomplete_audio,constructionalnoctions_audio,fireout_audio}
+//解放军的声音
+howaboutaction_audio = new Audios(howaboutaction.default),
+movingnow_audio = new Audios(movingnow.default)
+
+export {buiding_audio,buidinginprogress_audio,cannotplayhere_audio,tankmoving_audio,waitingorders_audio,constructionalcomplete_audio,constructionalnoctions_audio,fireout_audio,howaboutaction_audio,movingnow_audio}

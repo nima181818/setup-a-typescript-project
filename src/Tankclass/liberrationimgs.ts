@@ -60,7 +60,7 @@ const lt5 = require('../assets/soilderimgs/lt5.png');
 
 let imgList = [t1, t2, t3, t4, t5,
     rt1, rt2, rt3, rt4, rt5,
-    rt1, r2, r3, r4, r5,
+    r1, r2, r3, r4, r5,
     rb1, rb2, rb3, rb4, rb5,
     b1, b2, b3, b4, b5,
     lb1, lb2, lb3, lb4, lb5,

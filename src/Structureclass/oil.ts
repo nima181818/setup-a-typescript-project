@@ -22,7 +22,7 @@ export class Oil extends Structure{
             this.imgList = oilobj.oilimgList
             this.paint(position)
         })
-       
+        this.blood=30
         this.handleSelfobstacle(oilobstacle.obstacle)
     }
 }

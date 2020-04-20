@@ -20,32 +20,35 @@ interface Position1 {
 }
 export class Rhinocerotidaetank extends Tank {
     speed: number = 2
-    firerange:number=190 //攻击距离 在该区域下会自动攻击 
+    firerange:number=150 //攻击距离 在该区域下会自动攻击 
     constructor(position: Position1) {
         super(position)
        
         this.width = 40; //覆盖父的
         this.obwidth = this.width;
-        
+        this.firerate = 500;
+
         this.height = 40; //覆盖父的
         this.obheight = this.height
         this.blood = 20;
         this.maxblood = 20
         this.MAX_SPEED = 30;
+
         this._name = 'rhinocerotidaetank'
         this.imgList = [imagetop.default, imagert.default, imagerig.default, imagerb.default, imagebot.default, imagelb.default, imagelef.default, imagelt.default, imagetop.default];
         this.initPicimg();
         rvosystem.addVihcles(this);
         // console.log(rvosystem,"rvo系统")
-        setInterval(()=>{
-            this.fire();
-        },3000)
+      //  setInterval(()=>{
+       //     this.fire();
+       // },3000)
+       this.harm = 3;
     }
-    fire() {
+    fire(position:pointerface,targetobject:any) {
         if(this._id==0){
             let that = this
             let j = 0
-            let bullet = new Bullet(that, {
+            let bullet = new Bullet(that,this.harm, targetobject,{
                 x: this.currentclickpoints.x,
                 y: this.currentclickpoints.y
             }, {
@@ -53,7 +56,7 @@ export class Rhinocerotidaetank extends Tank {
                 height: 4
     
             }, 10,
-                { x: 1000, y: 500 }, this.currentctx,{width:62,height:78})
+            position, this.currentctx,{width:62,height:78})
                 bullet.run_tank();
         }
         }

@@ -13,6 +13,8 @@ import { eventlist } from '../Tankclass/Eventlist';
 import {structuresets} from './structureSet'
 // import {baseControl} from './basecontrol'
 class Structure {
+    static ids:number=0
+    _id:number
     name: string
     imginitsuccess:boolean=false
     blood: number
@@ -31,7 +33,8 @@ class Structure {
     ownobstacles: positions[] = [] //存取自身的障碍矩阵 已/5
     constructor(bl: number, owner: string, position: positions, name: string, ctx: HTMLCanvasElement, size: positions) {
         this.blood = bl;
-
+        Structure.ids++;
+        this._id = Structure.ids
         this.owner = owner
         this.positions = position
         this.name = name
@@ -49,18 +52,32 @@ class Structure {
         console.log(structuresets)
     }
     
-    beAttacked(bollet: number) {
-        this.blood = this.blood - bollet
-
-    }
-    //maybe I have to destroy this？？--死亡状态
+   
+    //
+     /*
+    1,死亡时发出声音 TODO
+    2，清理自己在globalMap的障碍
+    3，清理自己的drawImage
+    4，弹出
+  */
     destroy() {
         clearInterval(this.animationtimer);
+        this.animationtimer = null;
+        console.log('建筑毁灭')
         //地图上销毁障碍?这点还要反应到各个机车上？？？--代价应该不大 因为现在已明确找到了不用遍历直接操作map的方式
         for (let j = 0; j < eventlist.tanklist.length; j++) {
             for (let k = 0; k < this.ownobstacles.length; k++) {
                 eventlist.tanklist[j].globalAstarmanage.map[this.ownobstacles[k].y][this.ownobstacles[k].x] = 0;
 
+            }
+        }
+        this.ctx.clearRect(this.positions.x, this.positions.y, this.size.x, this.size.y );
+        for(let j in structuresets.unitsList){
+            for(let k=0;k<structuresets.unitsList[j].length;k++){
+                if(this._id==structuresets.unitsList[j][k]._id){
+                    structuresets.unitsList[j].splice(k,1);
+                    k--
+                }
             }
         }
     }
@@ -191,6 +208,14 @@ class Structure {
 
 
         }
+    }
+    //血量减少
+    bloodLess(value){
+      this.blood-=value;
+      console.log(this.blood)
+      if(this.blood<=0){
+        this.destroy();
+    }
     }
     //处理自身位置的障碍
     handleSelfobstacle(obstacle: positions[]) {

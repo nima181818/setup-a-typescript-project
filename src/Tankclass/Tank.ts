@@ -9,11 +9,13 @@ import { eventlist } from './Eventlist';
 import { transformimg } from '../assets/imgurltransform';
 import { rvosystem } from '../utils/rovpathfindinghelper';
 import {tankmoving_audio,waitingorders_audio,howaboutaction_audio,movingnow_audio} from '../assets/audios/audio'
-
+import {structuresets} from  '../Structureclass/structureSet'
+import { Structure } from '../Structureclass/structure';
 console.log(rvosystem)
 export class Tank {
     static id: number = -1
     _id: number
+
     lastobstaclematrix:pointerface[]=[]
     _name:string
     bodyposition:boolean= false //身体的动作  为士兵所特有
@@ -22,6 +24,9 @@ export class Tank {
 	workername:string //webwork创造id  因为有时需要去掉不必要的worker
     r: number = 20
     dt: number = 0.08
+    infire:number = null //正处于攻击状态
+    firerate:number //每500毫秒攻击一次
+    harm:number //伤害
     startmoving:boolean=false
     obstaclematrix: Position1 = { x: 0, y: 0 }
     avoidforce: Position1 = { x: 0, y: 0 }
@@ -183,6 +188,7 @@ export class Tank {
        
       }
     }
+    
     //去目的地改变
     startmovingTrigger(){
         
@@ -231,13 +237,112 @@ export class Tank {
     select(canvas: HTMLCanvasElement): void {
 
     }
+    //单位死亡
+    /*
+      1,死亡时发出声音 TODO
+      2，清理自己在globalMap的障碍
+      3，清理自己的drawImage
+      4，弹出eventList.tanklist
+    */
+    destroy(){
+        for(let j=0;j<this.lastobstaclematrix.length;j++){
+            realAstarmanage.fakemap[this.lastobstaclematrix[j].y][this.lastobstaclematrix[j].x] = 0;
+         }
+         this.currentctx.clearRect(this.currentclickpoints.x-this.width*0.5,this.currentclickpoints.y-this.height*0.5,this.width,this.height);
+         clearInterval(this.timer);
+         for(let j=0;j<eventlist.tanklist.length;j++){
+             if(this._id==eventlist.tanklist[j]._id){
+                eventlist.tanklist.splice(j,1);
+                j--
+             }
+         }
+    }
+     //血量减少
+     bloodLess(value){
+        this.blood-=value;
+        if(this.blood<=0){
+            this.destroy();
+        }
+      }
     //开火
-    fire() {
+    fire(position:pointerface,targetobject:any) {
       //TODO 共
     }
-    //监听敌人 是否在攻击范围内 在的话
+    //监听敌人 是否在攻击范围内 在的话 TODO--  现目前是将自己这边的（tank）添加为敌人 还要添加建筑
     detectingEnviromentchange(){
+        if(this._id!=0){
+            return;
+        }
+            let index=0,
+                distance =  10**9;//够大以防有小于他的
 
+              //这里处理了 tank  
+            for(let j=0;j<eventlist.tanklist.length;j++){
+                if(this._id!=eventlist.tanklist[j]._id){
+                    if(distance>=this.pointDistance(eventlist.tanklist[j].currentclickpoints,this.currentclickpoints,true)){
+                        distance = this.pointDistance(eventlist.tanklist[j].currentclickpoints,this.currentclickpoints,true);
+                        index = j
+                     }
+                }
+               
+
+            }
+            //TODO 还要处理 建筑
+           let strindex=0,
+               strname = '',
+               strdistance = 10**9;
+               for(let j in structuresets.unitsList){
+                   for(let k=0;k<structuresets[j].length;k++){
+                       let structurecenter = {
+                           x:structuresets[j][k].positions.x + structuresets[j][k].size.x*0.5,
+                           y:structuresets[j][k].positions.y + structuresets[j][k].size.y*0.5,
+                       }
+                       if(strdistance>=this.pointDistance(this.currentclickpoints,structurecenter,true)){
+                        strdistance = this.pointDistance(this.currentclickpoints,structurecenter,true);
+                        strname = j;
+                        strindex = k;
+
+                       }
+                   }
+               }
+            //比较 strdistance和distance的大小,取较小者
+              let smaller = strdistance>distance?'tank':'structure'
+          if(smaller=='tank'){
+            this.runThefire(distance,eventlist.tanklist[index],smaller)
+          }else{
+             this.runThefire(strdistance,structuresets.unitsList[strname][strindex],smaller)
+          }
+
+           
+          
+    }
+    runThefire(distance:number,obj,type){
+        if(distance>this.firerange){
+            clearTimeout(this.infire);
+            this.infire = null;
+        }else{
+            console.log('有目标')
+    
+            //有目标  TODO 运动状态下是否攻击？ 否?
+            if(!this.timer){
+               if(!this.infire){
+                   this.infire = window.setTimeout(()=>{
+                   try{
+                      
+                    this.fire((type=='tank')?obj.currentclickpoints:{x:obj.positions.x+obj.size.x*0.5,y:obj.positions.y+obj.size.y*0.5},obj);
+                   }catch(e){
+                    console.log('index is not defined',e)
+                   }
+                   
+                    clearTimeout(this.infire);
+                       this.infire = null;
+                   },this.firerate)
+               }
+               
+               
+            }
+
+        }
     }
     //临近函数 //找出距离自己最近的矩阵点
     closeFunc(point: number): number {
@@ -983,6 +1088,7 @@ export class Tank {
     }
     loopMethods(){
             this.paintAgain();
+            this.detectingEnviromentchange();
           
       //  window.requestAnimationFrame(this.loopMethods.bind(this))
     }

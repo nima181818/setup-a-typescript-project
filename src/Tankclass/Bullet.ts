@@ -15,11 +15,15 @@ export class Bullet{
     }   //绘制爆炸的图片大小
     currentctx: any
     master: any
+    targetobject:any //目标打击对象
+    harm:number
     timer: number = 0
-    constructor(master: any, position:pointerface,size: {width:number,height:number},speed:number,target:pointerface,currentctx:any,drawsize:{width:number,height:number
+    constructor(master: any,harm:number ,targetobject:any, position:pointerface,size: {width:number,height:number},speed:number,target:pointerface,currentctx:any,drawsize:{width:number,height:number
     }) {
         this.master = master
+        this.harm = harm
         this.position = position;
+        this.targetobject = targetobject
         this.size = size;
         this.speed = speed
         this.target = target;
@@ -124,6 +128,8 @@ export class Bullet{
         if(counts==imgelements.length-1){
            clearInterval(timer);
            this.currentctx.clearRect(this.target.x-this.drawsize.width/2,this.target.y-this.drawsize.height/2,this.drawsize.width,this.drawsize.height);
+           //目标血量减少？
+           this.targetobject.bloodLess(this.harm)
         }
        },30)
     }

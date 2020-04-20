@@ -21,7 +21,7 @@ export class Soliderfactory extends Structure{
             y:972
         }
        
-        
+        this.blood=30
      
        this.handleSelfobstacle(structurepbstacle.obstacle);
     //  this.burn();

@@ -17,6 +17,7 @@ export class Powerstation extends Structure{
             this.imgList = powerstationobj.powerstationimgList
             this.paint(position)
         })
+        this.blood=30
         this.needanimation = true
         this.handleSelfobstacle(powerstationobstacle.obstacle)
        //

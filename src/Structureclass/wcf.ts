@@ -18,6 +18,7 @@ export class Wcf extends Structure{
             this.imgList = wcfobj.wcfimgList
             this.paint(position)
         })
+        this.blood=30
        //TODO--未添加发电厂的障碍
     }
 }

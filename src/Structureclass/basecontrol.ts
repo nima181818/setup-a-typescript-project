@@ -17,6 +17,7 @@ export class BaseControl extends Structure {
             this.paint(position)
         })
         this.handleSelfobstacle(basecontrolobstacle.obstacle)
+        this.blood=45
     }
     
     paint(position: { x: number, y: number }) {
@@ -24,7 +25,7 @@ export class BaseControl extends Structure {
       
             
             
-            setInterval(()=>{
+            this.animationtimer = window.setInterval(()=>{
                 this.ctx.clearRect(position.x,position.y, this.size.x, this.size.y);
                 this.ctx.drawImage(this.imgList[parseInt(index.toString())], position.x,position.y, this.size.x, this.size.y);
                 if(this.innewbuilding){

@@ -16,7 +16,7 @@ interface Position1 {
 
  class Liberationarmy extends Tank {
     speed: number = 2
-    firerange:number=190 //攻击距离 在该区域下会自动攻击 
+    firerange:number=100 //攻击距离 在该区域下会自动攻击 
     constructor(position: Position1) {
         super(position)
         this.bodyposition = true
@@ -24,8 +24,8 @@ interface Position1 {
         this.obwidth = this.width/3*2
         this.height = 48; //覆盖父的
         this.obheight = this.height/3*2
-        this.blood = 1;
-        this.maxblood = 12
+        this.blood = 15;
+        this.maxblood = 15
         this.MAX_SPEED = 18;
         this._name = 'liberationarmy'
         // this.imgList = [imagetop.default, imagert.default, imagerig.default, imagerb.default, imagebot.default, imagelb.default, imagelef.default, imagelt.default, imagetop.default];
@@ -36,9 +36,9 @@ interface Position1 {
         this.picimgList = picimgList
         rvosystem.addVihcles(this);
        })
-       setInterval(()=>{
-        this.fire();
-    },3000)
+    //    setInterval(()=>{
+    //     this.fire();
+    // },3000)
         // console.log(rvosystem,"rvo系统")
     }
     fire() {

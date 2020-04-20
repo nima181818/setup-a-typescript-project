@@ -1,6 +1,7 @@
 
 import {imgelements} from './bulletexpolisionimg';
-import {fireout_audio} from '../assets/audios/audio'
+import {fireout_audio,soilderbullet_audio} from '../assets/audios/audio'
+import {fightimgselements} from '../assets/soilderimgs/soilder_attack_img/soilder_attackimg'
 export class Bullet{
 
     position:  pointerface
@@ -43,7 +44,25 @@ export class Bullet{
     }
     //士兵发射子弹—— 不需要弹道
     run_soilder(){
+      let a=0;
+   
+       let t= setInterval(()=>{
+          a+=0.2;
+  
+            this.currentctx.drawImage(fightimgselements[8],this.target.x,this.target.y,15,15);
+   
+           if(a>=2){
       
+             clearInterval(t);
+             this.currentctx.clearRect(this.target.x,this.target.y,15,15);
+             soilderbullet_audio.playAudio();
+             this.targetobject.bloodLess(this.harm)
+           }
+        },16.6)
+      
+ //     },60)
+      
+
     }
     //借助贝塞尔曲线充当子弹的弹道 对tank有效
     run_tank(){
@@ -116,7 +135,7 @@ export class Bullet{
              }
           },16.6)
     }
-    //爆炸效果
+    //爆炸效果-- 要让这一坨优先于其他地方的绘制TODO--
     explosionEffect(){
       let counts1=0; 
       let timer = setInterval(()=>{

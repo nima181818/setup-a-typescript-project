@@ -8,14 +8,14 @@ import { Watcher } from '../utils/watcher';
 import { eventlist } from './Eventlist';
 import { transformimg } from '../assets/imgurltransform';
 import { rvosystem } from '../utils/rovpathfindinghelper';
-import {tankmoving_audio,waitingorders_audio,howaboutaction_audio,movingnow_audio} from '../assets/audios/audio'
+import {tankmoving_audio,waitingorders_audio,howaboutaction_audio,movingnow_audio,soilderdied_audio} from '../assets/audios/audio'
 import {structuresets} from  '../Structureclass/structureSet'
 import { Structure } from '../Structureclass/structure';
 console.log(rvosystem)
 export class Tank {
     static id: number = -1
     _id: number
-
+    fightanimationcontrol:boolean=false //攻击时刻的动画，必要时由fire函数来控制
     lastobstaclematrix:pointerface[]=[]
     _name:string
     bodyposition:boolean= false //身体的动作  为士兵所特有
@@ -241,14 +241,20 @@ export class Tank {
     /*
       1,死亡时发出声音 TODO
       2，清理自己在globalMap的障碍
-      3，清理自己的drawImage
+      3，清理自己的drawImage，血量
       4，弹出eventList.tanklist
     */
     destroy(){
+        if(this._name=='liberationarmy'){
+            soilderdied_audio.playAudio()
+        }
         for(let j=0;j<this.lastobstaclematrix.length;j++){
             realAstarmanage.fakemap[this.lastobstaclematrix[j].y][this.lastobstaclematrix[j].x] = 0;
          }
          this.currentctx.clearRect(this.currentclickpoints.x-this.width*0.5,this.currentclickpoints.y-this.height*0.5,this.width,this.height);
+         //TODO 血量这里可能还有点问题
+         this.currentctx.clearRect(this.currentclickpoints.x - this.velocity.x * this.dt-this.obwidth*0.5-3,this.currentclickpoints.y - this.velocity.y * this.dt-this.obheight*0.5-11-3,this.obwidth+6,7+6);
+
          clearInterval(this.timer);
          for(let j=0;j<eventlist.tanklist.length;j++){
              if(this._id==eventlist.tanklist[j]._id){
@@ -261,6 +267,7 @@ export class Tank {
      bloodLess(value){
         this.blood-=value;
         if(this.blood<=0){
+            this.blood = 0 //有小于的情况处理为0
             this.destroy();
         }
       }
@@ -270,9 +277,9 @@ export class Tank {
     }
     //监听敌人 是否在攻击范围内 在的话 TODO--  现目前是将自己这边的（tank）添加为敌人 还要添加建筑
     detectingEnviromentchange(){
-        if(this._id!=0){
-            return;
-        }
+        // if(this._name!='rhinocerotidaetank'){
+        //     return;
+        // }
             let index=0,
                 distance =  10**9;//够大以防有小于他的
 
@@ -320,8 +327,14 @@ export class Tank {
         if(distance>this.firerange){
             clearTimeout(this.infire);
             this.infire = null;
-        }else{
-            console.log('有目标')
+            //这里表示距离还远不影响什么
+            
+            if(this.fightanimationcontrol){
+                this.fightanimationcontrol = false //交由默认控制
+                
+            }
+               }else{
+      //      console.log('有目标')
     
             //有目标  TODO 运动状态下是否攻击？ 否?
             if(!this.timer){
@@ -340,6 +353,9 @@ export class Tank {
                }
                
                
+            }else{
+                //运动状态控制权还是设置为默认
+                this.fightanimationcontrol = false //交由默认控制
             }
 
         }
@@ -381,7 +397,8 @@ export class Tank {
 			if(this.workername){
 				window[this.workername].terminate();  //去掉正在运行的worker
 			}
-			
+       //     this.currentctx.clearRect(this.currentclickpoints.x - this.width*0.5-10, this.currentclickpoints.y -this.height*0.5-10, this.width+20, this.height+20);
+         //   this.fightanimationcontrol= false
             //开始寻路
 			 this.workername = 'worker'+parseInt((Math.random()*10**10).toString());
              var MT = new Multithread(4,this.workername);//web worker
@@ -621,7 +638,9 @@ export class Tank {
 
         let obstacle = this.findMostcloseobstacle();
         //	console.log(obstacle)
-
+        // if(!obstacle){
+        //     return;
+        // }
         this.calculateObstacleavoidance(obstacle);
 
         this.calculateSeekforce();
@@ -659,6 +678,10 @@ export class Tank {
     paintAgain() {
         // this.currentclickpoints.x += this.velocity.x * this.dt;
         // this.currentclickpoints.y += this.velocity.y * this.dt;
+        if(this.fightanimationcontrol){
+            //动画控制权交由fire函数控制  //具有特异性。对兵种成立，对坦克不成立
+            return 
+        }
         let picindex = 0,
             velocitylength = this.squalCaculator(this.velocity, true),
             v =　{
@@ -762,6 +785,9 @@ export class Tank {
                 }
             }
 
+        }
+        if(!obstacle){
+           return this
         }
         return obstacle
     }
@@ -927,17 +953,19 @@ export class Tank {
     }
     //实时更新速度
     updatingVelocity() {
-        let obstacle = this.findMostcloseobstacle();
-
+        // let obstacle = this.findMostcloseobstacle();
+        //  if(!obstacle){
+        //       return;
+        //  }
         let acceleration = {
             x: (this.seekforce.x + this.avoidforce.x) / this.mass ? (this.seekforce.x + this.avoidforce.x) / this.mass : 0,
             y: (this.seekforce.y + this.avoidforce.y) / this.mass ? (this.seekforce.y + this.avoidforce.y) / this.mass : 0
         }
 
-        let directionofmiles = {
-            x: obstacle.currentclickpoints.x - this.currentclickpoints.x,
-            y: obstacle.currentclickpoints.y - this.currentclickpoints.y
-        }
+        // let directionofmiles = {
+        //     x: obstacle.currentclickpoints.x - this.currentclickpoints.x,
+        //     y: obstacle.currentclickpoints.y - this.currentclickpoints.y
+        // }
         let xvelocity = acceleration.x / (acceleration.x ** 2 + acceleration.y ** 2) ** 0.5,
             yvelocity = acceleration.y / (acceleration.x ** 2 + acceleration.y ** 2) ** 0.5;
 

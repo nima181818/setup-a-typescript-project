@@ -9,8 +9,8 @@ export class Powerstation extends Structure{
         this.animationendstart = 6;
         this.animationend = 10
         this.size = {
-            x:1211/2,
-            y:1009/2
+            x:1211/12,
+            y:1009/12
         }
         imginits(powerstationobj.powerstationimgUrllist,powerstationobj.powerstationimgList).then(()=>{
             this.imginitsuccess = true;

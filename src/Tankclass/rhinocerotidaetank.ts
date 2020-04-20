@@ -26,7 +26,7 @@ export class Rhinocerotidaetank extends Tank {
        
         this.width = 40; //覆盖父的
         this.obwidth = this.width;
-        this.firerate = 500;
+        this.firerate = 1500;
 
         this.height = 40; //覆盖父的
         this.obheight = this.height
@@ -45,7 +45,7 @@ export class Rhinocerotidaetank extends Tank {
        this.harm = 3;
     }
     fire(position:pointerface,targetobject:any) {
-        if(this._id==0){
+      //  if(this._id==0){
             let that = this
             let j = 0
             let bullet = new Bullet(that,this.harm, targetobject,{
@@ -58,7 +58,7 @@ export class Rhinocerotidaetank extends Tank {
             }, 10,
             position, this.currentctx,{width:62,height:78})
                 bullet.run_tank();
-        }
+    //    }
         }
        
 }

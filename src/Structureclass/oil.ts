@@ -13,8 +13,8 @@ export class Oil extends Structure{
         this.needanimation = true
         this.animationend = this.imgUrllist.length-1;
         this.size = {
-            x:1211/2,
-            y:1009/2
+            x:1211/12,
+            y:1009/12
         }
         this.needanimation = true
         imginits(oilobj.oilimgUrllist,oilobj.oilimgList).then(()=>{

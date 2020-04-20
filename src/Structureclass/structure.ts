@@ -112,8 +112,8 @@ class Structure {
 
             if (index <= this.imgList.length) {
               
-                    this.ctx.clearRect(this.positions.x, this.positions.y, this.size.x / 6, this.size.y / 6);
-                    this.ctx.drawImage(this.imgList[index - 1], this.positions.x, this.positions.y, this.size.x / 6, this.size.y / 6);
+                    this.ctx.clearRect(this.positions.x, this.positions.y, this.size.x, this.size.y );
+                    this.ctx.drawImage(this.imgList[index - 1], this.positions.x, this.positions.y, this.size.x , this.size.y );
 
               
             } else {
@@ -143,7 +143,7 @@ class Structure {
                     }
     
                     
-                    this.ctx.drawImage(this.imgList[index - 1], this.positions.x, this.positions.y, this.size.x / 6, this.size.y / 6);
+                    this.ctx.drawImage(this.imgList[index - 1], this.positions.x, this.positions.y, this.size.x, this.size.y);
     
                 }, this.circletime)
             } else {
@@ -151,7 +151,7 @@ class Structure {
                     index = this.imgList.length;
                     //TODO-- 这里不清除效果好一点点 ，但是对于上面需要自身更新的怎么办？
                     //  this.ctx.clearRect( this.positions.x,this.positions.y, this.size.x/6, this.size.y/6);
-                    this.ctx.drawImage(this.imgList[index - 1], this.positions.x, this.positions.y, this.size.x / 6, this.size.y / 6);
+                    this.ctx.drawImage(this.imgList[index - 1], this.positions.x, this.positions.y, this.size.x , this.size.y );
     
                 }, 16.6)
             }

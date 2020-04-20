@@ -7,6 +7,7 @@ import {soilderobj,imginits} from './structureimgsinits'
 const image = require('../assets/solderfactory.png');
 export class Soliderfactory extends Structure{
     baseimg: HTMLImageElement
+  
     constructor(bl: number, owner: string, position: { x: number, y: number }, name: string, ctx: HTMLCanvasElement,size:{x:number,y:number}) {
         super(bl, owner, position, name, ctx,size)
       
@@ -17,12 +18,12 @@ export class Soliderfactory extends Structure{
         })
          
         this.size = {
-            x:528,
-            y:972
+            x:528/6,
+            y:972/6
         }
        
         this.blood=30
-     
+    
        this.handleSelfobstacle(structurepbstacle.obstacle);
     //  this.burn();
     }

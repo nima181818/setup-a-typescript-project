@@ -21,8 +21,8 @@ interface Position1 {
 export class Rhinocerotidaetank extends Tank {
     speed: number = 2
     firerange:number=150 //攻击距离 在该区域下会自动攻击 
-    constructor(position: Position1) {
-        super(position)
+    constructor(unittype:string,position: Position1) {
+        super(unittype,position)
        
         this.width = 40; //覆盖父的
         this.obwidth = this.width;

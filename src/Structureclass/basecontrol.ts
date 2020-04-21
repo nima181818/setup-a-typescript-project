@@ -9,8 +9,8 @@ const basecontrolobstacle = require('./basecontrol.json');
 export class BaseControl extends Structure {
     baseimg: HTMLImageElement
     innewbuilding:boolean=false
-    constructor(bl: number, owner: string, position: { x: number, y: number }, name: string, ctx: HTMLCanvasElement,size:{x:number,y:number}) {
-        super(bl, owner, position, name, ctx,size)
+    constructor(unittype:string,bl: number, owner: string, position: { x: number, y: number }, name: string, ctx: HTMLCanvasElement,size:{x:number,y:number}) {
+        super(unittype,bl, owner, position, name, ctx,size)
         imginits(baseobj.baseimgUrllist,baseobj.baseimgList).then(res=>{
             this.imgList = baseobj.baseimgList;
             this.imginitsuccess = true;

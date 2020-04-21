@@ -6,6 +6,7 @@ interface sizes {
 import { transformimg } from './assets/imgurltransform'
 import { globalAstarmanage } from './utils/wayfinders'
 import { littlewindow } from './rightbars/littlewindow'
+import {Player} from './player'
 const map = require('./assets/map.jpg');
 const mapobstacle = require('./mapobstacle.json');
  class World {
@@ -16,6 +17,7 @@ const mapobstacle = require('./mapobstacle.json');
   // tanks:[]
   worldimg: HTMLImageElement
   pageflowtimer: number
+  playerManage:Player[]=[]
   controler:string
   canvascontainer:HTMLDivElement
   worldobstacles: sizes[] = []
@@ -25,6 +27,9 @@ const mapobstacle = require('./mapobstacle.json');
     this.initWorldobstacle();
     this.paint()
     this.bindScrollmapevent();
+    let player1 = new Player('player1'); //有数字的原因是有可能是多玩家玩耍
+    let ai1 = new Player('ai1');
+    this.playerManage.push(player1,ai1)
   }
   paint() {
     let img = transformimg(map.default);

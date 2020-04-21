@@ -5,15 +5,26 @@ interface Position1 {
 }
 import { globalAstarmanage as realAstarmanage } from '../utils/wayfinders'
 import { Watcher } from '../utils/watcher';
-import { eventlist } from './Eventlist';
+import { Eventlist } from './Eventlist';
+import {world} from '../World'
 import { transformimg } from '../assets/imgurltransform';
 import { rvosystem } from '../utils/rovpathfindinghelper';
 import {tankmoving_audio,waitingorders_audio,howaboutaction_audio,movingnow_audio,soilderdied_audio} from '../assets/audios/audio'
 import {structuresets} from  '../Structureclass/structureSet'
 import { Structure } from '../Structureclass/structure';
+
+// let eventlist={
+    tanklist:[]
+// }
+   for(let j=0;j<world.playerManage.length;j++){
+        for(let k=0;k<world.playerManage[j].eventlist.tanklist.length;k++){
+            eventlist.tanklist.push()
+        }
+   }
 console.log(rvosystem)
 export class Tank {
     static id: number = -1
+    unittype:string
     _id: number
     fightanimationcontrol:boolean=false //攻击时刻的动画，必要时由fire函数来控制
     lastobstaclematrix:pointerface[]=[]
@@ -79,8 +90,9 @@ export class Tank {
     speed: number = 2
     myendpoint: Position1
     ownobstacles: Position1[] = []
-    constructor(position: Position1) {
+    constructor(unittype:string,position: Position1) {
         Tank.id++;
+        this.unittype=unittype
         this._id = Tank.id
         for (let j in realAstarmanage) {
             if (typeof realAstarmanage[j] == 'function') {
@@ -101,7 +113,7 @@ export class Tank {
         }
         
         this.autoFire();
-        eventlist.tanklist.push(this);
+        myeventlist.tanklist.push(this);
         this.watcher = new Watcher();
         this.watcher.register('currentclickpointsTrigger', this.currentclickpointsTrigger);
         this.watcher.responseMode(this, 'currentclickpoints');
@@ -134,6 +146,10 @@ export class Tank {
         realAstarmanage.setStartpointandendpoint(this.closeFunc(this.currentclickpoints.y), this.closeFunc(this.currentclickpoints.x), 'startpoint');
         this.initStartpointendpoint();
              
+    }
+    //初始化几个tank集合 other，all，my
+    initEventtanklist(){
+        
     }
     //处理目标点变化
     targetpointTrigger() {
@@ -256,9 +272,9 @@ export class Tank {
          this.currentctx.clearRect(this.currentclickpoints.x - this.velocity.x * this.dt-this.obwidth*0.5-3,this.currentclickpoints.y - this.velocity.y * this.dt-this.obheight*0.5-11-3,this.obwidth+6,7+6);
 
          clearInterval(this.timer);
-         for(let j=0;j<eventlist.tanklist.length;j++){
-             if(this._id==eventlist.tanklist[j]._id){
-                eventlist.tanklist.splice(j,1);
+         for(let j=0;j<myeventlist.tanklist.length;j++){
+             if(this._id==myeventlist.tanklist[j]._id){
+                myeventlist.tanklist.splice(j,1);
                 j--
              }
          }
@@ -284,10 +300,10 @@ export class Tank {
                 distance =  10**9;//够大以防有小于他的
 
               //这里处理了 tank  
-            for(let j=0;j<eventlist.tanklist.length;j++){
-                if(this._id!=eventlist.tanklist[j]._id){
-                    if(distance>=this.pointDistance(eventlist.tanklist[j].currentclickpoints,this.currentclickpoints,true)){
-                        distance = this.pointDistance(eventlist.tanklist[j].currentclickpoints,this.currentclickpoints,true);
+            for(let j=0;j<othereventlist.tanklist.length;j++){
+                if(this._id!=othereventlist.tanklist[j]._id){
+                    if(distance>=this.pointDistance(othereventlist.tanklist[j].currentclickpoints,this.currentclickpoints,true)){
+                        distance = this.pointDistance(othereventlist.tanklist[j].currentclickpoints,this.currentclickpoints,true);
                         index = j
                      }
                 }
@@ -443,21 +459,21 @@ export class Tank {
     ///障碍重排
     obstacleRepailie() {
 
-        for (let j = 0; j < eventlist.tanklist.length; j++) {
+        for (let j = 0; j < alleventlist.tanklist.length; j++) {
             //这里应该是虚拟地图对真实地图进行映射
-            if (this._id !== eventlist.tanklist[j]._id) {
+            if (this._id !== alleventlist.tanklist[j]._id) {
 
                 for (let k = 0; k < this.globalAstarmanage.map.length; k++) {
                     
                     for (let u = 0; u < this.globalAstarmanage.map[k].length; u++) {
                         if (
-                            k * 10 >= eventlist.tanklist[j].ownobstacles[0].y
+                            k * 10 >= alleventlist.tanklist[j].ownobstacles[0].y
                             &&
-                            k * 10 <= eventlist.tanklist[j].ownobstacles[1].y
+                            k * 10 <= alleventlist.tanklist[j].ownobstacles[1].y
                             &&
-                            u * 10 >= eventlist.tanklist[j].ownobstacles[0].x
+                            u * 10 >= alleventlist.tanklist[j].ownobstacles[0].x
                             &&
-                            u * 10 <= eventlist.tanklist[j].ownobstacles[1].x
+                            u * 10 <= alleventlist.tanklist[j].ownobstacles[1].x
                         ) {
                           //-- 还有建筑物生成的障碍物未处理
                           if(this.globalAstarmanage.map[k][u]!=33&&this.globalAstarmanage.map[k][u]!=333){
@@ -768,9 +784,9 @@ export class Tank {
         let tempobstaclearray = []
 
         // return 
-        for (let j = 0; j < eventlist.tanklist.length; j++) {
-            if (eventlist.tanklist[j]._id != this._id) {
-                tempobstaclearray.push(eventlist.tanklist[j]);
+        for (let j = 0; j < alleventlist.tanklist.length; j++) {
+            if (alleventlist.tanklist[j]._id != this._id) {
+                tempobstaclearray.push(alleventlist.tanklist[j]);
 
             }
         }
@@ -845,9 +861,9 @@ export class Tank {
     //计算两个机车圆心的距离
     minDistancefromcenter(){
         let temp = []
-        for(let j=0;j<eventlist.tanklist.length;j++){
-            if(eventlist.tanklist[j].multiselect&&this._id!=eventlist.tanklist[j]._id){
-                temp.push(eventlist.tanklist[j])
+        for(let j=0;j<alleventlist.tanklist.length;j++){
+            if(alleventlist.tanklist[j].multiselect&&this._id!=alleventlist.tanklist[j]._id){
+                temp.push(alleventlist.tanklist[j])
             }
         }
         let obstacle = temp[0];

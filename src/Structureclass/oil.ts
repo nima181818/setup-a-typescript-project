@@ -4,8 +4,8 @@ import {Structure} from './structure';
 import {oilobj,imginits} from './structureimgsinits'
 const oilobstacle = require('./oil.json');
 export class Oil extends Structure{
-    constructor(bl: number, owner: string, position: { x: number, y: number }, name: string, ctx: HTMLCanvasElement,size:{x:number,y:number}) {
-        super(bl, owner, position, name, ctx,size)
+    constructor(unittype:string,bl: number, owner: string, position: { x: number, y: number }, name: string, ctx: HTMLCanvasElement,size:{x:number,y:number}) {
+        super(unittype,bl, owner, position, name, ctx,size)
         //this.paint(position);
         this.imgUrllist = oilobj.oilimgUrllist
         this.circletime = 100;

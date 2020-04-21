@@ -117,16 +117,16 @@ class Buildinglayer {
         // Powerstation,Soliderfactory,Oil
         switch (this.type_name) {
             case 'stpowertation':
-                let powerstation = new Powerstation(10, '20',buildinglocation, 'powertation', this.canvas,size ); 
+                let powerstation = new Powerstation('player',10, '20',buildinglocation, 'powertation', this.canvas,size ); 
                 break;
             case 'stinfantry':
-                let soliderfactory1 = new Soliderfactory(10, '20',buildinglocation, 'soliderfactory', this.canvas,size);
+                let soliderfactory1 = new Soliderfactory('player',10, '20',buildinglocation, 'soliderfactory', this.canvas,size);
                 break;
             case 'stoil':
-                let oil = new Oil(10, '20',buildinglocation, 'oil', this.canvas, size);
+                let oil = new Oil('player',10, '20',buildinglocation, 'oil', this.canvas, size);
                 break;
             case 'stwcf':
-                let wcf = new Wcf(10, '20',buildinglocation, 'wcf', this.canvas, size);
+                let wcf = new Wcf('player',10, '20',buildinglocation, 'wcf', this.canvas, size);
                 break;
             default:
                 break;

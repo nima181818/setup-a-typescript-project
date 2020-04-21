@@ -19,8 +19,8 @@ interface Position1 {
     firerange:number=120 //攻击距离 在该区域下会自动攻击 
     soilderfightimgs:any
     firetimes:number=0
-    constructor(position: Position1) {
-        super(position)
+    constructor(unittype:string,position: Position1) {
+        super(unittype,position)
         this.bodyposition = true
         this.width = 38; //覆盖父的
         this.obwidth = this.width/3*2

@@ -8,7 +8,7 @@ interface goalsinternal {
     _uid: number
     list: number[]
 }
-import { eventlist } from '../Tankclass/Eventlist';
+// import { eventlist } from '../Tankclass/Eventlist';
 class Rvosystem {
     rvoruningtimer: null
     rvohelper: any = RVO

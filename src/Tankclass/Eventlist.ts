@@ -27,13 +27,11 @@ interface tankobject extends Tank {
 }
 class Eventlist {
     multimode: boolean = false
-    canvasclickeventlist: Function[] = []
-    windowmousemoveeventlist: Function[] = []
-    incommunication: tankobject[] = []
     tanklist: tankobject[] = []
     mapborder:number[][]=[]
-    
-    constructor(){
+    unittype:string
+    constructor(unittype:string){
+        this.unittype = unittype
         this.initMapborder();
         setTimeout(()=>{
             this.allTanksanimation();
@@ -145,5 +143,5 @@ class Eventlist {
     }
     
 }
-let eventlist = new Eventlist();
-export { eventlist }
+// let eventlist = new Eventlist();
+export { Eventlist }

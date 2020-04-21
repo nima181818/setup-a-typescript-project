@@ -7,7 +7,7 @@ interface positions {
   基地是900 600 10
 
 */
-console.log(Multithread, "wocao")
+// console.log(Multithread, "wocao")
 import { globalAstarmanage } from '../utils/wayfinders';
 import { eventlist } from '../Tankclass/Eventlist';
 import {structuresets} from './structureSet'
@@ -15,6 +15,7 @@ import {player1} from '../player'
 // import {baseControl} from './basecontrol'
 class Structure {
     static ids:number=0
+    unittype:string
     _id:number
     name: string
     imginitsuccess:boolean=false
@@ -33,7 +34,8 @@ class Structure {
     animationendstart: number
     animationend: number
     ownobstacles: positions[] = [] //存取自身的障碍矩阵 已/5
-    constructor(bl: number, owner: string, position: positions, name: string, ctx: HTMLCanvasElement, size: positions) {
+    constructor(unittype:string,bl: number, owner: string, position: positions, name: string, ctx: HTMLCanvasElement, size: positions) {
+        this.unittype = unittype
         this.blood = bl;
         Structure.ids++;
         this._id = Structure.ids

@@ -1,6 +1,6 @@
 const map = require('../assets/map.jpg'); 
 import { eventlist } from '../Tankclass/Eventlist'; 
-import {world} from '../map'
+import {world} from '../World'
 class Littlewindow{
     img:HTMLImageElement
     canvas4alivethings:HTMLCanvasElement

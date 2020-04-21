@@ -1,8 +1,8 @@
 import {Structure} from './structure';
 import {wcfobj,imginits} from './structureimgsinits'
 export class Wcf extends Structure{
-    constructor(bl: number, owner: string, position: { x: number, y: number }, name: string, ctx: HTMLCanvasElement,size:{x:number,y:number}) {
-        super(bl, owner, position, name, ctx,size)
+    constructor(unittype:string,bl: number, owner: string, position: { x: number, y: number }, name: string, ctx: HTMLCanvasElement,size:{x:number,y:number}) {
+        super(unittype,bl, owner, position, name, ctx,size)
         //this.paint(position);
         this.imgUrllist =wcfobj.wcfimgUrllist
         this.circletime = 100;

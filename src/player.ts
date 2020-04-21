@@ -31,6 +31,7 @@ export class Player{
         if(type=='reduce'){
             this.money-=value
         }
+        //TODO 现要考虑敌方AI
         this.moneyelement.innerHTML = '$'+this.money.toString()
     }
    

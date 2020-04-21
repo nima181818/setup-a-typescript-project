@@ -10,7 +10,7 @@ export class Soliderfactory extends Structure{
   
     constructor(bl: number, owner: string, position: { x: number, y: number }, name: string, ctx: HTMLCanvasElement,size:{x:number,y:number}) {
         super(bl, owner, position, name, ctx,size)
-      
+        this.cost = 200
         imginits(soilderobj.soilderimgUrllist,soilderobj.soilderimgList).then(res=>{
             this.imgList = soilderobj.soilderimgList;
             this.imginitsuccess = true;

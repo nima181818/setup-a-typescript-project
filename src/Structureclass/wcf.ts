@@ -9,8 +9,8 @@ export class Wcf extends Structure{
         this.animationendstart = 6;
         this.animationend = 10
         this.size = {
-            x:1970/2,  //TODO--
-            y:1610/2
+            x:1970/12,  //TODO--
+            y:1610/12
         }
         this.needanimation = false
         imginits(wcfobj.wcfimgUrllist,wcfobj.wcfimgList).then(()=>{
@@ -18,6 +18,7 @@ export class Wcf extends Structure{
             this.imgList = wcfobj.wcfimgList
             this.paint(position)
         })
+        this.cost = 250
         this.blood=30
        //TODO--未添加发电厂的障碍
     }

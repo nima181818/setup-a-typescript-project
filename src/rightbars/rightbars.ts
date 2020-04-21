@@ -16,6 +16,7 @@ const s1 = require('../assets/rightbar/s1.png'),
     $cls = document.getElementsByClassName.bind(document);
 import { stlistMask, guardlistMask, soilderlistMask, wartanklistMask } from './masks';
 import { littlewindow } from './littlewindow';
+import {player1} from '../player'
 littlewindow.initCanvas();
 littlewindow.draw();
 let maskListall = [stlistMask, soilderlistMask, guardlistMask, wartanklistMask]
@@ -161,7 +162,11 @@ export class Rightbars {
             this.structurelist[j].appendChild(this.structureimg[j]);
             //左键建造，
             this.structurelist[j].onclick = function () {
-
+                  //TODO 这里需要预判是否钱够
+                  if(!this.moneyPrejudge(j)){
+                     alert('钱不够')  
+                    return;
+                  }
                 maskListall[0].analyseCommander('building', j);
                 // if (this.structureinbuiding) {
                 //     return;
@@ -178,6 +183,30 @@ export class Rightbars {
 
             }.bind(this)
         }
+    }
+    //金钱的判断
+    moneyPrejudge(j){
+        let canbuild=false;
+       switch(j){
+           case 0:
+            canbuild = player1.money - 150>=0 //TODO 这里写死 应该要引用
+            break;
+            case 1:
+            canbuild = player1.money - 200>=0 //TODO 这里写死 应该要引用
+            break;
+            case 2:
+            canbuild = player1.money - 200>=0 //TODO 这里写死 应该要引用
+            break;
+            case 3:
+            canbuild = player1.money - 250>=0 //TODO 这里写死 应该要引用
+            break;
+            default:
+                break;
+            
+            
+            
+       }
+       return canbuild
     }
 
 }

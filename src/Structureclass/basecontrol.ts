@@ -18,6 +18,7 @@ export class BaseControl extends Structure {
         })
         this.handleSelfobstacle(basecontrolobstacle.obstacle)
         this.blood=45
+        this.cost = 0
     }
     
     paint(position: { x: number, y: number }) {

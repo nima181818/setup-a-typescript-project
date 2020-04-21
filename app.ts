@@ -8,7 +8,7 @@ import { Oil } from './src/Structureclass/oil'
 import { world } from './src/map'
 import {Rightbars} from './src/rightbars/rightbars'
 import {Liberationarmy} from './src/Tankclass/liberationarmy'
-
+import {player1} from './src/player'
 window.onload = function () {
     let canvas1: HTMLCanvasElement = document.getElementById('canvas1') as HTMLCanvasElement;
 let canvas2: HTMLCanvasElement = document.getElementById('canvas2') as HTMLCanvasElement;
@@ -26,7 +26,7 @@ let newTank4 = new Rhinocerotidaetank({ x: 0, y: 200 });
 let newTank5 = new Rhinocerotidaetank({ x: 100, y: 200 });
 let newTank6 = new Rhinocerotidaetank({ x: 200, y: 200 });
 let soider1 = new Liberationarmy({x:1000,y:1000})
-       
+
          let  context = canvas2.getContext('2d'),
         pages = {
             x: 0,

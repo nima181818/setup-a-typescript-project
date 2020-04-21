@@ -10,16 +10,25 @@ body{
     overflow:scroll;
     position: relative;
 }
+.moneyandpower{
+    display: flex;
+
+}
+.powers,
 .tops{
-    height:20px;
-    text-align: center;
-    height:28px;
-    line-height:28px;
+    
+    text-align: right;
+   
     font-size:19px;
     color:rgb(255,253,1);
     background: black;
     font-weight: bold;
+    flex:1;
+    
 
+}
+.powers{
+    text-align: left;
 }
 .stlist,.guardlist,.soilderlist,.wartanklist{
     width:100%;

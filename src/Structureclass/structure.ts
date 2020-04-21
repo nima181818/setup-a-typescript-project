@@ -11,12 +11,14 @@ console.log(Multithread, "wocao")
 import { globalAstarmanage } from '../utils/wayfinders';
 import { eventlist } from '../Tankclass/Eventlist';
 import {structuresets} from './structureSet'
+import {player1} from '../player'
 // import {baseControl} from './basecontrol'
 class Structure {
     static ids:number=0
     _id:number
     name: string
     imginitsuccess:boolean=false
+    cost:number //消耗
     blood: number
     owner: string
     imgsize: positions
@@ -50,6 +52,10 @@ class Structure {
            
         }
         console.log(structuresets)
+        setTimeout(()=>{
+            player1.updateMoney('reduce',this.cost)
+        })
+       
     }
     
    
@@ -141,7 +147,9 @@ class Structure {
                     if (index > end) {
                         index = start
                     }
-    
+                    if(index%2==0&&this.name=='oil'&&index>=5){
+                        player1.updateMoney('add',1)
+                    }
                     
                     this.ctx.drawImage(this.imgList[index - 1], this.positions.x, this.positions.y, this.size.x, this.size.y);
     

@@ -5,7 +5,7 @@ import {Oil} from './oil'
 
 import {Wcf} from './wcf'
 
- export class Structuresets{
+class Structuresets{
      base:BaseControl[]=[]
      powertation:Powerstation[]=[]
      soliderfactory:Soliderfactory[]=[]
@@ -45,4 +45,9 @@ import {Wcf} from './wcf'
     
 
 }
-export let structuresets = new Structuresets();
+
+let structuresets = new Structuresets();
+console.log(structuresets.constructor,"structuresets.constructor");
+console.log(Structuresets,"Structuresets");
+console.log(structuresets,"structuresets");
+export {structuresets,Structuresets}

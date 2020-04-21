@@ -16,6 +16,7 @@ export class Oil extends Structure{
             x:1211/12,
             y:1009/12
         }
+        this.cost = 200
         this.needanimation = true
         imginits(oilobj.oilimgUrllist,oilobj.oilimgList).then(()=>{
             this.imginitsuccess = true;

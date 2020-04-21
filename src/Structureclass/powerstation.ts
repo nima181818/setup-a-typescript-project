@@ -12,6 +12,7 @@ export class Powerstation extends Structure{
             x:1211/12,
             y:1009/12
         }
+        this.cost = 150
         imginits(powerstationobj.powerstationimgUrllist,powerstationobj.powerstationimgList).then(()=>{
             this.imginitsuccess = true;
             this.imgList = powerstationobj.powerstationimgList

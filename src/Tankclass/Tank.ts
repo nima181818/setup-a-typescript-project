@@ -5,22 +5,14 @@ interface Position1 {
 }
 import { globalAstarmanage as realAstarmanage } from '../utils/wayfinders'
 import { Watcher } from '../utils/watcher';
-import { Eventlist } from './Eventlist';
 import {world} from '../World'
 import { transformimg } from '../assets/imgurltransform';
 import { rvosystem } from '../utils/rovpathfindinghelper';
 import {tankmoving_audio,waitingorders_audio,howaboutaction_audio,movingnow_audio,soilderdied_audio} from '../assets/audios/audio'
-import {structuresets} from  '../Structureclass/structureSet'
-import { Structure } from '../Structureclass/structure';
+// import {structuresets} from  '../Structureclass/structureSet'
 
-// let eventlist={
-    tanklist:[]
-// }
-   for(let j=0;j<world.playerManage.length;j++){
-        for(let k=0;k<world.playerManage[j].eventlist.tanklist.length;k++){
-            eventlist.tanklist.push()
-        }
-   }
+
+
 console.log(rvosystem)
 export class Tank {
     static id: number = -1
@@ -113,7 +105,8 @@ export class Tank {
         }
         
         this.autoFire();
-        myeventlist.tanklist.push(this);
+        let myeventlist = world.getEventlist('my',this.unittype);
+               myeventlist.tanklist.push(this);
         this.watcher = new Watcher();
         this.watcher.register('currentclickpointsTrigger', this.currentclickpointsTrigger);
         this.watcher.responseMode(this, 'currentclickpoints');
@@ -264,6 +257,7 @@ export class Tank {
         if(this._name=='liberationarmy'){
             soilderdied_audio.playAudio()
         }
+       let myeventlist =  world.getEventlist('my',this.unittype)
         for(let j=0;j<this.lastobstaclematrix.length;j++){
             realAstarmanage.fakemap[this.lastobstaclematrix[j].y][this.lastobstaclematrix[j].x] = 0;
          }
@@ -297,28 +291,26 @@ export class Tank {
         //     return;
         // }
             let index=0,
-                distance =  10**9;//够大以防有小于他的
-
+                distance =  10**9,//够大以防有小于他的
+                othereventlist = world.getEventlist('other',this.unittype),
+                otherstructuresets = world.playerManage.find(item=>{return item.unittype!=this.unittype}).structuresets //注意这里要改进
               //这里处理了 tank  
             for(let j=0;j<othereventlist.tanklist.length;j++){
-                if(this._id!=othereventlist.tanklist[j]._id){
                     if(distance>=this.pointDistance(othereventlist.tanklist[j].currentclickpoints,this.currentclickpoints,true)){
                         distance = this.pointDistance(othereventlist.tanklist[j].currentclickpoints,this.currentclickpoints,true);
                         index = j
                      }
-                }
-               
 
             }
             //TODO 还要处理 建筑
            let strindex=0,
                strname = '',
                strdistance = 10**9;
-               for(let j in structuresets.unitsList){
-                   for(let k=0;k<structuresets[j].length;k++){
+               for(let j in otherstructuresets.unitsList){
+                   for(let k=0;k<otherstructuresets[j].length;k++){
                        let structurecenter = {
-                           x:structuresets[j][k].positions.x + structuresets[j][k].size.x*0.5,
-                           y:structuresets[j][k].positions.y + structuresets[j][k].size.y*0.5,
+                           x:otherstructuresets[j][k].positions.x + otherstructuresets[j][k].size.x*0.5,
+                           y:otherstructuresets[j][k].positions.y + otherstructuresets[j][k].size.y*0.5,
                        }
                        if(strdistance>=this.pointDistance(this.currentclickpoints,structurecenter,true)){
                         strdistance = this.pointDistance(this.currentclickpoints,structurecenter,true);
@@ -331,9 +323,9 @@ export class Tank {
             //比较 strdistance和distance的大小,取较小者
               let smaller = strdistance>distance?'tank':'structure'
           if(smaller=='tank'){
-            this.runThefire(distance,eventlist.tanklist[index],smaller)
+            this.runThefire(distance,othereventlist.tanklist[index],smaller)
           }else{
-             this.runThefire(strdistance,structuresets.unitsList[strname][strindex],smaller)
+             this.runThefire(strdistance,otherstructuresets.unitsList[strname][strindex],smaller)
           }
 
            
@@ -458,7 +450,7 @@ export class Tank {
    
     ///障碍重排
     obstacleRepailie() {
-
+            let alleventlist = world.getEventlist('all',this.unittype)
         for (let j = 0; j < alleventlist.tanklist.length; j++) {
             //这里应该是虚拟地图对真实地图进行映射
             if (this._id !== alleventlist.tanklist[j]._id) {
@@ -781,8 +773,9 @@ export class Tank {
     }
     ////计算最近的障碍物
     findMostcloseobstacle() {
-        let tempobstaclearray = []
-
+        let tempobstaclearray = [],
+            alleventlist = world.getEventlist('all',this.unittype)
+            
         // return 
         for (let j = 0; j < alleventlist.tanklist.length; j++) {
             if (alleventlist.tanklist[j]._id != this._id) {
@@ -860,7 +853,8 @@ export class Tank {
 		}
     //计算两个机车圆心的距离
     minDistancefromcenter(){
-        let temp = []
+        let temp = [],
+        alleventlist = world.getEventlist('all',this.unittype)
         for(let j=0;j<alleventlist.tanklist.length;j++){
             if(alleventlist.tanklist[j].multiselect&&this._id!=alleventlist.tanklist[j]._id){
                 temp.push(alleventlist.tanklist[j])

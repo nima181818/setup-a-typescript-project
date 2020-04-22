@@ -1,4 +1,4 @@
-import { structuresets } from './Structureclass/structureSet'
+import { Structuresets } from './Structureclass/structureSet'
 import { Eventlist } from './Tankclass/Eventlist';
 import { Tank } from './Tankclass/tank';
 import { Rhinocerotidaetank } from './Tankclass/rhinocerotidaetank'
@@ -7,8 +7,7 @@ import { Soliderfactory } from './Structureclass/soliderfactory'
 import { Powerstation } from './Structureclass/powerstation'
 import { Oil } from './Structureclass/oil'
 import { world } from './World'
-import { Rightbars } from './rightbars/rightbars'
-import { Liberationarmy } from './Tankclass/liberationarmy'
+
 export class Player {
     baseMapcanvas: HTMLCanvasElement
     topUnitscanvas: HTMLCanvasElement
@@ -17,14 +16,15 @@ export class Player {
     money: number = 1000
     unittype: string
     moneyelement: HTMLDivElement
-    constructor(unittype: string) {
+    constructor(unittype: string,baseposition:pointerface) {
         //    this.
         this.unittype = unittype
-        this.structuresets = structuresets
+        this.structuresets = new Structuresets(this.unittype)
         this.eventlist = new Eventlist(unittype);
         this.initCanvas();
         this.playersSelection();
-    }
+        this.initBase(baseposition) //这里又要使用异步的方式 
+    } 
     //通过unittype获取eventList
 
     //初始化canvas |以及金钱
@@ -35,6 +35,18 @@ export class Player {
         this.topUnitscanvas = canvas2;
         this.moneyelement = document.getElementsByClassName('tops')[0] as HTMLDivElement;
     }
+    //初始化基地，部队
+    initBase(baseposition:pointerface){
+        setTimeout(()=>{
+            let base  = new BaseControl(this.unittype,10, '20', baseposition, 'base', this.topUnitscanvas, { x: 98.9 * 1.5, y: 58.5 * 1.5+25 });
+          
+            let t1 = new Rhinocerotidaetank(this.unittype,this.unittype=='player1'?{ x: 1000, y: 800 }:{ x: 3500, y: 800 }),
+            t2 = new Rhinocerotidaetank(this.unittype,this.unittype=='player1'?{ x: 800, y: 800 }:{ x: 3600, y: 800 });
+                t1.paint(this.topUnitscanvas);
+                t2.paint(this.topUnitscanvas); 
+        })
+     
+    }
     //更新金币
     updateMoney(type: string, value: number) {
         if (type == 'add') {
@@ -44,7 +56,10 @@ export class Player {
             this.money -= value
         }
         //TODO 现要考虑敌方AI
-        this.moneyelement.innerHTML = '$' + this.money.toString()
+        if(this.unittype.indexOf('player') != -1){
+            this.moneyelement.innerHTML = '$' + this.money.toString()
+        }
+       
     }
     
     playersSelection() {
@@ -111,7 +126,13 @@ export class Player {
                 }
 
             }.bind(this)
-         
+           canvas2.oncontextmenu = function(e){
+           for(let j=0;j<this.eventlist.tanklist.length;j++){
+            this.eventlist.tanklist[j].selected = false;
+            this.eventlist.tanklist[j].multiselect = false;
+           }
+           return false
+           }.bind(this)
 
 
 

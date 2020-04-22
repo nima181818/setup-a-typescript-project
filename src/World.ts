@@ -4,8 +4,9 @@ interface sizes {
 
 }
 import { transformimg } from './assets/imgurltransform'
-import { globalAstarmanage } from './utils/wayfinders'
-import { littlewindow } from './rightbars/littlewindow'
+import { globalAstarmanage } from './utils/wayfinders';
+import {Littlewindow} from './rightbars/littlewindow'
+
 import {Player} from './player'
 const map = require('./assets/map.jpg');
 const mapobstacle = require('./mapobstacle.json');
@@ -20,6 +21,8 @@ const mapobstacle = require('./mapobstacle.json');
   playerManage:Player[]=[]
   controler:string
   canvascontainer:HTMLDivElement
+  littlewindow:Littlewindow
+  rightbars:any
   worldobstacles: sizes[] = []
   constructor(size: sizes, ctx: HTMLCanvasElement) {
     this.size = size
@@ -27,15 +30,67 @@ const mapobstacle = require('./mapobstacle.json');
     this.initWorldobstacle();
     this.paint()
     this.bindScrollmapevent();
-    let player1 = new Player('player1'); //有数字的原因是有可能是多玩家玩耍
-    let ai1 = new Player('ai1');
-    this.playerManage.push(player1,ai1)
+    let player1 = new Player('player1',{ x: 900, y: 600 }); //有数字的原因是有可能是多玩家玩耍
+    let ai1 = new Player('ai1',{ x: 3400, y: 600 });
+    this.playerManage.push(player1,ai1);
+   this.initComponents()
+  }
+  initComponents(){
+    this.littlewindow = new Littlewindow();
+      
+      //TODO-- 这里还应该可以改造一下
+      import('./rightbars/rightbars').then(res=>{
+        this.rightbars = new res.Rightbars()
+      })
+     
+
+
+  }
+  //根据分类获取eventlist
+  /*
+    type:种类 all my other
+    unittype: player  ai
+  */
+  getEventlist(type:string,unittype:string){
+    if(type=='all'){
+      let obj = {
+         tanklist:[]
+      };
+         for(let j=0;j<this.playerManage.length;j++){
+            
+               obj.tanklist.push(...this.playerManage[j].eventlist.tanklist)
+            
+         }
+         return obj
+    }
+    if(type=='my'){
+       let obj;
+       for(let j=0;j<this.playerManage.length;j++){
+         if(this.playerManage[j].unittype==unittype){
+           obj = this.playerManage[j].eventlist
+         }
+       }
+       return obj
+    }
+    if(type=='other'){
+      let obj = {
+        tanklist:[]
+      }
+      for(let j=0;j<this.playerManage.length;j++){
+        if(this.playerManage[j].unittype!=unittype){
+          obj.tanklist.push(...this.playerManage[j].eventlist.tanklist)
+        }
+      }
+      return obj
+    }
   }
   paint() {
     let img = transformimg(map.default);
-    this.worldimg = img
+    this.worldimg = img;
+    
     this.worldimg.onload = function () {
       // 960-464
+    
       this.ctx.drawImage(this.worldimg, 0, 0, 4480, 1400)
     }.bind(this)
 
@@ -152,8 +207,8 @@ const mapobstacle = require('./mapobstacle.json');
       let target:any = e.target;
       if(!scrolltimer){
         scrolltimer = setTimeout(()=>{
-     //     console.log(target.scrollLeft,target.scrollTop)
-          littlewindow.changeFramelocation({offsetX:target.scrollLeft,offsetY:target.scrollTop},'scroll');
+       
+          this.littlewindow.changeFramelocation({offsetX:target.scrollLeft,offsetY:target.scrollTop},'scroll');
           clearTimeout(scrolltimer);
           scrolltimer = null
         },100)

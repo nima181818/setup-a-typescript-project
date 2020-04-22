@@ -9,9 +9,10 @@ interface positions {
 */
 // console.log(Multithread, "wocao")
 import { globalAstarmanage } from '../utils/wayfinders';
-import { eventlist } from '../Tankclass/Eventlist';
-import {structuresets} from './structureSet'
-import {player1} from '../player'
+// import { eventlist } from '../Tankclass/Eventlist';
+import {world} from '../World'
+import {Structuresets} from './structureSet'
+// import {player1} from '../player'
 // import {baseControl} from './basecontrol'
 class Structure {
     static ids:number=0
@@ -44,6 +45,8 @@ class Structure {
         this.name = name
         this.size = size
         this.ctx = ctx.getContext('2d');
+
+        let structuresets = world.playerManage.find(item=>{return item.unittype==this.unittype}).structuresets
         structuresets.operationStructure(this.name,'add',this)
         // this.paint(position)
         if(this.name!='base'){
@@ -55,6 +58,7 @@ class Structure {
         }
         console.log(structuresets)
         setTimeout(()=>{
+            let player1 = world.playerManage.find(item=>{return item.unittype==this.unittype})
             player1.updateMoney('reduce',this.cost)
         })
        
@@ -72,13 +76,15 @@ class Structure {
         clearInterval(this.animationtimer);
         this.animationtimer = null;
         console.log('建筑毁灭')
+        let alleventlist = world.getEventlist('all',this.unittype)
         //地图上销毁障碍?这点还要反应到各个机车上？？？--代价应该不大 因为现在已明确找到了不用遍历直接操作map的方式
-        for (let j = 0; j < eventlist.tanklist.length; j++) {
+        for (let j = 0; j < alleventlist.tanklist.length; j++) {
             for (let k = 0; k < this.ownobstacles.length; k++) {
-                eventlist.tanklist[j].globalAstarmanage.map[this.ownobstacles[k].y][this.ownobstacles[k].x] = 0;
+                alleventlist.tanklist[j].globalAstarmanage.map[this.ownobstacles[k].y][this.ownobstacles[k].x] = 0;
 
             }
         }
+        let structuresets = world.playerManage.find(item=>{return item.unittype==this.unittype}).structuresets
         this.ctx.clearRect(this.positions.x, this.positions.y, this.size.x, this.size.y );
         for(let j in structuresets.unitsList){
             for(let k=0;k<structuresets.unitsList[j].length;k++){
@@ -142,7 +148,7 @@ class Structure {
     animationMthod(start: number, end: number) {
 
         let index = start;
-      
+            let player1 = world.playerManage.find(item=>{ return item.unittype==this.unittype})
             if (this.needanimation) {
                 this.animationtimer = window.setInterval(() => {
                     index++;
@@ -176,7 +182,8 @@ class Structure {
     }
     //初始化自身的地图
     initStructureobstacle(obstacle: positions[]) {
-        let temp = []
+        let temp = [],
+        alleventlist = world.getEventlist('all',this.unittype);
 
         //TODO-- 这里还没有结合自己的位置
      //   if (this.name == 'soliderfactory') {
@@ -212,9 +219,9 @@ class Structure {
     //    }
         globalAstarmanage.addObstacle(temp, 333);
         //当建筑出生的时候 动态映射到真实地图和每个坦克的地图上
-        for (let j = 0; j < eventlist.tanklist.length; j++) {
+        for (let j = 0; j < alleventlist.tanklist.length; j++) {
 
-            eventlist.tanklist[j].globalAstarmanage.addObstacle(temp, 333)
+            alleventlist.tanklist[j].globalAstarmanage.addObstacle(temp, 333)
 
 
         }

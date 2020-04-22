@@ -1,6 +1,8 @@
 const map = require('../assets/map.jpg'); 
-import { eventlist } from '../Tankclass/Eventlist'; 
-import {world} from '../World'
+// import { eventlist } from '../Tankclass/Eventlist'; 
+
+import {world} from '../World';
+
 class Littlewindow{
     img:HTMLImageElement
     canvas4alivethings:HTMLCanvasElement
@@ -9,7 +11,8 @@ class Littlewindow{
     frameposition:{x:number,y:number}={x:null,y:null}
     oldframeposition:{x:number,y:number}={x:null,y:null}
     constructor(){
-
+        this.initCanvas();
+        this.draw();
     }
     initCanvas(){
         let img = document.getElementById('canvas3') as HTMLImageElement,
@@ -30,7 +33,7 @@ class Littlewindow{
     }
     //左边界面可能会使用到
     changeFramelocation(e:{offsetX:number,offsetY:number},controler:string){
-       
+        console.log('change触发')
         if(controler=='click'){
             this.frameposition = {
                 x:e.offsetX,
@@ -62,12 +65,12 @@ class Littlewindow{
        this.oldframeposition.x = this.frameposition.x
        this.oldframeposition.y = this.frameposition.y
 
-
+       let alleventlist = world.getEventlist('all','player1')
             //TODO--这里还要添加建筑的， 还要添加敌方的
     //  
-      for(let j=0;j<eventlist.tanklist.length;j++){
-          let positionx = eventlist.tanklist[j].currentclickpoints.x/24,
-              positiony = eventlist.tanklist[j].currentclickpoints.y*1.875/24;
+      for(let j=0;j<alleventlist.tanklist.length;j++){
+          let positionx = alleventlist.tanklist[j].currentclickpoints.x/24,
+              positiony = alleventlist.tanklist[j].currentclickpoints.y*1.875/24;
               this.canvas4alivethingsctx.fillStyle = 'rgb(135,254,2)';
               this.canvas4alivethingsctx.fillRect(positionx,positiony,2,2);
       }
@@ -75,4 +78,4 @@ class Littlewindow{
         },200)
     }
 }
-export let littlewindow = new Littlewindow()
+export {Littlewindow}

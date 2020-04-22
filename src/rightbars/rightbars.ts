@@ -15,10 +15,9 @@ const s1 = require('../assets/rightbar/s1.png'),
     $id = document.getElementById.bind(document),
     $cls = document.getElementsByClassName.bind(document);
 import { stlistMask, guardlistMask, soilderlistMask, wartanklistMask } from './masks';
-import { littlewindow } from './littlewindow';
-import {player1} from '../player'
-littlewindow.initCanvas();
-littlewindow.draw();
+import { world } from '../World';
+// import {player1} from '../player'
+let player1 = world.playerManage.find(item=>{return item.unittype=='player1'});
 let maskListall = [stlistMask, soilderlistMask, guardlistMask, wartanklistMask]
 export class Rightbars {
     currentpageIndex: number = 0

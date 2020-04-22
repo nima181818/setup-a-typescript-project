@@ -1,9 +1,14 @@
 
 //引入 tank中的一个
-import { eventlist } from '../Tankclass/Eventlist';
+// import { eventlist } from '../Tankclass/Eventlist';
 import { globalAstarmanage as realAstarmanage, globalAstarmanage } from '../utils/wayfinders'
 import {Powerstation,Soliderfactory,Oil,Wcf} from '../Structureclass/allStructureslist'
 import {cannotplayhere_audio,constructionalnoctions_audio} from '../assets/audios/audio'
+import { world } from '../World';
+
+let myeventlist =world.getEventlist('my','player1'),
+    alleventlist = world.getEventlist('all','player1')
+  
 class Buildinglayer {
     timer: number = null
     debouncetimer:number=null
@@ -117,16 +122,16 @@ class Buildinglayer {
         // Powerstation,Soliderfactory,Oil
         switch (this.type_name) {
             case 'stpowertation':
-                let powerstation = new Powerstation('player',10, '20',buildinglocation, 'powertation', this.canvas,size ); 
+                let powerstation = new Powerstation('player1',10, '20',buildinglocation, 'powertation', this.canvas,size ); 
                 break;
             case 'stinfantry':
-                let soliderfactory1 = new Soliderfactory('player',10, '20',buildinglocation, 'soliderfactory', this.canvas,size);
+                let soliderfactory1 = new Soliderfactory('player1',10, '20',buildinglocation, 'soliderfactory', this.canvas,size);
                 break;
             case 'stoil':
-                let oil = new Oil('player',10, '20',buildinglocation, 'oil', this.canvas, size);
+                let oil = new Oil('player1',10, '20',buildinglocation, 'oil', this.canvas, size);
                 break;
             case 'stwcf':
-                let wcf = new Wcf('player',10, '20',buildinglocation, 'wcf', this.canvas, size);
+                let wcf = new Wcf('player1',10, '20',buildinglocation, 'wcf', this.canvas, size);
                 break;
             default:
                 break;
@@ -140,9 +145,9 @@ class Buildinglayer {
     //当鼠标已在滑动的时候 应取消tank的选择或多选状态 对建筑这一方法成立
     cancelTankselectormultiselect(){
         if(this.type=='stlist'||this.type=='guardlist'){
-            for(let j=0;j<eventlist.tanklist.length;j++){
-                eventlist.tanklist[j].selected = false;
-                eventlist.tanklist[j].multiselect = false;
+            for(let j=0;j<myeventlist.tanklist.length;j++){
+                myeventlist.tanklist[j].selected = false;
+                myeventlist.tanklist[j].multiselect = false;
             }
         }
         
@@ -164,7 +169,7 @@ class Buildinglayer {
             this.debouncetimer = null
         }
         this.debouncetimer = window.setTimeout(()=>{
-            let othermap = eventlist.tanklist[0].globalAstarmanage.map,//其他障碍物
+            let othermap = alleventlist.tanklist[0]?alleventlist.tanklist[0].globalAstarmanage.map:globalAstarmanage.map,//其他障碍物
             atankmap = globalAstarmanage.fakemap, //（自身障碍物）//有问题
             MT = new Multithread(4);//web worker
             console.log(othermap,"其他地图")

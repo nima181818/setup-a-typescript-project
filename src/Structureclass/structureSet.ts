@@ -12,8 +12,10 @@ class Structuresets{
      oil:Oil[]=[]
      wcf:Wcf[]=[]
      unitsList:any={}
-     constructor(){
+     unittype:string
+     constructor(unittype:string){
           this.unitsList.base = this.base;
+          this.unittype = unittype
           this.unitsList.powertation = this.powertation;
           this.unitsList.soliderfactory = this.soliderfactory;
           this.unitsList.oil = this.oil;
@@ -46,8 +48,6 @@ class Structuresets{
 
 }
 
-let structuresets = new Structuresets();
-console.log(structuresets.constructor,"structuresets.constructor");
-console.log(Structuresets,"Structuresets");
-console.log(structuresets,"structuresets");
-export {structuresets,Structuresets}
+
+
+export {Structuresets}

@@ -1,7 +1,8 @@
 
-import {world} from './src/World'
+import {world} from './World'
 window.onload = function () {
     let obstacles = [];
+    console.log(world)
      return;
     var back = document.getElementById('back');
         back.style.display='flex';

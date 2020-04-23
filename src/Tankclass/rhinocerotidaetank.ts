@@ -36,7 +36,7 @@ export class Rhinocerotidaetank extends Tank {
 
         this._name = 'rhinocerotidaetank'
         this.imgList = [imagetop.default, imagert.default, imagerig.default, imagerb.default, imagebot.default, imagelb.default, imagelef.default, imagelt.default, imagetop.default];
-        this.initPicimg();
+        this.initPicimg(); 
         rvosystem.addVihcles(this);
         // console.log(rvosystem,"rvo系统")
       //  setInterval(()=>{

@@ -26,7 +26,7 @@ export class Rhinocerotidaetank extends Tank {
        
         this.width = 40; //覆盖父的
         this.obwidth = this.width;
-        this.firerate = 1500;
+        this.firerate = 500;
 
         this.height = 40; //覆盖父的
         this.obheight = this.height

@@ -8,7 +8,7 @@ import { Watcher } from '../utils/watcher';
 import {world} from '../World'
 import { transformimg } from '../assets/imgurltransform';
 import { rvosystem } from '../utils/rovpathfindinghelper';
-import {tankmoving_audio,waitingorders_audio,howaboutaction_audio,movingnow_audio,soilderdied_audio} from '../assets/audios/audio'
+import {tankattacking_audio,soilderdoit_audio,tankmoving_audio,waitingorders_audio,howaboutaction_audio,movingnow_audio,soilderdied_audio} from '../assets/audios/audio'
 // import {structuresets} from  '../Structureclass/structureSet'
 
 
@@ -17,6 +17,7 @@ console.log(rvosystem)
 export class Tank {
     static id: number = -1
     unittype:string
+    movingwithattack:boolean=false //带有攻击性的移动
     _id: number
     fightanimationcontrol:boolean=false //攻击时刻的动画，必要时由fire函数来控制
     lastobstaclematrix:pointerface[]=[]
@@ -202,10 +203,20 @@ export class Tank {
     startmovingTrigger(){
         
         if(this.startmoving){
+            this.movingwithattack = false
             if(this._name=='rhinocerotidaetank'){
-                tankmoving_audio.playAudio();
+                if(!this.judgeDestinationhasenemy(this.targetpoint)){
+                    tankmoving_audio.playAudio();
+                   
+                }
+
+               
             }else if(this._name=='liberationarmy'){
-                movingnow_audio.playAudio();
+                if(!this.judgeDestinationhasenemy(this.targetpoint)){
+                    movingnow_audio.playAudio();
+                   
+                }
+               
             }else if(this._name==''){
     
             }
@@ -364,6 +375,12 @@ export class Tank {
             }else{
                 //运动状态控制权还是设置为默认
                 this.fightanimationcontrol = false //交由默认控制
+                if(this.movingwithattack){
+                    clearInterval(this.timer);
+                    this.timer = null;
+                    this.velocity.x=0;
+                    this.velocity.y=0
+                }
             }
 
         }
@@ -407,6 +424,10 @@ export class Tank {
 			}
        //     this.currentctx.clearRect(this.currentclickpoints.x - this.width*0.5-10, this.currentclickpoints.y -this.height*0.5-10, this.width+20, this.height+20);
          //   this.fightanimationcontrol= false
+         //这里判断是否那个地方有敌人 TODO--
+        
+
+
             //开始寻路
 			 this.workername = 'worker'+parseInt((Math.random()*10**10).toString());
              var MT = new Multithread(4,this.workername);//web worker
@@ -446,6 +467,20 @@ export class Tank {
             
             
         }
+    }
+    //判断目标点的位置是否被敌人占据
+    judgeDestinationhasenemy(p:pointerface){
+        //TODO-- 待优化 如果敌人有多股势力怎么办?
+        let player = world.playerManage.find((item)=>{return item.unittype!=this.unittype});
+           if(player){
+              for(let j=0;j<player.eventlist.tanklist.length;j++){
+                  if(this.pointDistance(p,player.eventlist.tanklist[j].currentclickpoints,true)<=player.eventlist.tanklist[j].r){
+                   this._name!='liberationarmy'?tankattacking_audio.playAudio():soilderdoit_audio.playAudio()
+                   this.movingwithattack = true
+                   return true
+                  }
+              }
+           }
     }
    
     ///障碍重排

@@ -8,12 +8,14 @@ const buiding =require('./eva_voice/building.mp3'),
       tankmoving = require('./tank_voice/moving_rank.mp3'),
       waitingorders = require('./tank_voice/waitingorders.mp3'),
       fireout = require('./tank_voice/fireout.mp3'),
+      tankattacking = require('./tank_voice/tank_attacking.mp3'),
 
       //解放军的声音
       howaboutaction = require('./soilder_voice/how about action.mp3'),
       movingnow = require('./soilder_voice/moving now.mp3'),
       soilderbullet = require('./soilder_voice/soidler_bullet.mp3'),
-      soilderdied = require('./soilder_voice/soidler_died.mp3')
+      soilderdied = require('./soilder_voice/soidler_died.mp3'),
+      soilderdoit = require('./soilder_voice/soilder_lets_do_it.mp3')
 
 console.log(buiding,"啦啦啦啊")
 class Audios{
@@ -37,11 +39,13 @@ constructionalnoctions_audio = new Audios(constructionalnoctions.default),
 tankmoving_audio = new Audios(tankmoving.default),
 waitingorders_audio = new Audios(waitingorders.default),
 fireout_audio = new Audios(fireout.default),
+tankattacking_audio = new Audios(tankattacking.default),
 
 //解放军的声音
 howaboutaction_audio = new Audios(howaboutaction.default),
 movingnow_audio = new Audios(movingnow.default),
 soilderbullet_audio = new Audios(soilderbullet.default),
-soilderdied_audio = new Audios(soilderdied.default)
+soilderdied_audio = new Audios(soilderdied.default),
+soilderdoit_audio = new Audios(soilderdoit.default)
 
-export {buiding_audio,buidinginprogress_audio,cannotplayhere_audio,tankmoving_audio,waitingorders_audio,constructionalcomplete_audio,constructionalnoctions_audio,fireout_audio,howaboutaction_audio,movingnow_audio,soilderbullet_audio,soilderdied_audio}
+export {tankattacking_audio,soilderdoit_audio,buiding_audio,buidinginprogress_audio,cannotplayhere_audio,tankmoving_audio,waitingorders_audio,constructionalcomplete_audio,constructionalnoctions_audio,fireout_audio,howaboutaction_audio,movingnow_audio,soilderbullet_audio,soilderdied_audio}

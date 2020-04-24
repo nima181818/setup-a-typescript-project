@@ -376,6 +376,8 @@ export class Tank {
                 //运动状态控制权还是设置为默认
                 this.fightanimationcontrol = false //交由默认控制
                 if(this.movingwithattack){
+                    //目标为可攻击对象 TODO 这里只处理了敌人为静止的TODO--
+                    //动的敌人岂不是要每一个tick 执行一次A*？？
                     clearInterval(this.timer);
                     this.timer = null;
                     this.velocity.x=0;
@@ -432,9 +434,9 @@ export class Tank {
 			 this.workername = 'worker'+parseInt((Math.random()*10**10).toString());
              var MT = new Multithread(4,this.workername);//web worker
          
-              
+             console.time('x')
           let handle = MT.process(this.globalAstarmanage.prepareForwebworker,(e)=>{
-			 
+            console.timeEnd('x')
               this.startmoving=true
             this.globalAstarmanage.map = e.map;
             this.globalAstarmanage.lastwaysmatrixlist = e.lastwaysmatrixlist;

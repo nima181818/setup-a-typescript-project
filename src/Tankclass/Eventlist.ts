@@ -82,6 +82,8 @@ class Eventlist {
                     console.log('点击无效')
                    return;
                 }
+                //TODO--  点击的地方如果在mapjson 的障碍（高山）中也应该返回
+
                 this.tanklist[j].setTankspoints(e.offsetX, e.offsetY, 'setendpoints', true)
             }
           

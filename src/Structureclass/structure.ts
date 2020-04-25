@@ -18,6 +18,7 @@ class Structure {
     static ids:number=0
     unittype:string
     _id:number
+    classType:string='structure' 
     name: string
     imginitsuccess:boolean=false
     cost:number //消耗

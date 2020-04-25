@@ -44,6 +44,12 @@ export class Player {
             t2 = new Rhinocerotidaetank(this.unittype,this.unittype=='player1'?{ x: 800, y: 800 }:{ x: 3600, y: 800 });
                 t1.paint(this.topUnitscanvas);
                 t2.paint(this.topUnitscanvas); 
+                if(this.unittype=='ai1'){
+                    setTimeout(()=>{
+                        t2.setTankspoints(387,1108,'setendpoints',true)
+                    },9000)
+                   
+                }
         })
      
     }
@@ -89,6 +95,7 @@ export class Player {
                 leftclick = false;
                 context.clearRect(pages.x - 1, pages.y - 1, oldposition.x + 2, oldposition.y + 2);
                 if (distance != 0) {
+                   
                     this.eventlist.multiSelection(pages, { x: e.offsetX, y: e.offsetY })
                 }
 

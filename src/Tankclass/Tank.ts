@@ -16,8 +16,14 @@ import {tankattacking_audio,soilderdoit_audio,tankmoving_audio,waitingorders_aud
 console.log(rvosystem)
 export class Tank {
     static id: number = -1
+    gathertimeobj:{s:number,e:number}={s:null,e:null} //截取时间开始与截取时间结束
     unittype:string
+    classType:string='tank' //类型 有tank和建筑
     movingwithattack:boolean=false //带有攻击性的移动
+    enemytarget:any //攻击目标 该攻击目标由玩家主动点击敌人产生，非自动产生
+    recalculatetimer:number //重新计算路线的settimeout id 在有移动的攻击目标下生效
+    recaltimespace:number=2000 //重新计算的时间间隔 2s
+    olderpath:pointerface[]=[] //储存开始寻路计算到当前位置的路线
     _id: number
     fightanimationcontrol:boolean=false //攻击时刻的动画，必要时由fire函数来控制
     lastobstaclematrix:pointerface[]=[]
@@ -140,6 +146,12 @@ export class Tank {
         realAstarmanage.setStartpointandendpoint(this.closeFunc(this.currentclickpoints.y), this.closeFunc(this.currentclickpoints.x), 'startpoint');
         this.initStartpointendpoint();
              
+
+
+
+        // if(this.unittype=='ai1'){
+        //     this.MAX_SPEED=20;
+        // }
     }
     //初始化几个tank集合 other，all，my
     initEventtanklist(){
@@ -150,7 +162,7 @@ export class Tank {
     
         rvosystem.dynamicUpdategoals(this, 'np')
     }
-    //动态的改变自己的
+    //动态的改变自己的 
     currentclickpointsTrigger() {
       
         if (this.ownobstacles.length) {
@@ -169,7 +181,9 @@ export class Tank {
         this.proxycurrentclickpoints.y = this.currentclickpoints.y + Math.random();
         this.realUpdatingownerobstacle(3)
      
-       
+
+        //还要做一件事 AI会告诉我他的位置TODO 不是追逐TODO
+      
     }
     //单选改变
     selectedTrigger(){
@@ -192,6 +206,7 @@ export class Tank {
             waitingorders_audio.playAudio();
         }else if(this._name=='liberationarmy'){
             howaboutaction_audio.playAudio();
+
         }else if(this._name==''){
 
         }
@@ -203,18 +218,20 @@ export class Tank {
     startmovingTrigger(){
         
         if(this.startmoving){
-            this.movingwithattack = false
+       //     this.movingwithattack = false;
             if(this._name=='rhinocerotidaetank'){
-                if(!this.judgeDestinationhasenemy(this.targetpoint)){
+                //目标点不是敌人
+                if(!this.enemytarget){
                     tankmoving_audio.playAudio();
+              //      this.enemytarget = null
                    
                 }
 
                
             }else if(this._name=='liberationarmy'){
-                if(!this.judgeDestinationhasenemy(this.targetpoint)){
+                if(!this.enemytarget){
                     movingnow_audio.playAudio();
-                   
+               //     this.enemytarget = null
                 }
                
             }else if(this._name==''){
@@ -296,7 +313,9 @@ export class Tank {
     fire(position:pointerface,targetobject:any) {
       //TODO 共
     }
-    //监听敌人 是否在攻击范围内 在的话 TODO--  现目前是将自己这边的（tank）添加为敌人 还要添加建筑
+ 
+    //监听敌人 是否在攻击范围内 在的话 TODO--  静态的敌人？？TODO
+    // 现目前是将自己这边的（tank）添加为敌人 还要添加建筑
     detectingEnviromentchange(){
         // if(this._name!='rhinocerotidaetank'){
         //     return;
@@ -353,7 +372,7 @@ export class Tank {
                 
             }
                }else{
-      //      console.log('有目标')
+        //    console.log('有目标',this.unittype)
     
             //有目标  TODO 运动状态下是否攻击？ 否?
             if(!this.timer){
@@ -392,6 +411,68 @@ export class Tank {
         let k = parseInt((point / 10).toString());
         return k * 10
     }
+       //处理运动中的敌人
+       handleMovingenemies(){
+        if(this.enemytarget){
+            if(this.enemytarget.timer){
+              if(!this.recalculatetimer){
+                  this.recalculatetimer=window.setTimeout(()=>{
+                    this.olderpath = [];
+                   this.gathertimeobj.s = new Date().getTime();
+                   console.log('处理中')
+                   this.operationofTankautomove(this.currentclickpoints,this.enemytarget.currentclickpoints);
+                      clearTimeout(this.recalculatetimer);
+                      this.recalculatetimer = null;
+                  },this.recaltimespace)
+                }
+            }
+         
+           
+        }
+      }
+    //坦克自动移动的操作
+    operationofTankautomove(tp:pointerface,eps:pointerface){
+        for (let k = 0; k < this.globalAstarmanage.map.length; k++) {
+            for (let u = 0; u < this.globalAstarmanage.map[k].length; u++) {
+                //-- 这里处理了地图障碍物，还有建筑障碍物未处理
+                if(this.globalAstarmanage.map[k][u] !=33&&this.globalAstarmanage.map[k][u] !=333){
+                    this.globalAstarmanage.map[k][u] = 0
+                }
+             
+            }
+        }
+        this.globalAstarmanage.setStartpointandendpoint(this.closeFunc(tp.y), this.closeFunc(tp.x), 'startpoint');
+        this.globalAstarmanage.setStartpointandendpoint(this.closeFunc(eps.y), this.closeFunc(eps.x), 'endpoint');
+        this.judgeDestinationhasenemy(eps)
+        this.obstacleRepailie();
+        var MT = new Multithread(4,this.workername);//web worker
+         
+      //  console.time('x')
+     let handle = MT.process(this.globalAstarmanage.prepareForwebworker,(e)=>{
+      // console.timeEnd('x')
+         this.startmoving=true;
+         this.gathertimeobj.e = new Date().getTime();
+       this.globalAstarmanage.map = e.map;
+       this.globalAstarmanage.lastwaysmatrixlist = e.lastwaysmatrixlist;
+         this.workername = null; //置空
+         clearInterval(this.timer);
+         this.timer = null
+       this.movingfunc('tank', this.currentclickpoints, this.height, this.width, this.speed, this,'byauto')
+        });
+       
+     let sp = {
+         x:this.globalAstarmanage.startPoint.x,
+         y:this.globalAstarmanage.startPoint.y
+     },
+       ep = {
+           x:this.globalAstarmanage.endPoint.x,
+           y:this.globalAstarmanage.endPoint.y
+       }
+      
+           
+     handle(this.globalAstarmanage.map,sp,ep)
+    }
+    //坦克手动移动的操作
     setTankspoints(x: number, y: number, type: string, movingcommander: boolean = false) {
         this.startmoving = false
         if (type == 'setstartpoints') {
@@ -401,7 +482,7 @@ export class Tank {
         if (type == 'setendpoints') {
             this.targetpoint.x = x;
             this.targetpoint.y = y;
-
+ 
             clearInterval(this.timer);
             this.timer = null;
             this.startpoint = JSON.parse(JSON.stringify(this.currentclickpoints));
@@ -420,6 +501,7 @@ export class Tank {
             }
             this.globalAstarmanage.setStartpointandendpoint(this.closeFunc(this.startpoint.y), this.closeFunc(this.startpoint.x), 'startpoint');
             this.globalAstarmanage.setStartpointandendpoint(this.closeFunc(this.targetpoint.y), this.closeFunc(this.targetpoint.x), 'endpoint');
+            this.judgeDestinationhasenemy({x,y})
             this.obstacleRepailie();
 			if(this.workername){
 				window[this.workername].terminate();  //去掉正在运行的worker
@@ -427,7 +509,7 @@ export class Tank {
        //     this.currentctx.clearRect(this.currentclickpoints.x - this.width*0.5-10, this.currentclickpoints.y -this.height*0.5-10, this.width+20, this.height+20);
          //   this.fightanimationcontrol= false
          //这里判断是否那个地方有敌人 TODO--
-        
+     
 
 
             //开始寻路
@@ -472,13 +554,17 @@ export class Tank {
     }
     //判断目标点的位置是否被敌人占据
     judgeDestinationhasenemy(p:pointerface){
+        this.enemytarget = null;
+        this.movingwithattack=false
         //TODO-- 待优化 如果敌人有多股势力怎么办?
         let player = world.playerManage.find((item)=>{return item.unittype!=this.unittype});
            if(player){
+            //    let hasenemys=null
               for(let j=0;j<player.eventlist.tanklist.length;j++){
                   if(this.pointDistance(p,player.eventlist.tanklist[j].currentclickpoints,true)<=player.eventlist.tanklist[j].r){
                    this._name!='liberationarmy'?tankattacking_audio.playAudio():soilderdoit_audio.playAudio()
                    this.movingwithattack = true
+                   this.enemytarget = player.eventlist.tanklist[j] //这里只处理了地方tank，还有建筑未处理TODO--
                    return true
                   }
               }
@@ -489,7 +575,7 @@ export class Tank {
     obstacleRepailie() {
             let alleventlist = world.getEventlist('all',this.unittype)
         for (let j = 0; j < alleventlist.tanklist.length; j++) {
-            //这里应该是虚拟地图对真实地图进行映射
+            //这里应该是虚拟地图对真实地图进行映射,再加一个条件：目标点是敌人的话 那一坨应该不设置为障碍物
             if (this._id !== alleventlist.tanklist[j]._id) {
 
                 for (let k = 0; k < this.globalAstarmanage.map.length; k++) {
@@ -506,7 +592,13 @@ export class Tank {
                         ) {
                           //-- 还有建筑物生成的障碍物未处理
                           if(this.globalAstarmanage.map[k][u]!=33&&this.globalAstarmanage.map[k][u]!=333){
-                            this.globalAstarmanage.map[k][u] = 3
+                              
+                            this.globalAstarmanage.map[k][u] = 3;
+                            if(this.enemytarget){
+                                if(alleventlist.tanklist[j]._id==this.enemytarget._id){
+                                    this.globalAstarmanage.map[k][u] = 0;
+                                }
+                            }
                           }
                            
                         }
@@ -561,9 +653,15 @@ export class Tank {
     }
     
     //路径规划 --A*驱动
-    movingfunc(type: string, position: Position1, height: number, width: number, speed: number, that: any) {
+    /*
+    comefrom：
+      byhand:手动
+      byauto:自动
+    */
+    movingfunc(type: string, position: Position1, height: number, width: number, speed: number, that: any,comefrom:string='byhand') {
 		  window.clearInterval(this.timer);
-		   this.timer = null
+           this.timer = null;
+      //     this.olderpath = [];
         //最新的路径规划方案
         let positionarrays = [],
             currentindex = 0;
@@ -578,6 +676,7 @@ export class Tank {
             }
             positionarrays.unshift(obj)
         }
+        positionarrays = [...this.olderpath,...positionarrays]
         if (positionarrays.length == 0) {
             return;
         }
@@ -606,7 +705,15 @@ export class Tank {
                     y: positionarrays[currentindex].y * 10 - positionarrays[currentindex-1].y * 10,
                 }
             }
-           
+           //收集A'-->A"的线路
+           let currenttime = new Date().getTime();
+              if(this.gathertimeobj.s<=currenttime&&
+                currenttime<=this.gathertimeobj.e&&comefrom=='byhand'){
+                    this.olderpath.push()
+                }
+
+
+
               try{
                 this.destinationpoint = {
                     x: positionarrays[currentindex + 1].x * 10,
@@ -1164,6 +1271,7 @@ export class Tank {
     loopMethods(){
             this.paintAgain();
             this.detectingEnviromentchange();
+            this.handleMovingenemies()
           
       //  window.requestAnimationFrame(this.loopMethods.bind(this))
     }

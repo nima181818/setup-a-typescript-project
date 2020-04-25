@@ -147,6 +147,40 @@ let wcfimgUrllist = [
 ],
 wcfimgList=[];
 
+
+const pt_b1 = require('../assets/prismtower/pt_b1.png');
+const pt_b2 = require('../assets/prismtower/pt_b2.png');
+const pt_b3 = require('../assets/prismtower/pt_b3.png');
+const pt_b4 = require('../assets/prismtower/pt_b4.png');
+const pt_b5 = require('../assets/prismtower/pt_b5.png');
+const pt_b6 = require('../assets/prismtower/pt_b6.png');
+const pt_s1 = require('../assets/prismtower/pt_s1.png');
+const pt_s2 = require('../assets/prismtower/pt_s2.png');
+const pt_s3 = require('../assets/prismtower/pt_s3.png');
+const pt_s4 = require('../assets/prismtower/pt_s4.png');
+const pt_s5 = require('../assets/prismtower/pt_s5.png');
+const pt_s6 = require('../assets/prismtower/pt_s6.png');
+const pt_s7 = require('../assets/prismtower/pt_s7.png');
+const pt_s8 = require('../assets/prismtower/pt_s8.png');
+const pt_s9 = require('../assets/prismtower/pt_s9.png');
+let ptimgUrllist=[
+    pt_b1.default,
+    pt_b2.default,
+    pt_b3.default,
+    pt_b4.default,
+    pt_b5.default,
+    pt_b6.default,
+    pt_s1.default,
+    pt_s2.default,
+    pt_s3.default,
+    pt_s4.default,
+    pt_s5.default,
+    pt_s6.default,
+    pt_s7.default,
+    pt_s8.default,
+    pt_s9.default
+],
+ptimgList=[]
 // imginits(oilimgUrllist,oilimgList);
 // imginits(soilderimgUrllist,soilderimgList);
 // imginits(powerstationimgUrllist,powerstationimgList);
@@ -170,6 +204,10 @@ wcfobj = {
 baseobj = {
     baseimgUrllist,
     baseimgList
+},
+ptobj = {
+    ptimgUrllist,
+    ptimgList
 }
-export {oilobj,soilderobj,powerstationobj,wcfobj,baseobj,imginits}
+export {oilobj,soilderobj,powerstationobj,wcfobj,baseobj,ptobj,imginits}
   

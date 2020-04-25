@@ -147,11 +147,21 @@ export class Bullet{
         if(counts==imgelements.length-1){
            clearInterval(timer);
            this.currentctx.clearRect(this.target.x-this.drawsize.width/2,this.target.y-this.drawsize.height/2,this.drawsize.width,this.drawsize.height);
-           //目标血量减少？
-           this.targetobject.bloodLess(this.harm)
+           //目标血量减少？条件：要击中
+           //classType表明是坦克  否则就是建筑
+           //TODO--  建筑的position可能不一样
+           if(this.distanceFormlation(this.target,this.targetobject.classType=='tank'?this.targetobject.currentclickpoints:this.targetobject.positions,true)<=20){
+            this.targetobject.bloodLess(this.harm)
+           }
+           
         }
        },30)
     }
+ //距离公式
+ distanceFormlation(p1:pointerface,p2:pointerface,kf:boolean = false){
+  let value = (p1.x - p2.x)**2+(p1.y-p2.y)**2;
+  return kf?(value**0.5):value
+}
     //初始化爆炸效果img
     initExplosion(){
       

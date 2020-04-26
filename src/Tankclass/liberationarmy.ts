@@ -26,7 +26,7 @@ interface Position1 {
         this.obwidth = this.width/3*2
         this.height = 48; //覆盖父的
         this.obheight = this.height/3*2
-        
+        this.cost = 200
         this.blood = 15;
         this.maxblood = 15
         this.firerate = 150; //攻速

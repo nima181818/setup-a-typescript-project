@@ -133,6 +133,7 @@ class Structure {
               
             } else {
                 clearInterval(time);
+                time = null
                 //  if(this.needanimation){
                 this.animationMthod(this.animationendstart, this.animationend);
                 //  }
@@ -151,17 +152,19 @@ class Structure {
         let index = start;
             let player1 = world.playerManage.find(item=>{ return item.unittype==this.unittype})
             if (this.needanimation) {
+               
                 this.animationtimer = window.setInterval(() => {
+                   
+                   
+                    if(index%2==0&&this.name=='oil'&&index>=5){
+                        player1.updateMoney('add',1)
+                    }
+                 
+                    this.ctx.drawImage(this.imgList[index], this.positions.x, this.positions.y, this.size.x, this.size.y);
                     index++;
                     if (index > end) {
                         index = start
                     }
-                    if(index%2==0&&this.name=='oil'&&index>=5){
-                        player1.updateMoney('add',1)
-                    }
-                    
-                    this.ctx.drawImage(this.imgList[index - 1], this.positions.x, this.positions.y, this.size.x, this.size.y);
-    
                 }, this.circletime)
             } else {
                 this.animationtimer = window.setInterval(() => {

@@ -12,13 +12,24 @@ const s1 = require('../assets/rightbar/s1.png'),
     stinfantry = require('../assets/buildings-structure/st_infantry.png'),
     stoil = require('../assets/buildings-structure/st_oil.png'),
     stwcf = require('../assets/buildings-structure/wcf.png'),
+
+    //防御图片
+    gdprismtower = require('../assets/buildings-structure/gd_prismtower.png'),
+    sentrycannon = require('../assets/buildings-structure/gd_prismtower.png'),
+
+
+    //兵种单位
+    liberationarmy = require('../assets/buildings-structure/soilder_liberationarmy.png'),
+    engineer = require('../assets/buildings-structure/soilder_engineer.png'),
+    spy = require('../assets/buildings-structure/soilder_spy.png'),
+
     $id = document.getElementById.bind(document),
     $cls = document.getElementsByClassName.bind(document);
 import { stlistMask, guardlistMask, soilderlistMask, wartanklistMask } from './masks';
 import { world } from '../World';
 // import {player1} from '../player'
-let player1 = world.playerManage.find(item=>{return item.unittype=='player1'});
-let maskListall = [stlistMask, soilderlistMask, guardlistMask, wartanklistMask]
+let player1 = world.playerManage.find(item => { return item.unittype == 'player1' });
+let maskListall = [stlistMask, guardlistMask, soilderlistMask, wartanklistMask]
 export class Rightbars {
     currentpageIndex: number = 0
     alllist: Array<HTMLDivElement> = []
@@ -33,6 +44,17 @@ export class Rightbars {
     structurelist: Array<HTMLDivElement> = []
     structureinbuiding: boolean = false
 
+
+    guardimgurl: Array<string>
+    guardimg: Array<HTMLImageElement> = []
+    guardlist: Array<HTMLDivElement> = []
+
+
+    //兵种
+    soilderimgurl: Array<string>
+    soilderimg: Array<HTMLImageElement> = []
+    soilderlist: Array<HTMLDivElement> = []
+
     constructor() {
 
         this.initContainerlist();
@@ -40,6 +62,9 @@ export class Rightbars {
 
 
         this.initStructure();
+        this.initGuard();
+        this.initSoilder();
+
     }
     //初始化下方类型框container
     initContainerlist() {
@@ -161,11 +186,12 @@ export class Rightbars {
             this.structurelist[j].appendChild(this.structureimg[j]);
             //左键建造，
             this.structurelist[j].onclick = function () {
-                  //TODO 这里需要预判是否钱够
-                  if(!this.moneyPrejudge(j)){
-                     alert('钱不够')  
+                //TODO 这里需要预判是否钱够
+
+                if (!this.moneyPrejudge(j, 'bar')) {
+                    alert('钱不够')
                     return;
-                  }
+                }
                 maskListall[0].analyseCommander('building', j);
                 // if (this.structureinbuiding) {
                 //     return;
@@ -179,33 +205,162 @@ export class Rightbars {
             }.bind(this)
             //右键取消
             this.structurelist[j].oncontextmenu = function () {
+                //TODO-- 
+            }.bind(this)
+        }
+    }
 
+    //初始化防御
+    initGuard() {
+        let prismtower = $id('prismtower'),
+            sentrycannon = $id('sentrycannon');
+        //还有哨所炮TODO--
+        this.guardlist = [prismtower, sentrycannon];
+        this.initGuardimg();
+    }
+    //初始化防御图片
+    initGuardimg() {
+        this.guardimgurl = [gdprismtower.default, sentrycannon.default];
+        return new Promise((res, rej) => {
+            let counts = 0;
+            for (let j = 0; j < this.guardimgurl.length; j++) {
+                let img: HTMLImageElement = new Image();
+                img.src = this.guardimgurl[j]
+                img.onload = function () {
+                    counts++;
+                    this.guardimg[j] = img;
+                    if (counts == this.guardimgurl.length) {
+                        res();
+                    }
+                }.bind(this)
+                document.body.appendChild(img)
+
+            }
+        }).then(result => {
+            this.bindingGuardevent();
+        })
+    }
+    //绑定防御事件
+    bindingGuardevent() {
+        for (let j = 0; j < this.guardlist.length; j++) {
+            this.guardlist[j].appendChild(this.guardimg[j]);
+            //左键建造，
+            this.guardlist[j].onclick = function () {
+                //TODO 这里需要预判是否钱够
+                if (!this.moneyPrejudge(j, 'guard')) {
+                    alert('钱不够')
+                    return;
+                }
+
+                maskListall[1].analyseCommander('building', j);
+                // if (this.structureinbuiding) {
+                //     return;
+                // }
+                // this.structureinbuiding = true
+                // setTimeout(() => {
+                //     this.structureinbuiding = false;
+                //     console.log('修建完成')
+                // }, 4000)
+
+            }.bind(this)
+            //右键取消
+            this.guardlist[j].oncontextmenu = function () {
+                //TODO-- 
+            }.bind(this)
+        }
+    }
+    
+    initSoilder() {
+
+
+        let liberationarmy = $id('liberationarmy'),
+            engineer = $id('engineer'),
+            spy = $id('spy');
+        //还有哨所炮TODO--
+        this.soilderlist = [liberationarmy, engineer, spy];
+        this.initSoilderimg();
+    }
+    initSoilderimg(){
+        this.soilderimgurl = [liberationarmy.default, engineer.default,spy.default];
+        return new Promise((res, rej) => {
+            let counts = 0;
+            for (let j = 0; j < this.soilderimgurl.length; j++) {
+                let img: HTMLImageElement = new Image();
+                img.src = this.soilderimgurl[j]
+                img.onload = function () {
+                    counts++;
+                    this.soilderimg[j] = img;
+                    if (counts == this.soilderimgurl.length) {
+                        res();
+                    }
+                }.bind(this)
+                document.body.appendChild(img)
+
+            }
+        }).then(result => {
+            this.bindingSoilderevent();
+        })
+    }
+    bindingSoilderevent(){
+        for (let j = 0; j < this.soilderlist.length; j++) {
+            this.soilderlist[j].appendChild(this.soilderimg[j]);
+            //左键建造，
+            this.soilderlist[j].onclick = function () {
+                //TODO 这里需要预判是否钱够
+                if (!this.moneyPrejudge(j, 'soilder')) {
+                    alert('钱不够')
+                    return;
+                }
+
+                maskListall[2].analyseCommander('building', j);
+              
+            }.bind(this)
+            //右键取消
+            this.soilderlist[j].oncontextmenu = function () {
+                //TODO-- 
             }.bind(this)
         }
     }
     //金钱的判断
-    moneyPrejudge(j){
-        let canbuild=false;
-       switch(j){
-           case 0:
-            canbuild = player1.money - 150>=0 //TODO 这里写死 应该要引用
-            break;
-            case 1:
-            canbuild = player1.money - 200>=0 //TODO 这里写死 应该要引用
-            break;
-            case 2:
-            canbuild = player1.money - 200>=0 //TODO 这里写死 应该要引用
-            break;
-            case 3:
-            canbuild = player1.money - 250>=0 //TODO 这里写死 应该要引用
-            break;
-            default:
-                break;
-            
-            
-            
-       }
-       return canbuild
+    moneyPrejudge(j: number, type: string) {
+        let canbuild = false;
+        if (type == 'bar') {
+            switch (j) {
+                case 0:
+                    canbuild = player1.money - 150 >= 0 //TODO 这里写死 应该要引用
+                    break;
+                case 1:
+                    canbuild = player1.money - 200 >= 0 //TODO 这里写死 应该要引用
+                    break;
+                case 2:
+                    canbuild = player1.money - 200 >= 0 //TODO 这里写死 应该要引用
+                    break;
+                case 3:
+                    canbuild = player1.money - 250 >= 0 //TODO 这里写死 应该要引用
+                    break;
+                default:
+                    break;
+
+
+
+            }
+        }
+        if (type == 'guard') {
+            switch (j) {
+                case 0:
+                    canbuild = player1.money - 400 >= 0 //光棱塔 TODO 这里写死 应该要引用TODO-- 还有哨所炮
+                    break;
+                case 1:
+                    canbuild = player1.money - 300 >= 0 //光棱塔 TODO 这里写死 应该要引用TODO-- 还有哨所炮
+                    break;
+                default:
+                    break;
+
+
+
+            }
+        }
+        return canbuild
     }
 
 }

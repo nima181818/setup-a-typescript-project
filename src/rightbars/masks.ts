@@ -6,6 +6,19 @@ interface positions {
     x: number,
     y: number
 }
+interface taskitem{
+    fun(),
+    timer:number,
+    typenum:number
+
+
+}
+interface taskque{
+    stlist:taskitem[],
+    guardlist:taskitem[],
+    soilderlist:taskitem[],
+    wartanklist:taskitem[]
+}
 class Masks {
     type: string   //为bar的类名？ stlist guardlist soilderlist wartanklist
     type_name: string
@@ -19,7 +32,7 @@ class Masks {
     p6: positions
     p7: positions
     watcher: Watcher<Masks> = new Watcher<this>()
-    taskqueue: { fun: Function, timer: number,typenum:number }[] = [] //任务列队，针对 战车和兵种可以重复多建造的：length>1
+    taskqueue:taskque={stlist:[],guardlist:[],soilderlist:[],wartanklist:[]}  //任务列队，针对 战车和兵种可以重复多建造的：length>1
     element: HTMLDivElement
     r: number
     theta: number
@@ -79,18 +92,20 @@ class Masks {
     //div初始化完成需要挂载在对应的bar上
     mountOnbar() {
         let bar = document.getElementsByClassName(this.type)[0];
+           
         bar.appendChild(this.element);
     }
     //分析命令
     analyseCommander(commander: string, typeNum: number) {
         if (commander == 'building') {
+            if (this.taskqueue[this.type].length) {
+                buidinginprogress_audio.playAudio();
+                return;
+            }
+            buiding_audio.playAudio();
             if (this.type == 'stlist') {
                 //建筑的建造均为单一的没有队列，做完一个 弹出队列？但是我是根据运行一个 走下一个？？
-                if (this.taskqueue.length) {
-                    buidinginprogress_audio.playAudio();
-                    return;
-                }
-                buiding_audio.playAudio();
+               
                 switch (typeNum) {
                     case 0:
                         this.handlePositions(0, 0);
@@ -108,6 +123,21 @@ class Masks {
                         this.handlePositions(100, 100);
                         this.type_name = 'stwcf'
                         break;
+                    default:
+
+                        break;
+                }
+            }
+            if(this.type=='guardlist'){
+                switch (typeNum) {
+                    case 0:
+                        this.handlePositions(0, 0);
+                        this.type_name = 'gdprismtower'
+                        break;
+                        case 1:
+                            this.handlePositions(0, 100);
+                            this.type_name = 'gdsentrycannon'
+                            break;
                     default:
 
                         break;
@@ -131,18 +161,18 @@ class Masks {
                 timer: null,
                 typenum:typenum
             }
-            this.taskqueue.push(taskitem);
-            this.taskqueue[0].fun();
+            this.taskqueue[this.type].push(taskitem);
+            this.taskqueue[this.type][0].fun();
         } else {
 
         }
     }
     //取消建造 TODO--
     cancelBuilding() {
-        let timer = this.taskqueue.splice(this.taskqueue.length - 1, 1)[0].timer;
-        if (timer) {
-            clearInterval(timer)
-        }
+        // let timer = this.taskqueue[this.type].splice(this.taskqueue.length - 1, 1)[0].timer;
+        // if (timer) {
+        //     clearInterval(timer)
+        // }
     }
     //位置处理
     handlePositions(top: number, left: number) {
@@ -294,16 +324,16 @@ class Masks {
                    this.toldPlayer();
             
                 this.element.style.display = 'none'
-                this.taskqueue.pop();
-                if (this.taskqueue.length) {
-                    this.taskqueue[this.currentbuildingindex].fun();
+                this.taskqueue[this.type].pop();
+                if (this.taskqueue[this.type].length) {
+                    this.taskqueue[this.type][this.currentbuildingindex].fun();
                 }
 
             }
             //    console.log(strings)
         }, this.buildingrate * 16.6);
 
-        this.taskqueue[this.currentbuildingindex].timer = timer
+        this.taskqueue[this.type][this.currentbuildingindex].timer = timer
     }
     //建造完成通知玩家进行鼠标左键选择-放在playground上
     //注意！！ 这只对 建筑和防御有效
@@ -312,6 +342,7 @@ class Masks {
      if(this.type=='stlist'||this.type=='guardlist'){
            console.log(66666);
            //
+           
            buildinglayer.setType(this.type,this.type_name)
            buildinglayer.bindCanvas();
            constructionalcomplete_audio.playAudio();

@@ -16,6 +16,7 @@ import {tankattacking_audio,soilderdoit_audio,tankmoving_audio,waitingorders_aud
 console.log(rvosystem)
 export class Tank {
     static id: number = -1
+    cost:number //消耗金钱
     gathertimeobj:{s:number,e:number}={s:null,e:null} //截取时间开始与截取时间结束
     unittype:string
     classType:string='tank' //类型 有tank和建筑
@@ -317,9 +318,7 @@ export class Tank {
     //监听敌人 是否在攻击范围内 在的话 TODO--  静态的敌人？？TODO
     // 现目前是将自己这边的（tank）添加为敌人 还要添加建筑
     detectingEnviromentchange(){
-        // if(this._name!='rhinocerotidaetank'){
-        //     return;
-        // }
+      
             let index=0,
                 distance =  10**9,//够大以防有小于他的
                 othereventlist = world.getEventlist('other',this.unittype),
@@ -565,12 +564,20 @@ export class Tank {
                    this._name!='liberationarmy'?tankattacking_audio.playAudio():soilderdoit_audio.playAudio()
                    this.movingwithattack = true
                    this.enemytarget = player.eventlist.tanklist[j] //这里只处理了地方tank，还有建筑未处理TODO--
+                   this.disguise()
                    return true
                   }
               }
            }
     }
-   
+   //伪装————对间谍有效
+   disguise(){
+      
+   }
+   //占领_偷盗TODO--
+
+
+
     ///障碍重排
     obstacleRepailie() {
             let alleventlist = world.getEventlist('all',this.unittype)
@@ -1270,10 +1277,14 @@ export class Tank {
     }
     loopMethods(){
             this.paintAgain();
-            this.detectingEnviromentchange();
-            this.handleMovingenemies()
+            //只对有攻击力的单位有效
+            if(this.harm){
+                this.detectingEnviromentchange();
+                this.handleMovingenemies()
+            }
+        
           
-      //  window.requestAnimationFrame(this.loopMethods.bind(this))
+      
     }
 
 

@@ -5,4 +5,6 @@ import {Soliderfactory} from './soliderfactory';
 import {Oil} from './oil'
 
 import {Wcf} from './wcf'
-export {Powerstation,Soliderfactory,Oil,Wcf}
+import {Prismtower} from './prismtower'
+import {Sentrycannon} from './sentrycannon'
+export {Powerstation,Soliderfactory,Oil,Wcf,Prismtower,Sentrycannon}

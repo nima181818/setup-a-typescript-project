@@ -15,7 +15,10 @@ const buiding =require('./eva_voice/building.mp3'),
       movingnow = require('./soilder_voice/moving now.mp3'),
       soilderbullet = require('./soilder_voice/soidler_bullet.mp3'),
       soilderdied = require('./soilder_voice/soidler_died.mp3'),
-      soilderdoit = require('./soilder_voice/soilder_lets_do_it.mp3')
+      soilderdoit = require('./soilder_voice/soilder_lets_do_it.mp3'),
+
+      //光棱塔的声音
+      ptattack = require('./pt_voice/ptattack.mp3')
 
 console.log(buiding,"啦啦啦啊")
 class Audios{
@@ -46,6 +49,9 @@ howaboutaction_audio = new Audios(howaboutaction.default),
 movingnow_audio = new Audios(movingnow.default),
 soilderbullet_audio = new Audios(soilderbullet.default),
 soilderdied_audio = new Audios(soilderdied.default),
-soilderdoit_audio = new Audios(soilderdoit.default)
+soilderdoit_audio = new Audios(soilderdoit.default),
 
-export {tankattacking_audio,soilderdoit_audio,buiding_audio,buidinginprogress_audio,cannotplayhere_audio,tankmoving_audio,waitingorders_audio,constructionalcomplete_audio,constructionalnoctions_audio,fireout_audio,howaboutaction_audio,movingnow_audio,soilderbullet_audio,soilderdied_audio}
+//光棱塔的攻击声音
+ptattack_audio = new Audios(ptattack.default)
+
+export {ptattack_audio,tankattacking_audio,soilderdoit_audio,buiding_audio,buidinginprogress_audio,cannotplayhere_audio,tankmoving_audio,waitingorders_audio,constructionalcomplete_audio,constructionalnoctions_audio,fireout_audio,howaboutaction_audio,movingnow_audio,soilderbullet_audio,soilderdied_audio}

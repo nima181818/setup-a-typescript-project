@@ -147,6 +147,16 @@ class Structure {
 
 
     }
+     //distance function 计算两点之间的距离
+		pointDistance(obj1:pointerface,obj2:pointerface,kf=false):number{
+			let distance =  (obj1.x-obj2.x)**2 +(obj1.y - obj2.y)**2;
+            return kf?(distance**0.5):distance			
+			
+        }
+        //监听模式对光棱塔和哨所炮成立
+        watchMode(){
+
+        }
     animationMthod(start: number, end: number) {
 
         let index = start;
@@ -154,12 +164,14 @@ class Structure {
             if (this.needanimation) {
                
                 this.animationtimer = window.setInterval(() => {
-                   
+                   if(this.name=='prismtower'){
+                       this.watchMode();
+                   }
                    
                     if(index%2==0&&this.name=='oil'&&index>=5){
                         player1.updateMoney('add',1)
                     }
-                 
+                    this.ctx.clearRect( this.positions.x,this.positions.y, this.size.x, this.size.y);
                     this.ctx.drawImage(this.imgList[index], this.positions.x, this.positions.y, this.size.x, this.size.y);
                     index++;
                     if (index > end) {
@@ -170,7 +182,7 @@ class Structure {
                 this.animationtimer = window.setInterval(() => {
                     index = this.imgList.length;
                     //TODO-- 这里不清除效果好一点点 ，但是对于上面需要自身更新的怎么办？
-                    //  this.ctx.clearRect( this.positions.x,this.positions.y, this.size.x/6, this.size.y/6);
+                    // 
                     this.ctx.drawImage(this.imgList[index - 1], this.positions.x, this.positions.y, this.size.x , this.size.y );
     
                 }, 16.6)

@@ -250,6 +250,11 @@ class Structure {
         this.destroy();
     }
     }
+      //Square conversion  计算长度本身上
+      squalCaculator(obj: pointerface, needgh: boolean = false) {
+        let value = obj.x ** 2 + obj.y ** 2;
+        return needgh ? (value ** 0.5) : value
+    }
     //处理自身位置的障碍
     handleSelfobstacle(obstacle: positions[]) {
         let temp = [];

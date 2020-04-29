@@ -78,11 +78,11 @@ export class Prismtower extends Structure {
     }
     //绘制_清除射线
     clearXray() {
-        debugger
+   
         let index = 0;
         let raylength = this.pointDistance(this.positions, this.attacktarget.currentclickpoints, true),
             verticee2s = {
-                x: this.attacktarget.currentclickpoints.x - (this.positions.x + this.size.x + 0.5),
+                x: this.attacktarget.currentclickpoints.x - (this.positions.x + this.size.x * 0.5),
                 y: this.attacktarget.currentclickpoints.y - (this.positions.y + 20)
             },
             sintheta = verticee2s.x / (this.squalCaculator(verticee2s, true)) ? verticee2s.x / (this.squalCaculator(verticee2s, true)) : 0,
@@ -101,6 +101,7 @@ export class Prismtower extends Structure {
             h = Math.abs(this.positions.y + 20 - this.attacktarget.currentclickpoints.y);
             setTimeout(()=>{
                 this.ctx.clearRect(x, y, w, h)
+                // this.clearLine(sintheta, costheta);
             },100)
         
         // let timerss = setInterval(() => {
@@ -118,6 +119,30 @@ export class Prismtower extends Structure {
     }
     clearLine(sintheta, costheta) {
 
+    let ps = {
+        x:this.positions.x+this.size.x*0.5,
+        y:this.positions.y+20
+    },
+        pte = {
+            x:this.attacktarget.currentclickpoints.x - ps.x,
+            y: this.attacktarget.currentclickpoints.y - ps.y
+        },
+        
+        pteel = {
+            x:pte.x/this.squalCaculator(pte)?pte.x/this.squalCaculator(pte,true):0,
+            y:pte.y/this.squalCaculator(pte)?pte.y/this.squalCaculator(pte,true):0,  //单位向量
+        },
+        rtw = 1.5/Math.abs(sintheta)?1.5/Math.abs(sintheta):2,
+        rth = 3/Math.abs(costheta)?3/Math.abs(costheta):2,
+        apart = 1.5/Math.abs(sintheta*costheta)?1.5/Math.abs(sintheta*costheta):2,
+        alllength = this.pointDistance(ps,this.attacktarget.currentclickpoints,true),
+        clearcounts = alllength/apart?alllength/apart:0;
+        debugger
+        for(let j=0;j<clearcounts;j++){
+            let x = ps.x + apart*j*pteel.x,
+                y = ps.y + apart*j*pteel.y
+            this.ctx.fillRect(x, y, rtw, rth)
+        }
 
         return
         console.log('cao ')

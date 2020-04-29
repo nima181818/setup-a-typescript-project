@@ -35,6 +35,35 @@ class Structuresets{
              }
          }
      }
+     //控制bar的显示与否
+     barControl(){
+        if(!(this.unittype.indexOf('play')!=-1)){
+            return; //AI 不参与bar的控制；
+        }
+         let hasbase = false, //是否有基地--》基地控制
+             hasguard = false, //是否防御 由于战车工厂控制
+             hassoilder = false, //是否有兵营 由兵营控制
+             haswcf = false //是否有战车工厂 由战车工厂控制
+
+             for(let j=0;j<this.unitsList.length;j++){
+                 if(this.unitsList[j].name=='base'){
+                    hasbase = true
+                 }
+                 if(this.unitsList[j].name=='soliderfactory'){
+                    hassoilder = true
+                 }
+                 if(this.unitsList[j].name=='wcf'){
+                    hasguard = true;
+                    haswcf = true
+                 }
+             }
+            return {
+                hasbase,
+                hasguard,
+                hassoilder,
+                haswcf
+            }
+     }
      //建筑的动画也均在此完成 TODO-- 还未实施
      structureAnimation(){
         for(let j in this.unitsList){

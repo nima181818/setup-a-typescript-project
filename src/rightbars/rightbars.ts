@@ -127,7 +127,7 @@ export class Rightbars {
     paintbarImg() {
         for (let j = 0; j < this.barElement.length; j++) {
             this.barElement[j].appendChild(this.barimgList[j + 4]);
-            this.barElement[j].onclick = function () {
+            this.barimgList[j + 4].onclick = function () {
 
                 this.currentpageIndex = j;
                 this.alllist[j].style.display = 'flex';
@@ -137,6 +137,8 @@ export class Rightbars {
                     if (k != j) {
                         this.barElement[k].innerHTML = '';
                         this.barElement[k].appendChild(this.barimgList[k + 4]);
+                        //校验是否有该选项
+                    //    let obj = player1.structuresets.barControl();
                         this.alllist[k].style.display = 'none'
                     }
                 }

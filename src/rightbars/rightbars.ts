@@ -127,8 +127,10 @@ export class Rightbars {
     paintbarImg() {
         for (let j = 0; j < this.barElement.length; j++) {
             this.barElement[j].appendChild(this.barimgList[j + 4]);
-            this.barimgList[j + 4].onclick = function () {
-
+            this.barElement[j].onclick = function () {
+                if(this.barElement[j].children[0].style.visibility=='hidden'){
+                    return;
+                }
                 this.currentpageIndex = j;
                 this.alllist[j].style.display = 'flex';
                 this.barElement[j].innerHTML = '';

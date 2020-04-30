@@ -2,7 +2,7 @@ import {BaseControl} from './basecontrol';
 import {Powerstation} from './powerstation';
 import {Soliderfactory} from './soliderfactory';
 import {Oil} from './oil'
-
+import {world} from '../World'
 import {Wcf} from './wcf'
 
 class Structuresets{
@@ -34,9 +34,11 @@ class Structuresets{
                  
              }
          }
+         this.barControl();
      }
      //控制bar的显示与否
      barControl(){
+         let rightbars = world.rightbars
         if(!(this.unittype.indexOf('play')!=-1)){
             return; //AI 不参与bar的控制；
         }
@@ -45,33 +47,58 @@ class Structuresets{
              hassoilder = false, //是否有兵营 由兵营控制
              haswcf = false //是否有战车工厂 由战车工厂控制
 
-             for(let j=0;j<this.unitsList.length;j++){
-                 if(this.unitsList[j].name=='base'){
-                    hasbase = true
+             for(let j in this.unitsList){
+                 if(j=='base'){
+                     if(this.unitsList[j].length){
+                        hasbase = true
+                     }
+                 
                  }
-                 if(this.unitsList[j].name=='soliderfactory'){
-                    hassoilder = true
+                 if(j=='soliderfactory'){
+                    if(this.unitsList[j].length){
+                        hassoilder = true
+                     }
+                  
                  }
-                 if(this.unitsList[j].name=='wcf'){
-                    hasguard = true;
+                 if(j=='wcf'){
+                    if(this.unitsList[j].length){
+                        hasguard = true;
                     haswcf = true
+                     }
+                   
                  }
              }
-            return {
-                hasbase,
-                hasguard,
-                hassoilder,
-                haswcf
-            }
+
+                 setTimeout(()=>{
+                    try{
+                        rightbars.barElement[0].children[0].style.visibility = hasbase?'visible':'hidden';
+                        rightbars.barElement[1].children[0].style.visibility = hasguard?'visible':'hidden';
+                        rightbars.barElement[2].children[0].style.visibility = hassoilder?'visible':'hidden';
+                        rightbars.barElement[3].children[0].style.visibility = haswcf?'visible':'hidden';
+                    }catch(e){
+                        console.log(e,"element did not init yet")
+                    }
+                   
+                 },1000)
+               
+         
+             
+            
+            // return {
+            //     hasbase,
+            //     hasguard,
+            //     hassoilder,
+            //     haswcf
+            // }
      }
      //建筑的动画也均在此完成 TODO-- 还未实施
      structureAnimation(){
         for(let j in this.unitsList){
             for(let k=0;k<this.unitsList[j].length;k++){
-                this.unitsList[j][k].paint(this.unitsList[j][k].position);
+                this.unitsList[j][k].animationMthod();
             }
         }
-        window.requestAnimationFrame(this.structureAnimation.bind(this))
+       // window.requestAnimationFrame(this.structureAnimation.bind(this))
      }
     
 

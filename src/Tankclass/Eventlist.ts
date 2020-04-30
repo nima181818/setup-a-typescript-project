@@ -18,8 +18,8 @@ class Eventlist {
         this.unittype = unittype
         this.initMapborder();
         setTimeout(()=>{
-            this.allTanksanimation();
-        },5000)
+     //       this.allTanksanimation();
+        },3000)
        
     }
     initMapborder(){
@@ -38,7 +38,7 @@ class Eventlist {
         }
        
       //  console.timeEnd()
-        window.setTimeout(this.allTanksanimation.bind(this),16.6666)
+    //    window.setTimeout(this.allTanksanimation.bind(this),16.6666)
     }
     movingjudge(e: MouseEvent) {
       console.log(e)

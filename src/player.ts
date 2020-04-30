@@ -24,6 +24,7 @@ export class Player {
         this.initCanvas();
         this.playersSelection();
         this.initBase(baseposition) //这里又要使用异步的方式 
+        this.allAnimations();
     } 
     //通过unittype获取eventList
 
@@ -51,7 +52,16 @@ export class Player {
                    
                 }
         })
-     
+       
+    }
+    //所有单位的动画 由于这个控制
+    allAnimations(){
+      //  setTimeout(()=>{
+            this.eventlist.allTanksanimation();
+            this.structuresets.structureAnimation();
+            window.requestAnimationFrame(this.allAnimations.bind(this))
+        ///},2000)
+
     }
     //更新金币
     updateMoney(type: string, value: number) {

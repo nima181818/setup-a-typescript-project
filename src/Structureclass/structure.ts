@@ -17,6 +17,9 @@ import {Structuresets} from './structureSet'
 class Structure {
     static ids:number=0
     unittype:string
+    alive:boolean=true //死亡还是活着
+    index:number = 0 //自身的动画片段
+    readyforselfanimation:boolean=false //已准备好自身的动画
     _id:number
     classType:string='structure' 
     name: string
@@ -76,6 +79,7 @@ class Structure {
     destroy() {
         clearInterval(this.animationtimer);
         this.animationtimer = null;
+        this.alive = false;
         console.log('建筑毁灭')
         let alleventlist = world.getEventlist('all',this.unittype)
         //地图上销毁障碍?这点还要反应到各个机车上？？？--代价应该不大 因为现在已明确找到了不用遍历直接操作map的方式
@@ -127,15 +131,16 @@ class Structure {
 
             if (index <= this.imgList.length) {
               
-                    this.ctx.clearRect(this.positions.x, this.positions.y, this.size.x, this.size.y );
+                    this.ctx.clearRect(this.positions.x, this.positions.y-2, this.size.x, this.size.y+4 );
                     this.ctx.drawImage(this.imgList[index - 1], this.positions.x, this.positions.y, this.size.x , this.size.y );
 
               
             } else {
                 clearInterval(time);
-                time = null
+                time = null;
+                this.readyforselfanimation = true
                 //  if(this.needanimation){
-                this.animationMthod(this.animationendstart, this.animationend);
+//this.animationMthod(this.animationendstart, this.animationend);
                 //  }
 
             }
@@ -157,35 +162,42 @@ class Structure {
         watchMode(){
 
         }
-    animationMthod(start: number, end: number) {
-
-        let index = start;
+    animationMthod() {
+          if((!this.alive)||(!this.readyforselfanimation)){
+            this.index = this.animationendstart;
+              return;
+          }
+           
+            let start = this.animationendstart;
+            let end = this.animationend;
+         
             let player1 = world.playerManage.find(item=>{ return item.unittype==this.unittype})
             if (this.needanimation) {
                
-                this.animationtimer = window.setInterval(() => {
+//this.animationtimer = window.setInterval(() => {
+                    //TODO circle time的处理 算作累加器0.2？
                    if(this.name=='prismtower'){
                        this.watchMode();
                    }
                    
-                    if(index%2==0&&this.name=='oil'&&index>=5){
+                    if(this.index%2==0&&this.name=='oil'&&this.index>=5){
                         player1.updateMoney('add',1)
                     }
                     this.ctx.clearRect( this.positions.x,this.positions.y, this.size.x, this.size.y);
-                    this.ctx.drawImage(this.imgList[index], this.positions.x, this.positions.y, this.size.x, this.size.y);
-                    index++;
-                    if (index > end) {
-                        index = start
+                    this.ctx.drawImage(this.imgList[this.index], this.positions.x, this.positions.y, this.size.x, this.size.y);
+                    this.index++;
+                    if (this.index > end) {
+                        this.index = start
                     }
-                }, this.circletime)
+            //    }, this.circletime)
             } else {
-                this.animationtimer = window.setInterval(() => {
-                    index = this.imgList.length;
+            //    this.animationtimer = window.setInterval(() => {
+                    this.index = this.imgList.length;
                     //TODO-- 这里不清除效果好一点点 ，但是对于上面需要自身更新的怎么办？
                     // 
-                    this.ctx.drawImage(this.imgList[index - 1], this.positions.x, this.positions.y, this.size.x , this.size.y );
+                    this.ctx.drawImage(this.imgList[this.index - 1], this.positions.x, this.positions.y, this.size.x , this.size.y );
     
-                }, 16.6)
+              //  }, 16.6)
             }
       
        

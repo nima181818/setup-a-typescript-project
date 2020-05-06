@@ -8,7 +8,7 @@ export class Oil extends Structure{
         super(unittype,bl, owner, position, name, ctx,size)
         //this.paint(position);
         this.imgUrllist = oilobj.oilimgUrllist
-        this.circletime = 100;
+        this.circletime = 1/6;
         this.animationendstart = 1;
         this.needanimation = true
         this.animationend = this.imgUrllist.length-1;

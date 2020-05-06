@@ -59,7 +59,9 @@ export class Player {
       //  setTimeout(()=>{
             this.eventlist.allTanksanimation();
             this.structuresets.structureAnimation();
-            window.requestAnimationFrame(this.allAnimations.bind(this))
+            window.setTimeout(()=>{
+                this.allAnimations();
+            },16)
         ///},2000)
 
     }
@@ -73,7 +75,9 @@ export class Player {
         }
         //TODO 现要考虑敌方AI
         if(this.unittype.indexOf('player') != -1){
-            this.moneyelement.innerHTML = '$' + this.money.toString()
+           
+           this.moneyelement.innerHTML = '$' + this.money.toString()
+           
         }
        
     }

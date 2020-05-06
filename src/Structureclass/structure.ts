@@ -179,13 +179,13 @@ class Structure {
                    if(this.name=='prismtower'){
                        this.watchMode();
                    }
-                   
-                    if(this.index%2==0&&this.name=='oil'&&this.index>=5){
+                   let showindex = parseInt(this.index.toString())
+                    if(showindex%2==0&&this.name=='oil'&&showindex>=5){
                         player1.updateMoney('add',1)
                     }
                     this.ctx.clearRect( this.positions.x,this.positions.y, this.size.x, this.size.y);
-                    this.ctx.drawImage(this.imgList[this.index], this.positions.x, this.positions.y, this.size.x, this.size.y);
-                    this.index++;
+                    this.ctx.drawImage(this.imgList[showindex], this.positions.x, this.positions.y, this.size.x, this.size.y);
+                    this.index+=this.circletime;
                     if (this.index > end) {
                         this.index = start
                     }
@@ -241,6 +241,13 @@ class Structure {
                         y: obstacle[j].x + this.closeFunc(this.positions.x - 200)
                     }
                   }
+                  //暂时将光棱塔的obstacle定义为oil的obstacle TODO--
+                  if(this.name=='prismtower'){
+                    item = {
+                        x: obstacle[j].y + this.closeFunc(this.positions.y - 400),
+                        y: obstacle[j].x + this.closeFunc(this.positions.x - 400)
+                    }
+                  }
                 temp.push(item)
             }
             console.log('已走')
@@ -281,7 +288,8 @@ class Structure {
                     y: parseInt((obstacle[j].y / 2).toString())
                 }
             }
-            if(this.name=='base'||this.name=='oil'||this.name=='powertation'){
+            //TODO-- 光棱塔的
+            if(this.name=='base'||this.name=='oil'||this.name=='powertation'||this.name=='prismtower'){
                 item = {
                     x: parseInt((obstacle[j].x).toString()),
                     y: parseInt((obstacle[j].y).toString())

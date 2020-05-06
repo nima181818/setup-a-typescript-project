@@ -11,5 +11,9 @@ declare interface pointerface {
    x:number,
    y:number
 }
+interface Function{
+    befores(f:Function)
+    
+  }  
 declare var Multithread
 

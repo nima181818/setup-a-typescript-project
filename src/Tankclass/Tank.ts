@@ -362,7 +362,9 @@ export class Tank {
     }
     runThefire(distance:number,obj,type){
         if(distance>this.firerange){
+           // console.time('666')
             clearTimeout(this.infire);
+            //console.timeEnd('666')
             this.infire = null;
             //这里表示距离还远不影响什么
             

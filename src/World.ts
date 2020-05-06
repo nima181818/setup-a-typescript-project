@@ -3,6 +3,22 @@ interface sizes {
   y: number
 
 }
+interface CanvasRenderingContext2D{
+  drawImage()
+}
+
+
+
+Function.prototype.befores=function(f){
+ let self = this;
+     return function(){
+        let can=f.apply(this,arguments);
+        if(!can){
+           return false
+        }
+        return self.apply(this,arguments)
+     }
+}
 import { transformimg } from './assets/imgurltransform'
 import { globalAstarmanage } from './utils/wayfinders';
 import {Littlewindow} from './rightbars/littlewindow'
@@ -27,6 +43,7 @@ const mapobstacle = require('./mapobstacle.json');
   constructor(size: sizes, ctx: HTMLCanvasElement) {
     this.size = size
     this.ctx = ctx.getContext('2d');
+this.changeCanvasdrawimgbehavior();
     this.initWorldobstacle();
     this.paint()
     this.bindScrollmapevent();
@@ -34,6 +51,19 @@ const mapobstacle = require('./mapobstacle.json');
     let ai1 = new Player('ai1',{ x: 3400, y: 600 });
     this.playerManage.push(player1,ai1);
    this.initComponents()
+  }
+  //试图改变drawImage的默认行为
+  changeCanvasdrawimgbehavior(){
+    let f=function(imgelement:any){
+      if(!imgelement){
+        console.log('还不得行哦')
+        return false
+      }else{
+        return true
+      }
+    }
+    CanvasRenderingContext2D.prototype.drawImage=CanvasRenderingContext2D.prototype.drawImage.befores(f)
+ 
   }
   initComponents(){
     this.littlewindow = new Littlewindow();

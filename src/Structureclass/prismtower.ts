@@ -12,7 +12,7 @@ export class Prismtower extends Structure {
     constructor(unittype: string, bl: number, owner: string, position: { x: number, y: number }, name: string, ctx: HTMLCanvasElement, size: { x: number, y: number }) {
         super(unittype, bl, owner, position, name, ctx, size)
         this.imgUrllist = ptobj.ptimgUrllist
-        this.circletime = 100;
+        this.circletime = 1/6;
         this.animationendstart = 6;
         this.animationend = 14
 
@@ -31,7 +31,7 @@ export class Prismtower extends Structure {
         this.handleSelfobstacle(powerstationobstacle.obstacle)
         //
     }
-    //监听模式
+    //监听模式 TODO-- 现在是连自己人都打
     watchMode() {
         let othereventlist = world.getEventlist('all', this.unittype),
             distance = 10 ** 9,

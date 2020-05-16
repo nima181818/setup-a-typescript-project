@@ -3,6 +3,7 @@ const buiding =require('./eva_voice/building.mp3'),
       cannotplayhere = require('./eva_voice/cannotplayhere.mp3'),
       constructionalcomplete = require('./eva_voice/constructionalcomplete.mp3'),
       constructionalnoctions =require('./eva_voice/constructionalnoctions.mp3'),
+      unitready = require('./eva_voice/unit_ready.mp3'),
 
       //犀牛坦克声音
       tankmoving = require('./tank_voice/moving_rank.mp3'),
@@ -38,6 +39,9 @@ buidinginprogress_audio = new Audios(buidinginprogress.default),
 cannotplayhere_audio = new Audios(cannotplayhere.default),
 constructionalcomplete_audio = new Audios(constructionalcomplete.default),
 constructionalnoctions_audio = new Audios(constructionalnoctions.default),
+unitready_audio = new Audios(unitready.default),
+
+
 //犀牛坦克声音
 tankmoving_audio = new Audios(tankmoving.default),
 waitingorders_audio = new Audios(waitingorders.default),
@@ -54,4 +58,4 @@ soilderdoit_audio = new Audios(soilderdoit.default),
 //光棱塔的攻击声音
 ptattack_audio = new Audios(ptattack.default)
 
-export {ptattack_audio,tankattacking_audio,soilderdoit_audio,buiding_audio,buidinginprogress_audio,cannotplayhere_audio,tankmoving_audio,waitingorders_audio,constructionalcomplete_audio,constructionalnoctions_audio,fireout_audio,howaboutaction_audio,movingnow_audio,soilderbullet_audio,soilderdied_audio}
+export {ptattack_audio,tankattacking_audio,unitready_audio,soilderdoit_audio,buiding_audio,buidinginprogress_audio,cannotplayhere_audio,tankmoving_audio,waitingorders_audio,constructionalcomplete_audio,constructionalnoctions_audio,fireout_audio,howaboutaction_audio,movingnow_audio,soilderbullet_audio,soilderdied_audio}

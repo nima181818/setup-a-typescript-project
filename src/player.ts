@@ -14,6 +14,7 @@ export class Player {
     structuresets: any
     eventlist: any
     money: number = 1000
+    powernumber:number = 0
     unittype: string
     moneyelement: HTMLDivElement
     constructor(unittype: string,baseposition:pointerface) {
@@ -26,6 +27,22 @@ export class Player {
         this.initBase(baseposition) //这里又要使用异步的方式 
         this.allAnimations();
     } 
+    powerCanculations(type:string,value:number){
+        let powerel = document.getElementById('powernumber') as HTMLSpanElement;
+        
+        if(type=='add'){
+           
+                 
+            this.powernumber+=value
+        }
+        if(type=='reduce'){
+            let tempvalue = this.powernumber;
+            tempvalue-=value;
+           
+            this.powernumber-=value
+        }
+        powerel.innerHTML = this.powernumber.toString()
+    }
     //通过unittype获取eventList
 
     //初始化canvas |以及金钱
@@ -59,9 +76,10 @@ export class Player {
       //  setTimeout(()=>{
             this.eventlist.allTanksanimation();
             this.structuresets.structureAnimation();
-            window.setTimeout(()=>{
-                this.allAnimations();
-            },16)
+            // window.setTimeout(()=>{
+            //     this.allAnimations();
+            // },16)
+            window.requestAnimationFrame(this.allAnimations.bind(this))
         ///},2000)
 
     }

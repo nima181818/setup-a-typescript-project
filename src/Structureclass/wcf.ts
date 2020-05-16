@@ -19,7 +19,9 @@ export class Wcf extends Structure{
             this.paint(position)
         })
         this.cost = 250
+        this.powercost=200
         this.blood=30
        //TODO--未添加发电厂的障碍
+       this.powerCaluc('born')
     }
 }

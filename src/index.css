@@ -36,6 +36,7 @@ body{
     flex-wrap: wrap;
     position: relative;
 }
+.wartanklist>div,
 .soilderlist>div,
 .guardlist>div,
 .stlist>div{
@@ -46,6 +47,7 @@ body{
     padding:2px;
     
 }
+.wartanklist>div>img,
 .soilderlist>div>img,
 .guardlist>div>img,
 .stlist>div>img{

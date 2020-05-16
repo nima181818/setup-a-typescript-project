@@ -30,7 +30,7 @@ export class BaseControl extends Structure {
                 this.ctx.clearRect(position.x,position.y, this.size.x, this.size.y);
                 this.ctx.drawImage(this.imgList[parseInt(index.toString())], position.x,position.y, this.size.x, this.size.y);
                 if(this.innewbuilding){
-                    index+=0.2;
+                    index+=0.5;
                    if(index>=this.imgList.length-1){
                        this.innewbuilding = false;
                        index=0;

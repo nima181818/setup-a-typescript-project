@@ -112,7 +112,8 @@ export class Bullet{
           },
           t=0;
           let timer = setInterval(()=>{
-            t+=0.03;
+          
+            t+=0.1;
             this.currentctx.clearRect(oldp.x-3,oldp.y-3,this.size.width+2,this.size.height+2);
             p.x = p0.x*(1-t)**2+2*(1-t)*t*p1.x+(t**2)*p2.x
             p.y = p0.y*(1-t)**2+2*(1-t)*t*p1.y+(t**2)*p2.y;
@@ -128,7 +129,7 @@ export class Bullet{
            
             oldp= JSON.parse(JSON.stringify(p));
             
-             if((p.x-p2.x)**2+(p.y-p2.y)**2<6){
+             if((p.x-p2.x)**2+(p.y-p2.y)**2<6||(!this.master.alive)){
                 this.currentctx.clearRect(p.x-2,p.y-2,this.size.width+1,this.size.height+1);
                clearInterval(timer);
                this.explosionEffect();
@@ -155,7 +156,7 @@ export class Bullet{
            }
            
         }
-       },30)
+       },16.66)
     }
  //距离公式
  distanceFormlation(p1:pointerface,p2:pointerface,kf:boolean = false){

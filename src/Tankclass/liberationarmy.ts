@@ -21,6 +21,7 @@ interface Position1 {
     firetimes:number=0
     constructor(unittype:string,position: Position1) {
         super(unittype,position)
+       
         this.bodyposition = true
         this.width = 38; //覆盖父的
         this.obwidth = this.width/3*2
@@ -30,10 +31,10 @@ interface Position1 {
         this.blood = 15;
         this.maxblood = 15
         this.firerate = 150; //攻速
-        this.MAX_SPEED = 18;
+        this.MAX_SPEED = 54;
         this._name = 'liberationarmy';
-        this.harm = 0.5;
-   
+        this.harm = 0.5; 
+        
        this.destinationpoint = JSON.parse(JSON.stringify(this.currentclickpoints))
        pics(imgList,picimgList).then(()=>{
         this.imgList = imgList

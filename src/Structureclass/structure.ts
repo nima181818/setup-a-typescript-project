@@ -25,7 +25,9 @@ class Structure {
     name: string
     imginitsuccess:boolean=false
     cost:number //消耗
+    powercost:number //电量消耗
     blood: number
+    maxblood:number
     owner: string
     imgsize: positions
     ctx: any
@@ -42,6 +44,7 @@ class Structure {
     constructor(unittype:string,bl: number, owner: string, position: positions, name: string, ctx: HTMLCanvasElement, size: positions) {
         this.unittype = unittype
         this.blood = bl;
+        this.maxblood = bl;
         Structure.ids++;
         this._id = Structure.ids
         this.owner = owner
@@ -65,7 +68,7 @@ class Structure {
             let player1 = world.playerManage.find(item=>{return item.unittype==this.unittype})
             player1.updateMoney('reduce',this.cost)
         })
-       
+     
     }
     
    
@@ -85,7 +88,7 @@ class Structure {
         //地图上销毁障碍?这点还要反应到各个机车上？？？--代价应该不大 因为现在已明确找到了不用遍历直接操作map的方式
         for (let j = 0; j < alleventlist.tanklist.length; j++) {
             for (let k = 0; k < this.ownobstacles.length; k++) {
-                alleventlist.tanklist[j].globalAstarmanage.map[this.ownobstacles[k].y][this.ownobstacles[k].x] = 0;
+                alleventlist.tanklist[j].globalAstarmanage.map[this.ownobstacles[k].x][this.ownobstacles[k].y] = 0;
 
             }
         }
@@ -99,8 +102,19 @@ class Structure {
                 }
             }
         }
+        //电量占用解除TODO
+        this.powerCaluc('die')
     }
-
+//电量相关 类型：出生和死亡
+     powerCaluc(type:string){
+        let player = world.playerManage.find(item=>{return item.unittype==this.unittype});
+        if(type=='born'){
+            player.powerCanculations('reduce',this.powercost)
+        }
+        if(type=='die'){
+            player.powerCanculations('add',this.powercost)
+        }
+     }
     initImgelement() {
         return new Promise((res, rej) => {
             let counts = 0;
@@ -163,6 +177,9 @@ class Structure {
 
         }
     animationMthod() {
+        if(this.name=='prismtower'){
+            debugger
+        }
           if((!this.alive)||(!this.readyforselfanimation)){
             this.index = this.animationendstart;
               return;
@@ -176,6 +193,8 @@ class Structure {
                
 //this.animationtimer = window.setInterval(() => {
                     //TODO circle time的处理 算作累加器0.2？
+
+                
                    if(this.name=='prismtower'){
                        this.watchMode();
                    }
@@ -183,6 +202,9 @@ class Structure {
                     if(showindex%2==0&&this.name=='oil'&&showindex>=5){
                         player1.updateMoney('add',1)
                     }
+                    // if(this.name=='prismtower'){
+                    //     console.log(showindex)
+                    // }
                     this.ctx.clearRect( this.positions.x,this.positions.y, this.size.x, this.size.y);
                     this.ctx.drawImage(this.imgList[showindex], this.positions.x, this.positions.y, this.size.x, this.size.y);
                     this.index+=this.circletime;
@@ -251,6 +273,7 @@ class Structure {
                 temp.push(item)
             }
             console.log('已走')
+            this.ownobstacles = temp //TODO新加的 之前貌似有点问题
     //    }
         globalAstarmanage.addObstacle(temp, 333);
         //当建筑出生的时候 动态映射到真实地图和每个坦克的地图上

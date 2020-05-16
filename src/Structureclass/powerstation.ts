@@ -13,6 +13,7 @@ export class Powerstation extends Structure{
             y:1009/12
         }
         this.cost = 150
+        this.powercost = -300
         imginits(powerstationobj.powerstationimgUrllist,powerstationobj.powerstationimgList).then(()=>{
             this.imginitsuccess = true;
             this.imgList = powerstationobj.powerstationimgList
@@ -22,5 +23,7 @@ export class Powerstation extends Structure{
         this.needanimation = true
         this.handleSelfobstacle(powerstationobstacle.obstacle)
        //
+       this.powerCaluc('born')
     }
+    
 }

@@ -139,10 +139,12 @@ class Buildinglayer {
                 x: this.size.width,
                 y: this.size.height
             }
+           
 
         // Powerstation,Soliderfactory,Oil
         switch (this.type_name) {
             case 'stpowertation':
+                
                 let powerstation = new Powerstation('player1', 10, '20', buildinglocation, 'powertation', this.canvas, size);
                 break;
             case 'stinfantry':
@@ -155,9 +157,10 @@ class Buildinglayer {
                 let wcf = new Wcf('player1', 10, '20', buildinglocation, 'wcf', this.canvas, size);
                 break;
             case 'gdprismtower':
+                debugger
                 let prismtower = new Prismtower('player1', 10, '20', buildinglocation, 'prismtower', this.canvas, size);
                 break;
-            case 'gdprismtower':
+            case 'gdprismtower':   //TODO __这里是哨所炮还未做
                 let gdsentrycannon = new Sentrycannon('player1', 10, '20', buildinglocation, 'sentrycannon', this.canvas, size);
                 break;
             default:

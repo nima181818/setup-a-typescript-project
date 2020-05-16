@@ -12,7 +12,7 @@ export class Prismtower extends Structure {
     constructor(unittype: string, bl: number, owner: string, position: { x: number, y: number }, name: string, ctx: HTMLCanvasElement, size: { x: number, y: number }) {
         super(unittype, bl, owner, position, name, ctx, size)
         this.imgUrllist = ptobj.ptimgUrllist
-        this.circletime = 1/6;
+        this.circletime = 1/3;
         this.animationendstart = 6;
         this.animationend = 14
 
@@ -21,6 +21,7 @@ export class Prismtower extends Structure {
             y: 95
         }
         this.cost = 400
+        this.powercost = 300
         imginits(ptobj.ptimgUrllist, ptobj.ptimgList).then(() => {
             this.imginitsuccess = true;
             this.imgList = ptobj.ptimgList
@@ -30,6 +31,7 @@ export class Prismtower extends Structure {
         this.needanimation = true
         this.handleSelfobstacle(powerstationobstacle.obstacle)
         //
+        this.powerCaluc('born')
     }
     //监听模式 TODO-- 现在是连自己人都打
     watchMode() {
@@ -53,7 +55,7 @@ export class Prismtower extends Structure {
             this.fire()
             //
         } else {
-            console.log(distance, this.firerange)
+            //console.log(distance, this.firerange)
             // clearTimeout(this.firetimer);
             //this.firetimer =  null
         }
@@ -74,7 +76,7 @@ export class Prismtower extends Structure {
     xrayAttack() {
         this.clearXray();
         ptattack_audio.playAudio()
-        //   this.attacktarget.bloodLess(this.harm)
+       this.attacktarget.bloodLess(this.harm)
     }
     //绘制_清除射线
     clearXray() {

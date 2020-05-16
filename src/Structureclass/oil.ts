@@ -17,6 +17,7 @@ export class Oil extends Structure{
             y:1009/12
         }
         this.cost = 200
+        this.powercost=150
         this.needanimation = true
         imginits(oilobj.oilimgUrllist,oilobj.oilimgList).then(()=>{
             this.imginitsuccess = true;
@@ -25,5 +26,6 @@ export class Oil extends Structure{
         })
         this.blood=30
         this.handleSelfobstacle(oilobstacle.obstacle)
+        this.powerCaluc('born')
     }
 }

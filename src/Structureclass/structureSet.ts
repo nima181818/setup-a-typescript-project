@@ -1,6 +1,7 @@
 import {BaseControl} from './basecontrol';
 import {Powerstation} from './powerstation';
 import {Soliderfactory} from './soliderfactory';
+import {Prismtower} from './prismtower'
 import {Oil} from './oil'
 import {world} from '../World'
 import {Wcf} from './wcf'
@@ -11,6 +12,7 @@ class Structuresets{
      soliderfactory:Soliderfactory[]=[]
      oil:Oil[]=[]
      wcf:Wcf[]=[]
+     prismtower:Prismtower[]=[]
      unitsList:any={}
      unittype:string
      constructor(unittype:string){
@@ -19,6 +21,7 @@ class Structuresets{
           this.unitsList.powertation = this.powertation;
           this.unitsList.soliderfactory = this.soliderfactory;
           this.unitsList.oil = this.oil;
+          this.unitsList.prismtower = this.prismtower
           this.unitsList.wcf = this.wcf
      }
      //增加-新建_死亡-减少建筑

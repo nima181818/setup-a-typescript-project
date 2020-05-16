@@ -17,6 +17,7 @@ console.log(rvosystem)
 export class Tank {
     static id: number = -1
     cost:number //消耗金钱
+    alive:boolean=true
     gathertimeobj:{s:number,e:number}={s:null,e:null} //截取时间开始与截取时间结束
     unittype:string
     classType:string='tank' //类型 有tank和建筑
@@ -133,8 +134,8 @@ export class Tank {
         this.watcher.responseMode(this, 'multiselect');
 
 
-        this.watcher.register('startmovingTrigger', this.startmovingTrigger);
-        this.watcher.responseMode(this, 'startmoving');
+        // this.watcher.register('startmovingTrigger', this.startmovingTrigger);
+        // this.watcher.responseMode(this, 'startmoving');
 
 
 
@@ -149,10 +150,13 @@ export class Tank {
              
 
 
-
-        // if(this.unittype=='ai1'){
-        //     this.MAX_SPEED=20;
-        // }
+         /*
+		
+		 */
+       
+		 
+	//	 this.paintAgain()
+		 
     }
     //初始化几个tank集合 other，all，my
     initEventtanklist(){
@@ -165,8 +169,9 @@ export class Tank {
     }
     //动态的改变自己的 
     currentclickpointsTrigger() {
-      
-        if (this.ownobstacles.length) {
+		//尝试设置为异步让子先初始化好
+      setTimeout(()=>{
+		   if (this.ownobstacles.length) {
             this.realUpdatingownerobstacle(0)
         }
     
@@ -182,6 +187,9 @@ export class Tank {
         this.proxycurrentclickpoints.y = this.currentclickpoints.y + Math.random();
         this.realUpdatingownerobstacle(3)
      
+		  
+	  })
+       
 
         //还要做一件事 AI会告诉我他的位置TODO 不是追逐TODO
       
@@ -190,7 +198,7 @@ export class Tank {
     selectedTrigger(){
       if(this.selected){
         // tankmoving_audio
-        if(this._name=='rhinocerotidaetank'){
+	if(this._name=='rhinocerotidaetank'||this._name=='skystarttank'){
             waitingorders_audio.playAudio();
         }else if(this._name=='liberationarmy'){
             howaboutaction_audio.playAudio();
@@ -203,7 +211,7 @@ export class Tank {
     //多选改变
     multiselectTrigger(){
       if(this.multiselect){
-        if(this._name=='rhinocerotidaetank'){
+        if(this._name=='rhinocerotidaetank'||this._name=='skystarttank'){
             waitingorders_audio.playAudio();
         }else if(this._name=='liberationarmy'){
             howaboutaction_audio.playAudio();
@@ -215,12 +223,14 @@ export class Tank {
       }
     }
     
-    //去目的地改变
-    startmovingTrigger(){
-        
+    //去目的地改变 //参数表示是否是从出生位置到集合点
+    startmovingTrigger(byborn:boolean=false){
+        if(byborn){
+            return
+        }
         if(this.startmoving){
        //     this.movingwithattack = false;
-            if(this._name=='rhinocerotidaetank'){
+            if(this._name=='rhinocerotidaetank'||this._name=='skystarttank'){
                 //目标点不是敌人
                 if(!this.enemytarget){
                     tankmoving_audio.playAudio();
@@ -283,6 +293,7 @@ export class Tank {
       4，弹出eventList.tanklist
     */
     destroy(){
+		this.alive = false
         if(this._name=='liberationarmy'){
             soilderdied_audio.playAudio()
         }
@@ -318,11 +329,13 @@ export class Tank {
     //监听敌人 是否在攻击范围内 在的话 TODO--  静态的敌人？？TODO
     // 现目前是将自己这边的（tank）添加为敌人 还要添加建筑
     detectingEnviromentchange(){
-      
+      	  
             let index=0,
                 distance =  10**9,//够大以防有小于他的
                 othereventlist = world.getEventlist('other',this.unittype),
-                otherstructuresets = world.playerManage.find(item=>{return item.unittype!=this.unittype}).structuresets //注意这里要改进
+				
+                otherstructuresets = world.playerManage.find(item=>{return item.unittype!=this.unittype}).structuresets, //注意这里要改进
+			    mystructuresets = world.playerManage.find(item=>{return item.unittype==this.unittype}).structuresets //自己的建筑，对工程师有效
               //这里处理了 tank  
             for(let j=0;j<othereventlist.tanklist.length;j++){
                     if(distance>=this.pointDistance(othereventlist.tanklist[j].currentclickpoints,this.currentclickpoints,true)){
@@ -335,7 +348,8 @@ export class Tank {
            let strindex=0,
                strname = '',
                strdistance = 10**9;
-               for(let j in otherstructuresets.unitsList){
+			   if(this._name!='engineer'){
+				    for(let j in otherstructuresets.unitsList){
                    for(let k=0;k<otherstructuresets[j].length;k++){
                        let structurecenter = {
                            x:otherstructuresets[j][k].positions.x + otherstructuresets[j][k].size.x*0.5,
@@ -349,8 +363,35 @@ export class Tank {
                        }
                    }
                }
+			   }else{
+				   //TODO 工程师的情况
+				   let temp:any={}
+				   for(let m in mystructuresets.unitsList){
+					   temp[m]=[...mystructuresets.unitsList[m]]
+				   }
+				    for(let n in otherstructuresets.unitsList){
+						
+					   temp[n].push(...otherstructuresets.unitsList[n])
+				   }
+				    for(let j in temp){
+                   for(let k=0;k<temp[j].length;k++){
+                       let structurecenter = {
+                           x:temp[j][k].positions.x + temp[j][k].size.x*0.5,
+                           y:temp[j][k].positions.y + temp[j][k].size.y*0.5,
+                       }
+                       if(strdistance>=this.pointDistance(this.currentclickpoints,structurecenter,true)){
+                        strdistance = this.pointDistance(this.currentclickpoints,structurecenter,true);
+                        strname = j;
+                        strindex = k;
+
+                       }
+                   }
+               }
+			   }
+              
             //比较 strdistance和distance的大小,取较小者
-              let smaller = strdistance>distance?'tank':'structure'
+              let smaller = strdistance>distance?'tank':'structure';
+		
           if(smaller=='tank'){
             this.runThefire(distance,othereventlist.tanklist[index],smaller)
           }else{
@@ -361,6 +402,7 @@ export class Tank {
           
     }
     runThefire(distance:number,obj,type){
+		
         if(distance>this.firerange){
            // console.time('666')
             clearTimeout(this.infire);
@@ -374,7 +416,7 @@ export class Tank {
             }
                }else{
         //    console.log('有目标',this.unittype)
-    
+              
             //有目标  TODO 运动状态下是否攻击？ 否?
             if(!this.timer){
                if(!this.infire){
@@ -401,7 +443,12 @@ export class Tank {
                     clearInterval(this.timer);
                     this.timer = null;
                     this.velocity.x=0;
-                    this.velocity.y=0
+                    this.velocity.y=0;
+					//如果是工程师 进入建筑之后 毁灭
+					if(this._name=='engineer'){
+						this.engineerOperationsprejudge()
+						this.destroy();
+					}
                 }
             }
 
@@ -414,6 +461,9 @@ export class Tank {
     }
        //处理运动中的敌人
        handleMovingenemies(){
+		   if(!this.harm){
+			   return;
+		   }
         if(this.enemytarget){
             if(this.enemytarget.timer){
               if(!this.recalculatetimer){
@@ -473,8 +523,42 @@ export class Tank {
            
      handle(this.globalAstarmanage.map,sp,ep)
     }
+	//工程师对单位造成的后果
+	engineerOperationsprejudge(){
+		let enemystructuresets = world.playerManage.find(item=>{return item.unittype!=this.unittype}).structuresets,
+			    mystructuresets = world.playerManage.find(item=>{return item.unittype==this.unittype}).structuresets;
+		if(this.enemytarget){
+			
+			if(this.enemytarget.unittype != this.unittype){
+				this.enemytarget.unittype = this.unittype;//TODO ?将敌方变成自己的，是否要destroy?
+			
+			//处理敌方unitList
+			for(let m in enemystructuresets.unitsList){
+				for(let n=0;n<enemystructuresets.unitsList[m].length;n++){
+					if(enemystructuresets.unitsList[m][n]._id==this.enemytarget._id){
+						enemystructuresets.unitsList[m].splice(n,1)
+					}
+				}
+			}
+			//处理自己unitList 往unitList中添加
+			
+			for(let m in mystructuresets.unitsList){
+				if(m==this.enemytarget.name){
+					mystructuresets.unitsList[m].push(this.enemytarget)
+				}
+			}
+			
+			}else{
+				//让建筑满血
+				this.enemytarget.blood = this.enemytarget.maxblood
+			}
+			
+			
+			
+		}
+	}
     //坦克手动移动的操作
-    setTankspoints(x: number, y: number, type: string, movingcommander: boolean = false) {
+    setTankspoints(x: number, y: number, type: string, movingcommander: boolean = false,byborn:boolean=false) {
         this.startmoving = false
         if (type == 'setstartpoints') {
             let { x, y } = this.currentclickpoints;
@@ -502,8 +586,15 @@ export class Tank {
             }
             this.globalAstarmanage.setStartpointandendpoint(this.closeFunc(this.startpoint.y), this.closeFunc(this.startpoint.x), 'startpoint');
             this.globalAstarmanage.setStartpointandendpoint(this.closeFunc(this.targetpoint.y), this.closeFunc(this.targetpoint.x), 'endpoint');
-            this.judgeDestinationhasenemy({x,y})
+            let judgevalue = this.judgeDestinationhasenemy({x,y},this._name)
+			if(this._name=='engineer'){
+				if(judgevalue=='enemy is a tank'){
+					alert('工程师无法攻击敌人')
+					return;
+				}
+			}
             this.obstacleRepailie();
+			
 			if(this.workername){
 				window[this.workername].terminate();  //去掉正在运行的worker
 			}
@@ -520,7 +611,8 @@ export class Tank {
              console.time('x')
           let handle = MT.process(this.globalAstarmanage.prepareForwebworker,(e)=>{
             console.timeEnd('x')
-              this.startmoving=true
+              this.startmoving=true;
+              this.startmovingTrigger(byborn)
             this.globalAstarmanage.map = e.map;
             this.globalAstarmanage.lastwaysmatrixlist = e.lastwaysmatrixlist;
 		      this.workername = null; //置空
@@ -553,24 +645,83 @@ export class Tank {
             
         }
     }
-    //判断目标点的位置是否被敌人占据
-    judgeDestinationhasenemy(p:pointerface){
+    //判断目标点的位置是否被敌人占据 mytype参数貌似没用？TODO
+    judgeDestinationhasenemy(p:pointerface,mytype:string='army'):string{
         this.enemytarget = null;
         this.movingwithattack=false
         //TODO-- 待优化 如果敌人有多股势力怎么办?
-        let player = world.playerManage.find((item)=>{return item.unittype!=this.unittype});
-           if(player){
-            //    let hasenemys=null
-              for(let j=0;j<player.eventlist.tanklist.length;j++){
+        let player = world.playerManage.find((item)=>{return item.unittype!=this.unittype}),
+		    myplayer = world.playerManage.find((item)=>{return item.unittype==this.unittype});
+           if(player||myplayer){
+             
+				   for(let j=0;j<player.eventlist.tanklist.length;j++){
                   if(this.pointDistance(p,player.eventlist.tanklist[j].currentclickpoints,true)<=player.eventlist.tanklist[j].r){
-                   this._name!='liberationarmy'?tankattacking_audio.playAudio():soilderdoit_audio.playAudio()
+					  if(this._name=='liberationarmy'){
+						  soilderdoit_audio.playAudio()
+					  }
+					  if(this._name=='engineer'){
+					  }
+					  if(this._name=='rhinocerotidaetank'||this._name=='skystarttank'){
+						  tankattacking_audio.playAudio()
+					  }
+                  
                    this.movingwithattack = true
                    this.enemytarget = player.eventlist.tanklist[j] //这里只处理了地方tank，还有建筑未处理TODO--
                    this.disguise()
-                   return true
+                   return 'enemy is a tank'
                   }
               }
+			  if(this._name=='engineer'){
+				  for(let j in myplayer.structuresets.unitsList){
+				for(let k=0;k<myplayer.structuresets.unitsList[j].length;k++){
+					let currentstructure = myplayer.structuresets.unitsList[j][k],
+					    centerposition = {
+							x:currentstructure.positions.x + 0.5*currentstructure.size.x,
+							y:currentstructure.positions.y + 0.5*currentstructure.size.y,
+						}
+						//currentstructure.size.x??
+					 if(this.pointDistance(p,centerposition,true)<=currentstructure.size.x){
+                   this.movingwithattack = true
+                   this.enemytarget = currentstructure //这里只处理了地方tank，还有建筑未处理TODO--
+                   this.disguise()
+                   return 'enemy is a my structure'
+                  }
+					
+				}
+                 
+              }
+				}
+			for(let j in player.structuresets.unitsList){
+				for(let k=0;k<player.structuresets.unitsList[j].length;k++){
+					let currentstructure = player.structuresets.unitsList[j][k],
+					    centerposition = {
+							x:currentstructure.positions.x + 0.5*currentstructure.size.x,
+							y:currentstructure.positions.y + 0.5*currentstructure.size.y,
+						}
+						//currentstructure.size.x??
+					 if(this.pointDistance(p,centerposition,true)<=currentstructure.size.x){
+					  if(this._name=='liberationarmy'){
+						  soilderdoit_audio.playAudio()
+					  }
+					  if(this._name=='engineer'){
+						  
+						  //TODO
+					  }
+					  if(this._name=='rhinocerotidaetank'){
+						  tankattacking_audio.playAudio()
+					  }
+                  
+                   this.movingwithattack = true
+                   this.enemytarget = currentstructure //这里只处理了地方tank，还有建筑未处理TODO--
+                   this.disguise()
+                   return 'enemy is a structure'
+                  }
+					
+				}
+                 
+              }
            }
+		   return 'no enemy'
     }
    //伪装————对间谍有效
    disguise(){
@@ -582,7 +733,10 @@ export class Tank {
 
     ///障碍重排
     obstacleRepailie() {
-            let alleventlist = world.getEventlist('all',this.unittype)
+		
+            let alleventlist = world.getEventlist('all',this.unittype),
+			    player = world.playerManage.find((item)=>{return item.unittype!=this.unittype}),
+				myplayer = world.playerManage.find((item)=>{return item.unittype==this.unittype})
         for (let j = 0; j < alleventlist.tanklist.length; j++) {
             //这里应该是虚拟地图对真实地图进行映射,再加一个条件：目标点是敌人的话 那一坨应该不设置为障碍物
             if (this._id !== alleventlist.tanklist[j]._id) {
@@ -599,7 +753,7 @@ export class Tank {
                             &&
                             u * 10 <= alleventlist.tanklist[j].ownobstacles[1].x
                         ) {
-                          //-- 还有建筑物生成的障碍物未处理
+                          //-- 还有建筑物生成的障碍物未处理TODO
                           if(this.globalAstarmanage.map[k][u]!=33&&this.globalAstarmanage.map[k][u]!=333){
                               
                             this.globalAstarmanage.map[k][u] = 3;
@@ -617,7 +771,39 @@ export class Tank {
 
         }
      
-       //
+       //处理建筑
+	   for (let m in player.structuresets.unitsList) {
+	       for (let n = 0; n < player.structuresets.unitsList[m].length; n++) {
+	           let str = player.structuresets.unitsList[m][n]
+	                   if (this.enemytarget) {
+	                       if (str._id == this.enemytarget._id) {
+							   for(let j=0;j<str.ownobstacles.length;j++){
+								    this.globalAstarmanage.map[str.ownobstacles[j].x][str.ownobstacles[j].y] = 0;
+									console.log(str.ownobstacles[j].x,str.ownobstacles[j].y)
+							   }
+	                          
+	                       }
+	                   }
+	       }
+	   }
+	   //当选中对象为工程师的时候 同时也要将自己的建筑纳入考虑
+	   if(this._name=='engineer'){
+		   for (let m in myplayer.structuresets.unitsList) {
+	       for (let n = 0; n < myplayer.structuresets.unitsList[m].length; n++) {
+	           let str = myplayer.structuresets.unitsList[m][n]
+	                   if (this.enemytarget) {
+	                       if (str._id == this.enemytarget._id) {
+							   for(let j=0;j<str.ownobstacles.length;j++){
+								    this.globalAstarmanage.map[str.ownobstacles[j].x][str.ownobstacles[j].y] = 0;
+									console.log(str.ownobstacles[j].x,str.ownobstacles[j].y)
+							   }
+	                          
+	                       }
+	                   }
+	       }
+	   }
+		   
+	   }
     //   
      
     }
@@ -835,7 +1021,7 @@ export class Tank {
         let value = (p1.x - p2.x)**2+(p1.y-p2.y)**2;
         return kf?(value**0.5):value
     }
-    //重绘--自身的图片形状
+    //重绘--自身的图片形状  类型：初始化阶段需要调用一次
     paintAgain() {
         // this.currentclickpoints.x += this.velocity.x * this.dt;
         // this.currentclickpoints.y += this.velocity.y * this.dt;
@@ -843,6 +1029,15 @@ export class Tank {
             //动画控制权交由fire函数控制  //具有特异性。对兵种成立，对坦克不成立
             return 
         }
+		if(!this.timer){
+			//这里还要添加当为天启动坦克的时候
+			if(this._name!='rhinocerotidaetank'){
+				 this.currentctx.clearRect(this.currentclickpoints.x - this.velocity.x * this.dt-this.width*0.5-2, this.currentclickpoints.y - this.velocity.y * this.dt-this.height*0.5-2, this.width+3, this.height+3);
+            this.currentctx.drawImage(this.picimgList[0], this.currentclickpoints.x-this.width*0.5, this.currentclickpoints.y-this.height*0.5, this.width, this.height)
+        return;
+			}
+			
+		}
         let picindex = 0,
             velocitylength = this.squalCaculator(this.velocity, true),
             v =　{
@@ -1211,9 +1406,12 @@ export class Tank {
     //选中时显示血量
     showBloodlength(x: number = this.currentclickpoints.x, y: number = this.currentclickpoints.y) {
 //console.time()
+     
         let ablood = this.obwidth/this.maxblood;
         this.currentctx.clearRect(this.currentclickpoints.x - this.velocity.x * this.dt-this.obwidth*0.5-3,this.currentclickpoints.y - this.velocity.y * this.dt-this.obheight*0.5-11-3,this.obwidth+(1/5)*ablood+6,7+6);
-
+if(!(this.selected||this.multiselect)){
+		 return;
+	 }
         if(this.selected||this.multiselect){
             this.currentctx.fillStyle='white'
             this.currentctx.fillRect(this.currentclickpoints.x-this.obwidth*0.5,this.currentclickpoints.y-this.obheight*0.5-11,this.obwidth+(1/5)*ablood,7);
@@ -1280,10 +1478,10 @@ export class Tank {
     loopMethods(){
             this.paintAgain();
             //只对有攻击力的单位有效
-            if(this.harm){
+          //  if(this.harm){
                 this.detectingEnviromentchange();
                 this.handleMovingenemies()
-            }
+     //       }
         
           
       

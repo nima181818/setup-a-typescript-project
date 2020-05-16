@@ -23,6 +23,10 @@ const s1 = require('../assets/rightbar/s1.png'),
     engineer = require('../assets/buildings-structure/soilder_engineer.png'),
     spy = require('../assets/buildings-structure/soilder_spy.png'),
 
+    //坦克单位
+    rhinocerotidaetank = require('../assets/buildings-structure/tk_rhinocerotidae.png'),
+    skystart = require('../assets/buildings-structure/tk_skystart.png'),
+
     $id = document.getElementById.bind(document),
     $cls = document.getElementsByClassName.bind(document);
 import { stlistMask, guardlistMask, soilderlistMask, wartanklistMask } from './masks';
@@ -55,6 +59,11 @@ export class Rightbars {
     soilderimg: Array<HTMLImageElement> = []
     soilderlist: Array<HTMLDivElement> = []
 
+   //tank
+   tankimgurl: Array<string>
+   tankimg: Array<HTMLImageElement> = []
+   tanklist: Array<HTMLDivElement> = []
+
     constructor() {
 
         this.initContainerlist();
@@ -64,6 +73,7 @@ export class Rightbars {
         this.initStructure();
         this.initGuard();
         this.initSoilder();
+        this.initTank();
 
     }
     //初始化下方类型框container
@@ -191,11 +201,31 @@ export class Rightbars {
             //左键建造，
             this.structurelist[j].onclick = function () {
                 //TODO 这里需要预判是否钱够
-
-                if (!this.moneyPrejudge(j, 'bar')) {
-                    alert('钱不够')
-                    return;
+                let powervalue = world.playerManage.find(item=>{return item.unittype.indexOf('ai')==-1}).powernumber
+      
+               
+                if(j==1){
+                    if(powervalue-(150)<0){
+                        alert('电量不足')
+                        return
+                    }
+                    
                 }
+                if(j==2){
+                    if(powervalue-(150)<0){
+                        alert('电量不足')
+                        return
+                    }
+                    
+                }     
+                if(j==3){
+                    if(powervalue-(200)<0){
+                        alert('电量不足')
+                        return
+                    }
+                    
+                }   
+             
                 maskListall[0].analyseCommander('building', j);
                 // if (this.structureinbuiding) {
                 //     return;
@@ -208,8 +238,9 @@ export class Rightbars {
 
             }.bind(this)
             //右键取消
-            this.structurelist[j].oncontextmenu = function () {
-                //TODO-- 
+            this.structurelist[j].oncontextmenu = function (e:any) {
+                maskListall[0].cancelBuilding()
+                e.preventDefault()
             }.bind(this)
         }
     }
@@ -219,12 +250,12 @@ export class Rightbars {
         let prismtower = $id('prismtower'),
             sentrycannon = $id('sentrycannon');
         //还有哨所炮TODO--
-        this.guardlist = [prismtower, sentrycannon];
+        this.guardlist = [prismtower];
         this.initGuardimg();
     }
     //初始化防御图片
     initGuardimg() {
-        this.guardimgurl = [gdprismtower.default, sentrycannon.default];
+        this.guardimgurl = [gdprismtower.default];
         return new Promise((res, rej) => {
             let counts = 0;
             for (let j = 0; j < this.guardimgurl.length; j++) {
@@ -249,13 +280,23 @@ export class Rightbars {
         for (let j = 0; j < this.guardlist.length; j++) {
             this.guardlist[j].appendChild(this.guardimg[j]);
             //左键建造，
+            
             this.guardlist[j].onclick = function () {
                 //TODO 这里需要预判是否钱够
+                let powervalue = world.playerManage.find(item=>{return item.unittype.indexOf('ai')==-1}).powernumber
+      
                 if (!this.moneyPrejudge(j, 'guard')) {
                     alert('钱不够')
                     return;
                 }
 
+                if(j==0){
+                    if(powervalue-(300)<0){
+                        alert('电量不足')
+                        return
+                    }
+                    
+                }
                 maskListall[1].analyseCommander('building', j);
                 // if (this.structureinbuiding) {
                 //     return;
@@ -269,7 +310,7 @@ export class Rightbars {
             }.bind(this)
             //右键取消
             this.guardlist[j].oncontextmenu = function () {
-                //TODO-- 
+                maskListall[1].cancelBuilding()
             }.bind(this)
         }
     }
@@ -281,11 +322,11 @@ export class Rightbars {
             engineer = $id('engineer'),
             spy = $id('spy');
         //还有哨所炮TODO--
-        this.soilderlist = [liberationarmy, engineer, spy];
+        this.soilderlist = [liberationarmy, engineer];
         this.initSoilderimg();
     }
     initSoilderimg(){
-        this.soilderimgurl = [liberationarmy.default, engineer.default,spy.default];
+        this.soilderimgurl = [liberationarmy.default, engineer.default];
         return new Promise((res, rej) => {
             let counts = 0;
             for (let j = 0; j < this.soilderimgurl.length; j++) {
@@ -305,11 +346,13 @@ export class Rightbars {
             this.bindingSoilderevent();
         })
     }
+    //绑定兵种建造事件
     bindingSoilderevent(){
         for (let j = 0; j < this.soilderlist.length; j++) {
             this.soilderlist[j].appendChild(this.soilderimg[j]);
             //左键建造，
             this.soilderlist[j].onclick = function () {
+                
                 //TODO 这里需要预判是否钱够
                 if (!this.moneyPrejudge(j, 'soilder')) {
                     alert('钱不够')
@@ -321,7 +364,56 @@ export class Rightbars {
             }.bind(this)
             //右键取消
             this.soilderlist[j].oncontextmenu = function () {
-                //TODO-- 
+                maskListall[2].cancelBuilding()
+            }.bind(this)
+        }
+    }
+    //初始化tank
+    initTank(){
+        let rhinocerotidaetank = $id('rhinocerotidaetank'),
+            skystart = $id('skystart');
+          this.tanklist = [rhinocerotidaetank,skystart]
+          this.initTankimg();
+    }
+    initTankimg(){
+        this.tankimgurl = [rhinocerotidaetank.default, skystart.default];
+        return new Promise((res, rej) => {
+            let counts = 0;
+            for (let j = 0; j < this.tankimgurl.length; j++) {
+                let img: HTMLImageElement = new Image();
+                img.src = this.tankimgurl[j]
+                img.onload = function () {
+                    counts++;
+                    this.tankimg[j] = img;
+                    if (counts == this.tankimgurl.length) {
+                        res();
+                    }
+                }.bind(this)
+                document.body.appendChild(img)
+
+            }
+        }).then(result => {
+            this.bindingTankevent();
+        })
+    }
+    bindingTankevent(){
+        for (let j = 0; j < this.tanklist.length; j++) {
+            this.tanklist[j].appendChild(this.tankimg[j]);
+            //左键建造，
+            this.tanklist[j].onclick = function () {
+                
+                //TODO 这里需要预判是否钱够
+                if (!this.moneyPrejudge(j, 'tank')) {
+                    alert('钱不够')
+                    return;
+                }
+
+                maskListall[3].analyseCommander('building', j);
+              
+            }.bind(this)
+            //右键取消
+            this.tanklist[j].oncontextmenu = function () {
+                maskListall[3].cancelBuilding()
             }.bind(this)
         }
     }
@@ -360,6 +452,40 @@ export class Rightbars {
                 default:
                     break;
 
+
+
+            }
+        }
+        if(type=='soilder'){
+            switch(j){
+                case 0:
+                    canbuild = player1.money - 200 >= 0 //解放军 TODO 这里写死 应该要引用TODO--
+                    break;
+                case 1:
+                    canbuild = player1.money - 300 >= 0 //工程师 TODO 这里写死 应该要引用TODO--
+                    break;
+                    // case 2:
+                    //     canbuild = player1.money - 250 >= 0 //间谍 TODO 这里写死 应该要引用TODO--
+                    //     break;
+                default:
+                    break;
+
+
+            }
+        }
+        if(type=='tank'){
+            switch(j){
+                case 0:
+                    canbuild = player1.money - 400 >= 0 //犀牛坦克 TODO 这里写死 应该要引用TODO--
+                    break;
+                case 1:
+                    canbuild = player1.money - 600 >= 0 //天启tank TODO 这里写死 应该要引用TODO--
+                    break;
+                    // case 2:
+                    //     canbuild = player1.money - 250 >= 0 //间谍 TODO 这里写死 应该要引用TODO--
+                    //     break;
+                default:
+                    break;
 
 
             }

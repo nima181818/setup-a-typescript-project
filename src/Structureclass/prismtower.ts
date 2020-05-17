@@ -1,5 +1,6 @@
 import { Structure } from './structure';
 import { ptobj, imginits } from './structureimgsinits';
+import { enemy_ptobj, enemy_imginits } from './enemystructureimgs';
 import { world } from '../World'
 import { ptattack_audio } from '../assets/audios/audio'
 
@@ -22,11 +23,20 @@ export class Prismtower extends Structure {
         }
         this.cost = 400
         this.powercost = 300
-        imginits(ptobj.ptimgUrllist, ptobj.ptimgList).then(() => {
-            this.imginitsuccess = true;
-            this.imgList = ptobj.ptimgList
-            this.paint(position)
-        })
+        if(this.unittype=='player1'){
+            imginits(ptobj.ptimgUrllist, ptobj.ptimgList).then(() => {
+                this.imginitsuccess = true;
+                this.imgList = ptobj.ptimgList
+                this.paint(position)
+            })
+        }else{
+            enemy_imginits(enemy_ptobj.ptimgUrllist, enemy_ptobj.ptimgList).then(() => {
+                this.imginitsuccess = true;
+                this.imgList = enemy_ptobj.ptimgList
+                this.paint(position)
+            })
+        }
+       
         this.blood = 20
         this.needanimation = true
         this.handleSelfobstacle(powerstationobstacle.obstacle)

@@ -3,6 +3,7 @@ import { Tank } from './Tank'
 import { rvosystem } from '../utils/rovpathfindinghelper';
 import { Bullet } from './Bullet';
 import {imgList,picimgList,pics} from './liberrationimgs'
+import {enemy_imgList,enemy_picimgList,enemy_pics} from './enemyliberationimgs'
 import {fightimg,fightimgselements,soilderfight} from '../assets/soilderimgs/soilder_attack_img/soilder_attackimg'
 interface Position1 {
     x: number
@@ -36,11 +37,20 @@ interface Position1 {
         this.harm = 0.5; 
         
        this.destinationpoint = JSON.parse(JSON.stringify(this.currentclickpoints))
-       pics(imgList,picimgList).then(()=>{
-        this.imgList = imgList
-        this.picimgList = picimgList
-        rvosystem.addVihcles(this);
-       })
+       if(this.unittype=='player1'){
+        pics(imgList,picimgList).then(()=>{
+            this.imgList = imgList
+            this.picimgList = picimgList
+            rvosystem.addVihcles(this);
+           })
+       }else{
+        enemy_pics(enemy_imgList,enemy_picimgList).then(()=>{
+            this.imgList = enemy_imgList
+            this.picimgList = enemy_picimgList
+            rvosystem.addVihcles(this);
+           })
+       }
+      
        soilderfight(fightimg,fightimgselements).then(()=>{
         
         this.soilderfightimgs = fightimgselements

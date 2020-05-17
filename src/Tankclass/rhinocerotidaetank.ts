@@ -2,14 +2,24 @@ import { Tank } from './Tank'
 
 import { rvosystem } from '../utils/rovpathfindinghelper';
 import { Bullet } from './Bullet'
-const imagelb = require('../assets/rhinocerotidaetank/rhinocerotidaetank-lb.png');//↙
-const imagebot = require('../assets/rhinocerotidaetank/rhinocerotidaetankbot.png');//↓
-const imagelef = require('../assets/rhinocerotidaetank/rhinocerotidaetanklef.png');//←
-const imagelt = require('../assets/rhinocerotidaetank/rhinocerotidaetanklt.png');//↖
-const imagerb = require('../assets/rhinocerotidaetank/rhinocerotidaetankrb.png');//↘
-const imagerig = require('../assets/rhinocerotidaetank/rhinocerotidaetankrig.png');//→
-const imagert = require('../assets/rhinocerotidaetank/rhinocerotidaetankrt.png');//↗
-const imagetop = require('../assets/rhinocerotidaetank/rhinocerotidaetanktop.png');//↑
+const imagelb = require('../assets/rhinocerotidaetank/rhi_lb.png');//↙
+const imagebot = require('../assets/rhinocerotidaetank/rhi_b.png');//↓
+const imagelef = require('../assets/rhinocerotidaetank/rhi_l.png');//←
+const imagelt = require('../assets/rhinocerotidaetank/rhi_lt.png');//↖
+const imagerb = require('../assets/rhinocerotidaetank/rhi_rb.png');//↘
+const imagerig = require('../assets/rhinocerotidaetank/rhi_r.png');//→
+const imagert = require('../assets/rhinocerotidaetank/rhi_rt.png');//↗
+const imagetop = require('../assets/rhinocerotidaetank/rhi_t.png');//↑
+
+
+const enemy_imagelb = require('../assets/enemy/rhinocerotidaetank/enemy_rhi_lb.png');//↙
+const enemy_imagebot = require('../assets/enemy/rhinocerotidaetank/enemy_rhi_b.png');//↓
+const enemy_imagelef = require('../assets/enemy/rhinocerotidaetank/enemy_rhi_l.png');//←
+const enemy_imagelt = require('../assets/enemy/rhinocerotidaetank/enemy_rhi_lt.png');//↖
+const enemy_imagerb = require('../assets/enemy/rhinocerotidaetank/enemy_rhi_rb.png');//↘
+const enemy_imagerig = require('../assets/enemy/rhinocerotidaetank/enemy_rhi_r.png');//→
+const enemy_imagert = require('../assets/enemy/rhinocerotidaetank/enemy_rhi_rt.png');//↗
+const enemy_imagetop = require('../assets/enemy/rhinocerotidaetank/enemy_rhi_t.png');//↑
 interface Position1 {
     x: number
     y: number
@@ -35,9 +45,14 @@ export class Rhinocerotidaetank extends Tank {
         this.MAX_SPEED = 90;
         this.cost = 400
         this._name = 'rhinocerotidaetank'
-      
+      if(this.unittype=='player1'){
         this.imgList = [imagetop.default, imagert.default, imagerig.default, imagerb.default, imagebot.default, imagelb.default, imagelef.default, imagelt.default, imagetop.default];
-        this.initPicimg(); 
+        
+      }else{
+        this.imgList = [enemy_imagetop.default, enemy_imagert.default, enemy_imagerig.default, enemy_imagerb.default, enemy_imagebot.default, enemy_imagelb.default, enemy_imagelef.default, enemy_imagelt.default, enemy_imagetop.default];
+         
+      }
+       this.initPicimg(); 
         rvosystem.addVihcles(this);
         // console.log(rvosystem,"rvo系统")
       //  setInterval(()=>{

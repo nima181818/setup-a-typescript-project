@@ -12,6 +12,7 @@ import { globalAstarmanage } from '../utils/wayfinders';
 // import { eventlist } from '../Tankclass/Eventlist';
 import {world} from '../World'
 import {Structuresets} from './structureSet'
+import {fog} from '../fog'
 // import {player1} from '../player'
 // import {baseControl} from './basecontrol'
 class Structure {
@@ -68,7 +69,10 @@ class Structure {
             let player1 = world.playerManage.find(item=>{return item.unittype==this.unittype})
             player1.updateMoney('reduce',this.cost)
         })
-     
+        if(this.unittype=='player1'){
+            fog.clear(this.positions.x-60,this.positions.y-60,this.size.x+120,this.size.y+120)
+        }
+    
     }
     
    

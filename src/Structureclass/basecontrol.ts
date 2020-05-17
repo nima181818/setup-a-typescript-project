@@ -1,6 +1,7 @@
 import { Structure } from './structure'
 import { transformimg } from '../assets/imgurltransform';
 import {baseobj,imginits} from './structureimgsinits'
+import {enemy_baseobj,enemy_imginits} from './enemystructureimgs'
 const image = require('../assets/base.png');
 const basecontrolobstacle = require('./basecontrol.json');
 // import baseimg from './assets/base.jpg'
@@ -11,11 +12,20 @@ export class BaseControl extends Structure {
     innewbuilding:boolean=false
     constructor(unittype:string,bl: number, owner: string, position: { x: number, y: number }, name: string, ctx: HTMLCanvasElement,size:{x:number,y:number}) {
         super(unittype,bl, owner, position, name, ctx,size)
-        imginits(baseobj.baseimgUrllist,baseobj.baseimgList).then(res=>{
-            this.imgList = baseobj.baseimgList;
-            this.imginitsuccess = true;
-            this.paint(position)
-        })
+        if(this.unittype=='player1'){
+            imginits(baseobj.baseimgUrllist,baseobj.baseimgList).then(res=>{
+                this.imgList = baseobj.baseimgList;
+                this.imginitsuccess = true;
+                this.paint(position)
+            })
+        }else{
+            enemy_imginits(enemy_baseobj.baseimgUrllist,enemy_baseobj.baseimgList).then(res=>{
+                this.imgList = enemy_baseobj.baseimgList;
+                this.imginitsuccess = true;
+                this.paint(position)
+            })
+        }
+       
         this.handleSelfobstacle(basecontrolobstacle.obstacle)
         this.blood=45
         this.cost = 0

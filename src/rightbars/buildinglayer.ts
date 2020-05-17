@@ -19,7 +19,8 @@ class Buildinglayer {
     positions: { x: number, y: number } = { x: 0, y: 0 }
     oldpositions: { x: number, y: number } = { x: 0, y: 0 }
     canvas: HTMLCanvasElement
-    context: any
+    context: any  //顶层绘图
+    unitcontext: any //单元实体绘图
     obstaclemap: { x: number, y: number }[] = []
     oldobstaclemap: { x: number, y: number }[] = []
     size: { width: number, height: number }
@@ -145,23 +146,23 @@ class Buildinglayer {
         switch (this.type_name) {
             case 'stpowertation':
                 
-                let powerstation = new Powerstation('player1', 10, '20', buildinglocation, 'powertation', this.canvas, size);
+                let powerstation = new Powerstation('player1', 10, '20', buildinglocation, 'powertation', this.unitcontext, size);
                 break;
             case 'stinfantry':
-                let soliderfactory1 = new Soliderfactory('player1', 10, '20', buildinglocation, 'soliderfactory', this.canvas, size);
+                let soliderfactory1 = new Soliderfactory('player1', 10, '20', buildinglocation, 'soliderfactory',  this.unitcontext, size);
                 break;
             case 'stoil':
-                let oil = new Oil('player1', 10, '20', buildinglocation, 'oil', this.canvas, size);
+                let oil = new Oil('player1', 10, '20', buildinglocation, 'oil',  this.unitcontext, size);
                 break;
             case 'stwcf':
-                let wcf = new Wcf('player1', 10, '20', buildinglocation, 'wcf', this.canvas, size);
+                let wcf = new Wcf('player1', 10, '20', buildinglocation, 'wcf',  this.unitcontext, size);
                 break;
             case 'gdprismtower':
                 debugger
-                let prismtower = new Prismtower('player1', 10, '20', buildinglocation, 'prismtower', this.canvas, size);
+                let prismtower = new Prismtower('player1', 10, '20', buildinglocation, 'prismtower',  this.unitcontext, size);
                 break;
             case 'gdprismtower':   //TODO __这里是哨所炮还未做
-                let gdsentrycannon = new Sentrycannon('player1', 10, '20', buildinglocation, 'sentrycannon', this.canvas, size);
+                let gdsentrycannon = new Sentrycannon('player1', 10, '20', buildinglocation, 'sentrycannon',  this.unitcontext, size);
                 break;
             default:
                 break;
@@ -184,9 +185,11 @@ class Buildinglayer {
     }
     //绑定滑动，游击事件
     bindCanvas() {
-        let canvas = document.getElementById('canvas2');
+        let canvas = document.getElementById('canvasclick') as HTMLCanvasElement, //事件应绑定在顶层上,
+            unitcanvas = document.getElementById('canvas2') as HTMLCanvasElement;
         this.canvas = canvas as HTMLCanvasElement
-        this.context = this.canvas.getContext('2d')
+        this.context = canvas.getContext('2d')
+        this.unitcontext = unitcanvas
         canvas.addEventListener('mousemove', this.mouseMovehandler);
         canvas.addEventListener('click', this.mouseClickhandler);
     }

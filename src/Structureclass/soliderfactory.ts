@@ -4,6 +4,7 @@ import { Structure } from "./structure";
 
 
 import {soilderobj,imginits} from './structureimgsinits'
+import {enemy_soilderobj,enemy_imginits} from './enemystructureimgs'
 const image = require('../assets/solderfactory.png');
 export class Soliderfactory extends Structure{
     baseimg: HTMLImageElement
@@ -12,11 +13,20 @@ export class Soliderfactory extends Structure{
         super(unittype,bl, owner, position, name, ctx,size)
         this.cost = 200
         this.powercost=150
-        imginits(soilderobj.soilderimgUrllist,soilderobj.soilderimgList).then(res=>{
-            this.imgList = soilderobj.soilderimgList;
-            this.imginitsuccess = true;
-            this.paint(position)
-        })
+        if(this.unittype=='player1'){
+            imginits(soilderobj.soilderimgUrllist,soilderobj.soilderimgList).then(res=>{
+                this.imgList = soilderobj.soilderimgList;
+                this.imginitsuccess = true;
+                this.paint(position)
+            })
+        }else{
+            enemy_imginits(enemy_soilderobj.soilderimgUrllist,enemy_soilderobj.soilderimgList).then(res=>{
+                this.imgList = enemy_soilderobj.soilderimgList;
+                this.imginitsuccess = true;
+                this.paint(position)
+            })
+        }
+       
          
         this.size = {
             x:528/6,

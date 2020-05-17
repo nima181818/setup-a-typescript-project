@@ -8,6 +8,7 @@ import { Powerstation } from './Structureclass/powerstation'
 import { Oil } from './Structureclass/oil'
 import { world } from './World'
 
+
 export class Player {
     baseMapcanvas: HTMLCanvasElement
     topUnitscanvas: HTMLCanvasElement
@@ -78,8 +79,8 @@ export class Player {
             this.structuresets.structureAnimation();
             // window.setTimeout(()=>{
             //     this.allAnimations();
-            // },16)
-            window.requestAnimationFrame(this.allAnimations.bind(this))
+            // },16.6)
+           window.requestAnimationFrame(this.allAnimations.bind(this))
         ///},2000)
 
     }
@@ -102,7 +103,7 @@ export class Player {
     
     playersSelection() {
         if (this.unittype.indexOf('player') != -1) {
-            let canvas2: HTMLCanvasElement = document.getElementById('canvas2') as HTMLCanvasElement;
+            let canvas2: HTMLCanvasElement = document.getElementById('canvasclick') as HTMLCanvasElement;
             let context = canvas2.getContext('2d'),
                 pages = {
                     x: 0,
@@ -141,6 +142,7 @@ export class Player {
                             let width = ((e.offsetX - pages.x) ** 2) ** 0.5,
                                 height = ((e.offsetY - pages.y) ** 2) ** 0.5;
                         //绘制区域
+
                             context.clearRect(pages.x - 1, pages.y - 1, width + 2, height + 2)
                             context.strokeStyle = 'white'
                             context.strokeRect(pages.x, pages.y, width, height);

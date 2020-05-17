@@ -11,7 +11,7 @@ import { rvosystem } from '../utils/rovpathfindinghelper';
 import {tankattacking_audio,soilderdoit_audio,tankmoving_audio,waitingorders_audio,howaboutaction_audio,movingnow_audio,soilderdied_audio} from '../assets/audios/audio'
 // import {structuresets} from  '../Structureclass/structureSet'
 
-
+import {fog} from '../fog'
 
 console.log(rvosystem)
 export class Tank {
@@ -174,7 +174,11 @@ export class Tank {
 		   if (this.ownobstacles.length) {
             this.realUpdatingownerobstacle(0)
         }
-    
+    if(this.unittype=='player1'){
+		let width = this.width+100,
+		    height = this.height+100
+		fog.clear(this.currentclickpoints.x-width*0.5,this.currentclickpoints.y-height*0.5,width,height)
+	}
         this.ownobstacles = [{
             x: this.currentclickpoints.x - this.obwidth*0.5 <= 0 ? 0 : this.currentclickpoints.x - this.obwidth*0.5,
             y: this.currentclickpoints.y - this.obheight*0.5 <= 0 ? 0 : this.currentclickpoints.y - this.obheight*0.5
@@ -254,7 +258,7 @@ export class Tank {
     //
     //实时更新自己本身的障碍点
     realUpdatingownerobstacle(value: number) {
-       
+
     let ks =  parseInt((this.ownobstacles[0].y/10).toString()),
         us =  parseInt((this.ownobstacles[0].x/10).toString()),
         width = parseInt((this.obwidth/10).toString()),
@@ -275,7 +279,7 @@ export class Tank {
                 })
             }
         }
-  
+
 
     }
     initStartpointendpoint() {
@@ -395,7 +399,12 @@ export class Tank {
           if(smaller=='tank'){
             this.runThefire(distance,othereventlist.tanklist[index],smaller)
           }else{
-             this.runThefire(strdistance,otherstructuresets.unitsList[strname][strindex],smaller)
+			  try{
+			  this.runThefire(strdistance,otherstructuresets.unitsList[strname][strindex],smaller)
+			  }catch(e){
+				  console.log(e,"侦查发生错误")
+			  }
+             
           }
 
            
@@ -574,7 +583,7 @@ export class Tank {
 
         }
         if (movingcommander) {
-        
+        //高耗时操作
             for (let k = 0; k < this.globalAstarmanage.map.length; k++) {
                 for (let u = 0; u < this.globalAstarmanage.map[k].length; u++) {
                     //-- 这里处理了地图障碍物，还有建筑障碍物未处理
@@ -740,7 +749,7 @@ export class Tank {
         for (let j = 0; j < alleventlist.tanklist.length; j++) {
             //这里应该是虚拟地图对真实地图进行映射,再加一个条件：目标点是敌人的话 那一坨应该不设置为障碍物
             if (this._id !== alleventlist.tanklist[j]._id) {
-
+                //高耗时操作
                 for (let k = 0; k < this.globalAstarmanage.map.length; k++) {
                     
                     for (let u = 0; u < this.globalAstarmanage.map[k].length; u++) {
@@ -1030,8 +1039,8 @@ export class Tank {
             return 
         }
 		if(!this.timer){
-			//这里还要添加当为天启动坦克的时候
-			if(this._name!='rhinocerotidaetank'){
+			
+			if(this._name!='rhinocerotidaetank'&&this._name!='skystarttank'){
 				 this.currentctx.clearRect(this.currentclickpoints.x - this.velocity.x * this.dt-this.width*0.5-2, this.currentclickpoints.y - this.velocity.y * this.dt-this.height*0.5-2, this.width+3, this.height+3);
             this.currentctx.drawImage(this.picimgList[0], this.currentclickpoints.x-this.width*0.5, this.currentclickpoints.y-this.height*0.5, this.width, this.height)
         return;
@@ -1408,7 +1417,7 @@ export class Tank {
 //console.time()
      
         let ablood = this.obwidth/this.maxblood;
-        this.currentctx.clearRect(this.currentclickpoints.x - this.velocity.x * this.dt-this.obwidth*0.5-3,this.currentclickpoints.y - this.velocity.y * this.dt-this.obheight*0.5-11-3,this.obwidth+(1/5)*ablood+6,7+6);
+        this.currentctx.clearRect(this.currentclickpoints.x - 2*this.velocity.x * this.dt-this.obwidth*0.5-3,this.currentclickpoints.y - 2*this.velocity.y * this.dt-this.obheight*0.5-11-3,this.obwidth+(1/5)*ablood+6,7+6);
 if(!(this.selected||this.multiselect)){
 		 return;
 	 }
@@ -1480,7 +1489,7 @@ if(!(this.selected||this.multiselect)){
             //只对有攻击力的单位有效
           //  if(this.harm){
                 this.detectingEnviromentchange();
-                this.handleMovingenemies()
+                this.handleMovingenemies(
      //       }
         
           

@@ -114,6 +114,44 @@ this.changeCanvasdrawimgbehavior();
       return obj
     }
   }
+  getStructuresets(type:string,unittype:string){
+    if(type=='all'){
+      let obj = {
+        
+      };
+      for(let m in this.playerManage[0].structuresets.unitsList){
+        obj[m] =[];
+      }
+         for(let j=0;j<this.playerManage.length;j++){
+            
+              for(let m in this.playerManage[j].structuresets.unitsList){
+                obj[m].push(...this.playerManage[j].structuresets.unitsList[m])
+              }
+            
+         }
+         return obj
+    }
+    if(type=='my'){
+       let obj;
+       for(let j=0;j<this.playerManage.length;j++){
+         if(this.playerManage[j].unittype==unittype){
+          obj = this.playerManage[j].structuresets.unitsList
+         }
+       }
+       return obj
+    }
+    if(type=='other'){
+      let obj = {
+        tanklist:[]
+      }
+      for(let j=0;j<this.playerManage.length;j++){
+        if(this.playerManage[j].unittype!=unittype){
+          obj=this.playerManage[j].structuresets.unitsList
+        }
+      }
+      return obj
+    }
+  }
   paint() {
     let img = transformimg(map.default);
     this.worldimg = img;

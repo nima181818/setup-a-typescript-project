@@ -10,6 +10,16 @@ const imagerb = require('../assets/skytank/sky_rb.png');//↘
 const imagerig = require('../assets/skytank/sky_r.png');//→
 const imagert = require('../assets/skytank/sky_rt.png');//↗
 const imagetop = require('../assets/skytank/sky_t.png');//↑
+
+
+const enemy_imagelb = require('../assets/enemy/skytank/enemy_sky_lb.png');//↙
+const enemy_imagebot = require('../assets/enemy/skytank/enemy_sky_b.png');//↓
+const enemy_imagelef = require('../assets/enemy/skytank/enemy_sky_l.png');//←
+const enemy_imagelt = require('../assets/enemy/skytank/enemy_sky_lt.png');//↖
+const enemy_imagerb = require('../assets/enemy/skytank/enemy_sky_rb.png');//↘
+const enemy_imagerig = require('../assets/enemy/skytank/enemy_sky_r.png');//→
+const enemy_imagert = require('../assets/enemy/skytank/enemy_sky_rt.png');//↗
+const enemy_imagetop = require('../assets/enemy/skytank/enemy_sky_t.png');//↑
 interface Position1 {
     x: number
     y: number
@@ -36,7 +46,13 @@ export class Skystart extends Tank {
         this.cost = 600
         this._name = 'skystarttank'
       
-        this.imgList = [imagetop.default, imagert.default, imagerig.default, imagerb.default, imagebot.default, imagelb.default, imagelef.default, imagelt.default, imagetop.default];
+        if(this.unittype=='player1'){
+            this.imgList = [imagetop.default, imagert.default, imagerig.default, imagerb.default, imagebot.default, imagelb.default, imagelef.default, imagelt.default, imagetop.default];
+            
+          }else{
+            this.imgList = [enemy_imagetop.default, enemy_imagert.default, enemy_imagerig.default, enemy_imagerb.default, enemy_imagebot.default, enemy_imagelb.default, enemy_imagelef.default, enemy_imagelt.default, enemy_imagetop.default];
+             
+          }
         this.initPicimg(); 
         rvosystem.addVihcles(this);
         // console.log(rvosystem,"rvo系统")

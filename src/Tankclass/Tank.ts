@@ -788,7 +788,7 @@ export class Tank {
 	                       if (str._id == this.enemytarget._id) {
 							   for(let j=0;j<str.ownobstacles.length;j++){
 								    this.globalAstarmanage.map[str.ownobstacles[j].x][str.ownobstacles[j].y] = 0;
-									console.log(str.ownobstacles[j].x,str.ownobstacles[j].y)
+								//	console.log(str.ownobstacles[j].x,str.ownobstacles[j].y)
 							   }
 	                          
 	                       }
@@ -1489,7 +1489,7 @@ if(!(this.selected||this.multiselect)){
             //只对有攻击力的单位有效
           //  if(this.harm){
                 this.detectingEnviromentchange();
-                this.handleMovingenemies(
+                this.handleMovingenemies()
      //       }
         
           

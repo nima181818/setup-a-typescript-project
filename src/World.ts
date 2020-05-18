@@ -24,6 +24,7 @@ import { globalAstarmanage } from './utils/wayfinders';
 import {Littlewindow} from './rightbars/littlewindow'
 
 import {Player} from './player'
+import {Timemanager} from './enemyai'
 const map = require('./assets/map.jpg');
 const mapobstacle = require('./mapobstacle.json');
  class World {
@@ -31,6 +32,7 @@ const mapobstacle = require('./mapobstacle.json');
   ctx: any
   scrollLeft: number = 0
   scrollTop: number = 0
+  timemanager:any
   // tanks:[]
   worldimg: HTMLImageElement
   pageflowtimer: number
@@ -49,6 +51,7 @@ this.changeCanvasdrawimgbehavior();
     this.bindScrollmapevent();
     let player1 = new Player('player1',{ x: 900, y: 600 }); //有数字的原因是有可能是多玩家玩耍
     let ai1 = new Player('ai1',{ x: 3400, y: 600 });
+    this.timemanager = new Timemanager(ai1);
     this.playerManage.push(player1,ai1);
    this.initComponents()
   }
@@ -56,7 +59,7 @@ this.changeCanvasdrawimgbehavior();
   changeCanvasdrawimgbehavior(){
     let f=function(imgelement:any){
       if(!imgelement){
-        console.log('还不得行哦')
+    //    console.log('还不得行哦')
         return false
       }else{
         return true

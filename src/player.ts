@@ -68,14 +68,13 @@ export class Player {
                 t2 = new Rhinocerotidaetank(this.unittype, this.unittype == 'player1' ? { x: 800, y: 800 } : { x: 3600, y: 800 });
             t1.paint(this.topUnitscanvas);
             t2.paint(this.topUnitscanvas);
-            if (this.unittype == 'ai1') {
-                setTimeout(() => {
-                    t2.setTankspoints(387, 1108, 'setendpoints', true)
-                }, 9000)
-
-            }
+        
         })
 
+    }
+    getAnotherplayer(){
+        let player = world.playerManage.find(item=>{return item.unittype!=this.unittype});
+        return player
     }
     //所有单位的动画 由于这个控制
     allAnimations() {
@@ -87,7 +86,7 @@ export class Player {
         // },16.6)
         window.requestAnimationFrame(this.allAnimations.bind(this))
         ///},2000)
-
+   
     }
     //更新金币
     updateMoney(type: string, value: number) {
@@ -111,31 +110,31 @@ export class Player {
         switch (type) {
             case 'powerstation':
                 let buildlocation1 = this.circleGenerationline('powerstation');
-                alert(JSON.stringify(buildlocation1))
+                
                 let s1 = new Powerstation('ai1', 10, '20', buildlocation1, 'powertation', this.topUnitscanvas, { x: 1, y: 1 });
                 break;
             case 'soliderfactory':
                
                 let buildlocation2 = this.circleGenerationline('soliderfactory');
-                alert(JSON.stringify(buildlocation2))
+              
                 let s2 = new Soliderfactory('ai1', 10, '20', buildlocation2, 'soliderfactory', this.topUnitscanvas, { x: 1, y: 1 });
                 break;
             case 'oil':
               
                 let buildlocation3 = this.circleGenerationline('oil');
-                alert(JSON.stringify(buildlocation3))
+            
                 let s3 = new Oil('ai1', 10, '20', buildlocation3, 'oil', this.topUnitscanvas, { x: 1, y: 1 });
                 break;
             case 'wcf':
                
                 let buildlocation4 = this.circleGenerationline('wcf');
-                alert(JSON.stringify(buildlocation4))
+               
                 let s4 = new Wcf('ai1', 10, '20', buildlocation4, 'wcf', this.topUnitscanvas, { x: 1, y: 1 });
                 break;
             case 'prismtower':
                 
                 let buildlocation5 = this.circleGenerationline('prismtower');
-                alert(JSON.stringify(buildlocation5))
+             
                 let s5 = new Prismtower('ai1', 10, '20', buildlocation5, 'prismtower', this.topUnitscanvas, { x: 1, y: 1 });
                 break;
         }
@@ -177,7 +176,7 @@ export class Player {
                 y: structure.positions.y + 0.5 * structure.size.y    //从基地开始辐射
             },
             r = 100,
-            theta = 2 * Math.PI / 5; 
+            theta = 2 * Math.PI / 8; 
         //建筑的unitownspace不一样
          //type 的参考值 powerstation soliderfactory wcf oil prismtower
         if (structurename == 'powerstation') {
@@ -213,7 +212,7 @@ export class Player {
         }
         let f = (r) => {
             let m = r;
-            for (let j = 0; j < 5; j++) {
+            for (let j = 0; j < 8; j++) {
                 let startx = this.closeFunc(bornposition.x + m * Math.cos(j * theta)+(j==2?-50:0)),
                     starty = this.closeFunc(bornposition.y + m * Math.sin(j * theta)),
                     endx = this.closeFunc(bornposition.x + m * Math.cos(j * theta) + unitownspace.width),

@@ -12,19 +12,7 @@ export class BaseControl extends Structure {
     innewbuilding:boolean=false
     constructor(unittype:string,bl: number, owner: string, position: { x: number, y: number }, name: string, ctx: HTMLCanvasElement,size:{x:number,y:number}) {
         super(unittype,bl, owner, position, name, ctx,size)
-        if(this.unittype=='player1'){
-            imginits(baseobj.baseimgUrllist,baseobj.baseimgList).then(res=>{
-                this.imgList = baseobj.baseimgList;
-                this.imginitsuccess = true;
-                this.paint(position)
-            })
-        }else{
-            enemy_imginits(enemy_baseobj.baseimgUrllist,enemy_baseobj.baseimgList).then(res=>{
-                this.imgList = enemy_baseobj.baseimgList;
-                this.imginitsuccess = true;
-                this.paint(position)
-            })
-        }
+       this.occupyByengineer(true,position)
        
         this.handleSelfobstacle(basecontrolobstacle.obstacle)
         this.blood=45
@@ -40,7 +28,7 @@ export class BaseControl extends Structure {
                 this.ctx.clearRect(position.x,position.y, this.size.x, this.size.y);
                 this.ctx.drawImage(this.imgList[parseInt(index.toString())], position.x,position.y, this.size.x, this.size.y);
                 if(this.innewbuilding){
-                    index+=0.5;
+                    index+=0.2;
                    if(index>=this.imgList.length-1){
                        this.innewbuilding = false;
                        index=0;
@@ -50,6 +38,27 @@ export class BaseControl extends Structure {
             },16.6)
        
 
+    }
+    //被工程师占领
+    occupyByengineer(paint:boolean=false,position:pointerface){
+        if(this.unittype=='player1'){
+            imginits(baseobj.baseimgUrllist,baseobj.baseimgList).then(res=>{
+                this.imgList = baseobj.baseimgList;
+                this.imginitsuccess = true;
+                if(paint){
+                    this.paint(position)
+                }
+              
+            })
+        }else{
+            enemy_imginits(enemy_baseobj.baseimgUrllist,enemy_baseobj.baseimgList).then(res=>{
+                this.imgList = enemy_baseobj.baseimgList;
+                this.imginitsuccess = true;
+                if(paint){
+                    this.paint(position)
+                }
+            })
+        }
     }
     newBuildingadded(){
         this.innewbuilding = true;

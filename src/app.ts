@@ -4,7 +4,7 @@ window.onload = function () {
     //单位的所属情况，尽量在每一个函数里面判断，不要使用缓存
     let obstacles = [];
     console.log(world)
-     return;
+    return;
     var back = document.getElementById('back');
         back.style.display='flex';
         back.style.zIndex='7'
@@ -35,16 +35,16 @@ window.onload = function () {
             y = parseInt((j / 448).toString());
             back.appendChild(div)
        
-        // div.onclick = function () {
+        div.onclick = function () {
           
-        //     console.log(x, y);
-        //     div.style.background = 'red'
-        //         obstaclearray.push({
-        //             x,
-        //             y
-        //         });
+            console.log(x, y);
+            div.style.background = 'red'
+                obstaclearray.push({
+                    x,
+                    y
+                });
        
-        // }  //注意揭开，开发的时候
+        }  //注意揭开，开发的时候
         // .bind(this)
     
     }

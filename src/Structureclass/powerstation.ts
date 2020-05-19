@@ -15,19 +15,7 @@ export class Powerstation extends Structure{
         }
         this.cost = 150
         this.powercost = -300
-        if(this.unittype=='player1'){
-            imginits(powerstationobj.powerstationimgUrllist,powerstationobj.powerstationimgList).then(()=>{
-                this.imginitsuccess = true;
-                this.imgList = powerstationobj.powerstationimgList
-                this.paint(position)
-            })
-        }else{
-            enemy_imginits(enemy_powerstationobj.powerstationimgUrllist,enemy_powerstationobj.powerstationimgList).then(()=>{
-                this.imginitsuccess = true;
-                this.imgList = enemy_powerstationobj.powerstationimgList
-                this.paint(position)
-            })
-        }
+        this.occupyByengineer(true,position)
       
         this.blood=30
         this.needanimation = true
@@ -35,5 +23,25 @@ export class Powerstation extends Structure{
        //
        this.powerCaluc('born')
     }
-    
+     //被工程师占领
+    occupyByengineer(paint:boolean=false,position:pointerface){
+        if(this.unittype=='player1'){
+            imginits(powerstationobj.powerstationimgUrllist,powerstationobj.powerstationimgList).then(()=>{
+                this.imginitsuccess = true;
+                this.imgList =powerstationobj.powerstationimgList
+                if(paint){
+                    this.paint(position)
+                }
+                
+            })
+        }else{
+            enemy_imginits(enemy_powerstationobj.powerstationimgUrllist,enemy_powerstationobj.powerstationimgList).then(()=>{
+                this.imginitsuccess = true;
+                this.imgList = enemy_powerstationobj.powerstationimgList
+                if(paint){
+                    this.paint(position)
+                }
+            })
+        }
+    }
 }

@@ -4,7 +4,7 @@ import { enemy_ptobj, enemy_imginits } from './enemystructureimgs';
 import { world } from '../World'
 import { ptattack_audio } from '../assets/audios/audio'
 
-const powerstationobstacle = require('./powerstation.json');  //TODO--
+const prismtowerobstacle = require('./prismtower.json');  //TODO--
 export class Prismtower extends Structure {
     firerange: number = 130
     firetimer: number = null
@@ -23,25 +23,34 @@ export class Prismtower extends Structure {
         }
         this.cost = 400
         this.powercost = 300
+        this.occupyByengineer(true,position)
+       
+        this.blood = 20
+        this.needanimation = true
+        this.handleSelfobstacle(prismtowerobstacle.obstacle)
+        //
+        this.powerCaluc('born')
+    }
+    //被工程师占领
+    occupyByengineer(paint:boolean=false,position:pointerface){
         if(this.unittype=='player1'){
             imginits(ptobj.ptimgUrllist, ptobj.ptimgList).then(() => {
                 this.imginitsuccess = true;
                 this.imgList = ptobj.ptimgList
-                this.paint(position)
+                if(paint){
+                    this.paint(position)
+                }
+               
             })
         }else{
             enemy_imginits(enemy_ptobj.ptimgUrllist, enemy_ptobj.ptimgList).then(() => {
                 this.imginitsuccess = true;
-                this.imgList = enemy_ptobj.ptimgList
-                this.paint(position)
+                this.imgList =enemy_ptobj.ptimgList
+                if(paint){
+                    this.paint(position)
+                }
             })
         }
-       
-        this.blood = 20
-        this.needanimation = true
-        this.handleSelfobstacle(powerstationobstacle.obstacle)
-        //
-        this.powerCaluc('born')
     }
     //监听模式 TODO-- 现在是连自己人都打
     watchMode() {

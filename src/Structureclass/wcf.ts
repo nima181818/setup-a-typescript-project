@@ -1,5 +1,6 @@
 import {Structure} from './structure';
 import {wcfobj,imginits} from './structureimgsinits'
+const wcfobstacle = require('./wcf.json');
 import {enemy_wcfobj,enemy_imginits} from './enemystructureimgs'
 export class Wcf extends Structure{
     constructor(unittype:string,bl: number, owner: string, position: { x: number, y: number }, name: string, ctx: HTMLCanvasElement,size:{x:number,y:number}) {
@@ -14,24 +15,34 @@ export class Wcf extends Structure{
             y:1610/12
         }
         this.needanimation = false
+        this.occupyByengineer(true,position)
+        
+        this.cost = 250
+        this.powercost=200
+        this.blood=30
+        this.handleSelfobstacle(wcfobstacle.obstacle);
+       
+       this.powerCaluc('born')
+    }
+    //被工程师占领
+    occupyByengineer(paint:boolean=false,position:pointerface){
         if(this.unittype=='player1'){
             imginits(wcfobj.wcfimgUrllist,wcfobj.wcfimgList).then(()=>{
                 this.imginitsuccess = true;
                 this.imgList = wcfobj.wcfimgList
-                this.paint(position)
+                if(paint){
+                    this.paint(position)
+                }
+                
             })
         }else{
             enemy_imginits(enemy_wcfobj.wcfimgUrllist,enemy_wcfobj.wcfimgList).then(()=>{
                 this.imginitsuccess = true;
                 this.imgList = enemy_wcfobj.wcfimgList
-                this.paint(position)
+                if(paint){
+                    this.paint(position)
+                }
             })
         }
-        
-        this.cost = 250
-        this.powercost=200
-        this.blood=30
-       //TODO--未添加发电厂的障碍
-       this.powerCaluc('born')
     }
 }

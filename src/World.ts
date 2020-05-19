@@ -51,7 +51,10 @@ this.changeCanvasdrawimgbehavior();
     this.bindScrollmapevent();
     let player1 = new Player('player1',{ x: 900, y: 600 }); //有数字的原因是有可能是多玩家玩耍
     let ai1 = new Player('ai1',{ x: 3400, y: 600 });
-    this.timemanager = new Timemanager(ai1);
+  //  this.timemanager = new Timemanager(ai1);
+ 
+    this.timemanager = new Timemanager(ai1);//异步加载？
+
     this.playerManage.push(player1,ai1);
    this.initComponents()
   }

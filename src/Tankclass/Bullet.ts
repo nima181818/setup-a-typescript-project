@@ -57,12 +57,20 @@ export class Bullet{
              this.currentctx.clearRect(this.target.x,this.target.y,15,15);
              soilderbullet_audio.playAudio();
              this.targetobject.bloodLess(this.harm)
+             this.handleEnemydied()
            }
         },16.6)
       
  //     },60)
       
 
+    }
+    //当所在单位挂掉 enemy置空 movingwithattack为false
+    handleEnemydied(){
+      if(this.targetobject.blood<=0){
+       this.master.movingwithattack = false;
+       this.master.enemytarget = null;
+      }
     }
     //借助贝塞尔曲线充当子弹的弹道 对tank有效
     run_tank(){
@@ -151,8 +159,10 @@ export class Bullet{
            //目标血量减少？条件：要击中
            //classType表明是坦克  否则就是建筑
            //TODO--  建筑的position可能不一样
-           if(this.distanceFormlation(this.target,this.targetobject.classType=='tank'?this.targetobject.currentclickpoints:this.targetobject.positions,true)<=20){
+           debugger
+           if(this.distanceFormlation(this.target,this.targetobject.classType=='tank'?this.targetobject.currentclickpoints:this.targetobject.positions,true)<=(this.targetobject.classType=='tank'?20:120)){
             this.targetobject.bloodLess(this.harm)
+            this.handleEnemydied()
            }
            
         }

@@ -4,8 +4,9 @@ interface positions {
 }
 /*
   军营的基础计算位置是按照{ x: 100, y: 0 }参考的 且是5为单位的
-  基地是900 600 10
-
+  基地是900 600 1 0
+  战车工厂基于 1072, y: 691.5 10
+  光临塔基于 1053, y: 791.5
 */
 // console.log(Multithread, "wocao")
 import { globalAstarmanage } from '../utils/wayfinders';
@@ -109,6 +110,7 @@ class Structure {
         //电量占用解除TODO
         this.powerCaluc('die')
     }
+   
 //电量相关 类型：出生和死亡
      powerCaluc(type:string){
         let player = world.playerManage.find(item=>{return item.unittype==this.unittype});
@@ -192,7 +194,7 @@ class Structure {
             let start = this.animationendstart;
             let end = this.animationend;
          
-            let player1 = world.playerManage.find(item=>{ return item.unittype==this.unittype})
+            let player = world.playerManage.find(item=>{ return item.unittype==this.unittype})
             if (this.needanimation) {
                
 //this.animationtimer = window.setInterval(() => {
@@ -204,12 +206,12 @@ class Structure {
                    }
                    let showindex = parseInt(this.index.toString())
                     if(showindex%2==0&&this.name=='oil'&&showindex>=5){
-                        player1.updateMoney('add',1)
+                        player.updateMoney('add',1)
                     }
                     // if(this.name=='prismtower'){
                     //     console.log(showindex)
                     // }
-                    this.ctx.clearRect( this.positions.x,this.positions.y, this.size.x, this.size.y);
+                    this.ctx.clearRect( this.positions.x,this.positions.y-2, this.size.x, this.size.y+3);
                     this.ctx.drawImage(this.imgList[showindex], this.positions.x, this.positions.y, this.size.x, this.size.y);
                     this.index+=this.circletime;
                     if (this.index > end) {
@@ -261,6 +263,12 @@ class Structure {
                         y: obstacle[j].x + this.closeFunc(this.positions.x - 400)
                     }
                   }
+                  if(this.name=='wcf'){
+                    item = {
+                        x: obstacle[j].y + this.closeFunc(this.positions.y - 691.5),
+                        y: obstacle[j].x + this.closeFunc(this.positions.x - 1072)
+                    }
+                  }
                   if(this.name=='powertation'){
                     item = {
                         x: obstacle[j].y + this.closeFunc(this.positions.y - 300),
@@ -270,8 +278,9 @@ class Structure {
                   //暂时将光棱塔的obstacle定义为oil的obstacle TODO--
                   if(this.name=='prismtower'){
                     item = {
-                        x: obstacle[j].y + this.closeFunc(this.positions.y - 400),
-                        y: obstacle[j].x + this.closeFunc(this.positions.x - 400)
+                    
+                        x: obstacle[j].y + this.closeFunc(this.positions.y - 791.5),
+                        y: obstacle[j].x + this.closeFunc(this.positions.x - 1053)
                     }
                   }
                 temp.push(item)
@@ -316,7 +325,7 @@ class Structure {
                 }
             }
             //TODO-- 光棱塔的
-            if(this.name=='base'||this.name=='oil'||this.name=='powertation'||this.name=='prismtower'){
+            if(this.name=='base'||this.name=='oil'||this.name=='powertation'||this.name=='prismtower'||this.name=='wcf'){
                 item = {
                     x: parseInt((obstacle[j].x).toString()),
                     y: parseInt((obstacle[j].y).toString())

@@ -13,20 +13,8 @@ export class Soliderfactory extends Structure{
         super(unittype,bl, owner, position, name, ctx,size)
         this.cost = 200
         this.powercost=150
-        if(this.unittype=='player1'){
-            imginits(soilderobj.soilderimgUrllist,soilderobj.soilderimgList).then(res=>{
-                this.imgList = soilderobj.soilderimgList;
-                this.imginitsuccess = true;
-                this.paint(position)
-            })
-        }else{
-            enemy_imginits(enemy_soilderobj.soilderimgUrllist,enemy_soilderobj.soilderimgList).then(res=>{
-                this.imgList = enemy_soilderobj.soilderimgList;
-                this.imginitsuccess = true;
-                this.paint(position)
-            })
-        }
        
+        this.occupyByengineer(true,position)
          
         this.size = {
             x:528/6,
@@ -42,5 +30,25 @@ export class Soliderfactory extends Structure{
     //  this.burn();
     this.powerCaluc('born')
     }
-    
+     //被工程师占领
+     occupyByengineer(paint:boolean=false,position:pointerface){
+        if(this.unittype=='player1'){
+            imginits(soilderobj.soilderimgUrllist,soilderobj.soilderimgList).then(res=>{
+                this.imgList = soilderobj.soilderimgList;
+                this.imginitsuccess = true;
+                if(paint){
+                    this.paint(position)
+                }
+              
+            })
+        }else{
+            enemy_imginits(enemy_soilderobj.soilderimgUrllist,enemy_soilderobj.soilderimgList).then(res=>{
+                this.imgList =enemy_soilderobj.soilderimgList;
+                this.imginitsuccess = true;
+                if(paint){
+                    this.paint(position)
+                }
+            })
+        }
+    }
 }

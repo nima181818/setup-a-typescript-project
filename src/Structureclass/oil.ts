@@ -20,22 +20,31 @@ export class Oil extends Structure{
         this.cost = 200
         this.powercost=150
         this.needanimation = true
+       this.occupyByengineer(true,position)
+       
+        this.blood=30
+        this.handleSelfobstacle(oilobstacle.obstacle)
+        this.powerCaluc('born')
+    }
+      //被工程师占领
+    occupyByengineer(paint:boolean=false,position:pointerface){
         if(this.unittype=='player1'){
             imginits(oilobj.oilimgUrllist,oilobj.oilimgList).then(()=>{
                 this.imginitsuccess = true;
                 this.imgList = oilobj.oilimgList
-                this.paint(position)
+                if(paint){
+                    this.paint(position)
+                }
+               
             })
         }else{
             enemy_imginits(enemy_oilobj.oilimgUrllist,enemy_oilobj.oilimgList).then(()=>{
                 this.imginitsuccess = true;
                 this.imgList = enemy_oilobj.oilimgList
-                this.paint(position)
+                if(paint){
+                    this.paint(position)
+                }
             })
         }
-       
-        this.blood=30
-        this.handleSelfobstacle(oilobstacle.obstacle)
-        this.powerCaluc('born')
     }
 }

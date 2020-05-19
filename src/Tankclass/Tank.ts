@@ -395,8 +395,24 @@ export class Tank {
               
             //比较 strdistance和distance的大小,取较小者
               let smaller = strdistance>distance?'tank':'structure';
-		
-          if(smaller=='tank'){
+		if(this.enemytarget){
+			if(this.enemytarget.classType=='tank'){
+			  distance = this.pointDistance(this.currentclickpoints,this.enemytarget.currentclickpoints,true);
+			}else{
+				
+				let center = {
+					 x:this.enemytarget.positions.x + this.enemytarget.size.x*0.5,
+                     y:this.enemytarget.positions.y + this.enemytarget.size.y*0.5,
+				}
+				
+				  distance = this.pointDistance(this.currentclickpoints,center,true);
+			}
+			
+			 this.runThefire(distance,this.enemytarget,this.enemytarget.classType)
+			
+		}else{
+		    if(smaller=='tank'){
+			  
             this.runThefire(distance,othereventlist.tanklist[index],smaller)
           }else{
 			  try{
@@ -406,6 +422,9 @@ export class Tank {
 			  }
              
           }
+		
+		}
+         
 
            
           
@@ -539,7 +558,15 @@ export class Tank {
 		if(this.enemytarget){
 			
 			if(this.enemytarget.unittype != this.unittype){
+				this.enemytarget.powerCaluc('die') //对于敌方来说，死亡
 				this.enemytarget.unittype = this.unittype;//TODO ?将敌方变成自己的，是否要destroy?
+				this.enemytarget.powerCaluc('born') //对于自己来说，新生
+				//更换色彩
+				this.enemytarget.occupyByengineer(false,{x:null,y:null});
+				
+				//处理电场和油井
+				
+				
 			
 			//处理敌方unitList
 			for(let m in enemystructuresets.unitsList){
@@ -594,16 +621,18 @@ export class Tank {
                 }
             }
             this.globalAstarmanage.setStartpointandendpoint(this.closeFunc(this.startpoint.y), this.closeFunc(this.startpoint.x), 'startpoint');
-            this.globalAstarmanage.setStartpointandendpoint(this.closeFunc(this.targetpoint.y), this.closeFunc(this.targetpoint.x), 'endpoint');
-            let judgevalue = this.judgeDestinationhasenemy({x,y},this._name)
+             
+		  let judgevalue = this.judgeDestinationhasenemy({x,y},this._name)
 			if(this._name=='engineer'){
 				if(judgevalue=='enemy is a tank'){
-					alert('工程师无法攻击敌人')
+				
 					return;
 				}
 			}
             this.obstacleRepailie();
-			
+			  this.globalAstarmanage.setStartpointandendpoint(this.closeFunc(this.targetpoint.y), this.closeFunc(this.targetpoint.x), 'endpoint');
+          
+            
 			if(this.workername){
 				window[this.workername].terminate();  //去掉正在运行的worker
 			}
@@ -617,9 +646,13 @@ export class Tank {
 			 this.workername = 'worker'+parseInt((Math.random()*10**10).toString());
              var MT = new Multithread(4,this.workername);//web worker
          
-             console.time('x')
+             console.log('寻路开始')
+			 if(judgevalue=='enemy is a tank'){
+				// document.write(JSON.stringify(this.globalAstarmanage.map))
+				 
+			 }
           let handle = MT.process(this.globalAstarmanage.prepareForwebworker,(e)=>{
-            console.timeEnd('x')
+            console.log('寻路结束')
               this.startmoving=true;
               this.startmovingTrigger(byborn)
             this.globalAstarmanage.map = e.map;
@@ -708,7 +741,7 @@ export class Tank {
 							y:currentstructure.positions.y + 0.5*currentstructure.size.y,
 						}
 						//currentstructure.size.x??
-					 if(this.pointDistance(p,centerposition,true)<=currentstructure.size.x){
+					 if(this.pointDistance(p,centerposition,true)<=0.5*currentstructure.size.x){
 					  if(this._name=='liberationarmy'){
 						  soilderdoit_audio.playAudio()
 					  }
@@ -742,7 +775,10 @@ export class Tank {
 
     ///障碍重排
     obstacleRepailie() {
-		
+		let mapshows = document.getElementById('mapshows');
+		    mapshows.onclick=function(){
+				mapshows.innerHTML = JSON.stringify(this.globalAstarmanage.map)
+			}.bind(this)
             let alleventlist = world.getEventlist('all',this.unittype),
 			    player = world.playerManage.find((item)=>{return item.unittype!=this.unittype}),
 				myplayer = world.playerManage.find((item)=>{return item.unittype==this.unittype})
@@ -785,9 +821,14 @@ export class Tank {
 	       for (let n = 0; n < player.structuresets.unitsList[m].length; n++) {
 	           let str = player.structuresets.unitsList[m][n]
 	                   if (this.enemytarget) {
+						   
 	                       if (str._id == this.enemytarget._id) {
+							
 							   for(let j=0;j<str.ownobstacles.length;j++){
-								    this.globalAstarmanage.map[str.ownobstacles[j].x][str.ownobstacles[j].y] = 0;
+								   console.log(str.ownobstacles[j].x,str.ownobstacles[j].y)
+								    this.globalAstarmanage.map[str.ownobstacles[j].x][str.ownobstacles[j].y] = 9;
+									
+									  console.log(this.globalAstarmanage.map[str.ownobstacles[j].x][str.ownobstacles[j].y])
 								//	console.log(str.ownobstacles[j].x,str.ownobstacles[j].y)
 							   }
 	                          

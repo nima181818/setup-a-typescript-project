@@ -464,63 +464,66 @@ class Masks {
 
         }
     }
-    //生成tank
-    generateTank(){
-        let bornposition = this.circleGenerationline(),
-        player1 = world.playerManage.find(item => { return item.unittype == 'player1' }),
+    //生成tank string:unittype
+    generateTank(type:string='player1'){
+        let bornposition = this.circleGenerationline(type),
+        
+        player = world.playerManage.find(item => { return item.unittype == type }),
         // import {Engineer} from '../Tankclass/engineer'
         // import {Spy} from '../Tankclass/spy'
         unit = null;
+        debugger
     switch (this.type_name) {
         case 'tkrhinocerotidaetank':
-            unit = new Rhinocerotidaetank('player1', bornposition);
+            unit = new Rhinocerotidaetank(type, bornposition);
             //   alert(unit._id)
 console.log(unit,"444")
             break;
         case 'tkskystarttank':
-            unit = new Skystart('player1', bornposition)
+            unit = new Skystart(type, bornposition)
             break;
       
         default:
             break;
     }
     //   unit.setTankspoints(aggregation.x, aggregation.y, 'setendpoints', true, true);
-    unit.paint(player1.topUnitscanvas)
+    unit.paint(player.topUnitscanvas)
     }
     //生成兵种
-    generateSoilder() {
-        let bornposition = this.circleGenerationline(),
-            player1 = world.playerManage.find(item => { return item.unittype == 'player1' }),
+    generateSoilder(type:string='player1') {
+        debugger
+        let bornposition = this.circleGenerationline(type),
+            player = world.playerManage.find(item => { return item.unittype == type }),
             // import {Engineer} from '../Tankclass/engineer'
             // import {Spy} from '../Tankclass/spy'
             unit = null;
         switch (this.type_name) {
             case 'sdliberationarmy':
-                unit = new Liberationarmy('player1', bornposition);
+                unit = new Liberationarmy(type, bornposition);
                 //   alert(unit._id)
 
                 break;
             case 'sdengineer':
-                unit = new Engineer('player1', bornposition)
+                unit = new Engineer(type, bornposition)
                 break;
             case 'sdspy':
-                unit = new Spy('player1', bornposition)
+                unit = new Spy(type, bornposition)
                 break;
             default:
                 break;
         }
         //   unit.setTankspoints(aggregation.x, aggregation.y, 'setendpoints', true, true);
-        unit.paint(player1.topUnitscanvas)
+        unit.paint(player.topUnitscanvas)
     }
 
     //采取在出生点环状生产的方式
     //代价：牺牲掉从军营门口生成的效果TODO
-    circleGenerationline(): pointerface {
+    circleGenerationline(type:string='player1'): pointerface {
 
 
-        let player1 = world.playerManage.find(item => { return item.unittype == 'player1' }),
+        let player = world.playerManage.find(item => { return item.unittype == type }),
             alleventlist = world.getEventlist('all', 'player1'),
-            soilderfactory =this.type=='soilderlist'?player1.structuresets.unitsList.soliderfactory[0]:player1.structuresets.unitsList.wcf[0];
+            soilderfactory =this.type=='soilderlist'?player.structuresets.unitsList.soliderfactory[0]:player.structuresets.unitsList.wcf[0];
         if (alleventlist.tanklist[0]) {
             for (let k = 0; k < alleventlist.tanklist[0].globalAstarmanage.map.length; k++) {
                 for (let u = 0; u < alleventlist.tanklist[0].globalAstarmanage.map[k].length; u++) {
@@ -552,11 +555,11 @@ console.log(unit,"444")
                 x: soilderfactory.positions.x + 0.5 * soilderfactory.size.x,
                 y: soilderfactory.positions.y + soilderfactory.size.y + 10
             },
-            r = this.type=='soilderlist'?50:100,
-            theta = 2 * Math.PI / 100;
+            r =this.type=='soilderlist'?50:100,
+            theta = 2 * Math.PI / 7;
         let f = (r) => {
             let m = r;
-            for (let j = 0; j < 100; j++) {
+            for (let j = 0; j < 7; j++) {
                 let startx = this.closeFunc(bornposition.x + m * Math.cos(j * theta)),
                     starty = this.closeFunc(bornposition.y + m * Math.sin(j * theta)),
                     endx = this.closeFunc(bornposition.x + m * Math.cos(j * theta) + unitownspace.width),

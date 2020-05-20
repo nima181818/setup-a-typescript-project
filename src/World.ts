@@ -57,7 +57,55 @@ this.changeCanvasdrawimgbehavior();
 
     this.playerManage.push(player1,ai1);
    this.initComponents()
+   setInterval(()=>{
+	   let gameresults = this.judgeWinornot();
+	   console.log(gameresults)
+   },500)
   }
+  	//判断是否玩家失败/胜利
+	judgeWinornot(){
+		//胜利
+		{
+		
+		
+		let ai = this.playerManage.find(item=>{return item.unittype=='ai1'}),
+		    gamestate = 'running',
+		    hasaliveunits = ai.eventlist.tanklist.find(item=>{return item.alive}),
+			hasstructure = false;
+			for(let j in ai.structuresets.unitsList){
+				for(let k =0;k<ai.structuresets.unitsList[j].length;k++){
+					if(ai.structuresets.unitsList[j][k].alive){
+						hasstructure = true
+					}
+				}
+			}
+			if((!hasstructure)&&(!hasaliveunits)){
+				//敌方建筑均死亡
+				gamestate = 'win';
+				return gamestate
+			}
+		}
+		{
+	    let my = this.playerManage.find(item=>{return item.unittype=='player1'}),
+		    gamestate = 'running',
+		    hasaliveunits = my.eventlist.tanklist.find(item=>{return item.alive}),
+			hasstructure = false;
+			for(let j in my.structuresets.unitsList){
+				for(let k =0;k<my.structuresets.unitsList[j].length;k++){
+					if(my.structuresets.unitsList[j][k].alive){
+						hasstructure = true
+					}
+				}
+			}
+			if((!hasstructure)&&(!hasaliveunits)){
+				//我方建筑均死亡
+				gamestate = 'lost';
+				return gamestate
+			}
+		}
+	    return 'running'
+		
+	}
   //试图改变drawImage的默认行为
   changeCanvasdrawimgbehavior(){
     let f=function(imgelement:any){

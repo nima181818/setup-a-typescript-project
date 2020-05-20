@@ -28,7 +28,7 @@ export class Player {
         this.initCanvas();
         this.playersSelection();
         this.initBase(baseposition) //这里又要使用异步的方式 
-        this.allAnimations();
+        //this.allAnimations();
     }
     powerCanculations(type: string, value: number) {
         let powerel = document.getElementById('powernumber') as HTMLSpanElement;
@@ -68,7 +68,7 @@ export class Player {
                 t2 = new Rhinocerotidaetank(this.unittype, this.unittype == 'player1' ? { x: 800, y: 800 } : { x: 3600, y: 800 });
             t1.paint(this.topUnitscanvas);
             t2.paint(this.topUnitscanvas);
-        
+        this.allAnimations();//放到这里是为了防止游戏已初始化就被判定为失败/胜利
         })
 
     }
@@ -81,13 +81,16 @@ export class Player {
         //  setTimeout(()=>{
         this.eventlist.allTanksanimation();
         this.structuresets.structureAnimation();
+		
+		  window.requestAnimationFrame(this.allAnimations.bind(this))
         // window.setTimeout(()=>{
         //     this.allAnimations();
         // },16.6)
-        window.requestAnimationFrame(this.allAnimations.bind(this))
+      
         ///},2000)
    
     }
+
     //更新金币
     updateMoney(type: string, value: number) {
         if (type == 'add') {

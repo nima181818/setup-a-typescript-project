@@ -472,7 +472,7 @@ class Masks {
         // import {Engineer} from '../Tankclass/engineer'
         // import {Spy} from '../Tankclass/spy'
         unit = null;
-        debugger
+        
     switch (this.type_name) {
         case 'tkrhinocerotidaetank':
             unit = new Rhinocerotidaetank(type, bornposition);
@@ -491,7 +491,7 @@ console.log(unit,"444")
     }
     //生成兵种
     generateSoilder(type:string='player1') {
-        debugger
+        
         let bornposition = this.circleGenerationline(type),
             player = world.playerManage.find(item => { return item.unittype == type }),
             // import {Engineer} from '../Tankclass/engineer'
@@ -539,7 +539,7 @@ console.log(unit,"444")
         let othermap = alleventlist.tanklist[0] ? alleventlist.tanklist[0].globalAstarmanage.map : globalAstarmanage.map,//其他障碍物
             atankmap = globalAstarmanage.fakemap //（自身障碍物）//有问题TODO
 
-        console.log(othermap, "其他地图")
+      //  console.log(othermap, "其他地图")
         return this.calculateObstacles(soilderfactory, othermap, atankmap);
     }
     //计算障碍物
@@ -573,7 +573,7 @@ console.log(unit,"444")
                         }
                     }
                     if (useful) {
-                        console.log(othermap, '啦啦啦')
+                 //       console.log(othermap, '啦啦啦')
                         return {
                             x: bornposition.x + r * Math.cos(j * theta),
                             y: bornposition.y + r * Math.sin(j * theta)

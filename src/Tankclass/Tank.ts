@@ -418,7 +418,7 @@ export class Tank {
 			  try{
 			  this.runThefire(strdistance,otherstructuresets.unitsList[strname][strindex],smaller)
 			  }catch(e){
-				  console.log(e,"侦查发生错误")
+			//	  console.log(e,"侦查发生错误")
 			  }
              
           }
@@ -511,6 +511,7 @@ export class Tank {
       }
     //坦克自动移动的操作
     operationofTankautomove(tp:pointerface,eps:pointerface){
+		return;
         for (let k = 0; k < this.globalAstarmanage.map.length; k++) {
             for (let u = 0; u < this.globalAstarmanage.map[k].length; u++) {
                 //-- 这里处理了地图障碍物，还有建筑障碍物未处理
@@ -1247,7 +1248,57 @@ export class Tank {
 				}
                
 		    }
-
+             
+		    //如果是多个单位到达同一个地点，在目标点已经被占据的情况下。。。
+			let alleventlist = world.getEventlist('all',this.unittype).tanklist,
+			   sametargets = [];
+			  
+			   for(let j=0;j<alleventlist.length;j++){
+				   if(this.pointDistance(this.targetpoint,alleventlist[j].targetpoint,true)<=10){
+					   //即说明 有相同的目标；
+					   if(this.pointDistance(this.targetpoint,alleventlist[j].currentclickpoints,true)<=this.firerange){
+						   //已经抵达周围，当前单位已经被其他单位挡住了路线
+						   //从目标点开始搜寻最近的点作为新的目标点 代价有点大？非地图层面
+						  
+						   sametargets.push(alleventlist[j])
+						   
+						   
+						   
+					   }
+				   }
+			   }
+			   //r从firerange开始
+			    let f=(r)=>{
+				   let theta = 2*Math.PI/10;
+				     for(let j=0;j<10;j++){
+						 let canuse = false,
+						     radioend = {
+								 x:this.targetpoint.x+r*Math.cos(theta*j),
+								 y:this.targetpoint.y+r*Math.sin(theta*j),
+							 }
+						 for(let k=0;k<sametargets.length;k++){
+							 let sx = sametargets[k].currentclickpoints.x - this.obwidth*0.5 - sametargets[k].obwidth.x, 
+							     sy = sametargets[k].currentclickpoints.y - this.obheight*0.5 - sametargets[k].obheight.x,
+								 ex = sametargets[k].currentclickpoints.x + this.obwidth*0.5 + sametargets[k].obwidth.x,
+								 ey = sametargets[k].currentclickpoints.y + this.obheight*0.5 + sametargets[k].obheight.x; //得加上自己的半径才行哦
+								 if(radioend.x>=sx
+								 &&radioend.x<=ex
+								 &&radioend.y>=sy
+								 &&radioend.y<=ey){
+									 canuse = false;
+								 }
+						 }
+						 if(canuse){
+							 return radioend
+						 }
+					 }
+			   }
+			   for(let j=0;j<30;j++){
+				   if(f(this.firerange+40*j)){
+					   this.targetpoint = f(this.firerange+40*j);
+					   return;
+				   }
+			   }
 		}
     //计算两个机车圆心的距离
     minDistancefromcenter(){

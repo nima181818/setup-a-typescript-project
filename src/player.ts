@@ -16,7 +16,7 @@ export class Player {
     topUnitscanvas: HTMLCanvasElement
     structuresets: any
     eventlist: any
-    money: number = 1000
+    money: number = 1800
     powernumber: number = 0
     unittype: string
     moneyelement: HTMLDivElement

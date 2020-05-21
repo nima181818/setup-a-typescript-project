@@ -201,6 +201,12 @@ export class Rightbars {
             //左键建造，
             this.structurelist[j].onclick = function () {
                 //TODO 这里需要预判是否钱够
+                if (!this.moneyPrejudge(j, 'bar','player1')) {
+                    alert('钱不够')
+                    return;
+                }
+
+
                 let powervalue = world.playerManage.find(item=>{return item.unittype.indexOf('ai')==-1}).powernumber
       
                
@@ -403,7 +409,8 @@ export class Rightbars {
             this.tanklist[j].onclick = function () {
                 
                 //TODO 这里需要预判是否钱够
-                if (!this.moneyPrejudge(j, 'tank')) {
+                
+                if (!this.moneyPrejudge(j, 'tank','player1')) {
                     alert('钱不够')
                     return;
                 }
@@ -418,8 +425,10 @@ export class Rightbars {
         }
     }
     //金钱的判断
-    moneyPrejudge(j: number, type: string) {
-        let canbuild = false;
+    moneyPrejudge(j: number, type: string,unittype:string='player1') {
+        let canbuild = false,
+        player1 =  world.playerManage.find(item => { return item.unittype == unittype });
+        
         if (type == 'bar') {
             switch (j) {
                 case 0:
@@ -457,6 +466,7 @@ export class Rightbars {
             }
         }
         if(type=='soilder'){
+            debugger
             switch(j){
                 case 0:
                     canbuild = player1.money - 200 >= 0 //解放军 TODO 这里写死 应该要引用TODO--

@@ -1,9 +1,17 @@
 
-import {world} from './World'
+
+import {Dashboard} from './dashboard'
+class App{
+    dashboard:Dashboard
+     constructor(){
+         this.dashboard = new Dashboard()
+     }
+}
+let app = new App();
 window.onload = function () {
     //单位的所属情况，尽量在每一个函数里面判断，不要使用缓存
     let obstacles = [];
-    console.log(world)
+    // console.log(world)
     return;
     var back = document.getElementById('back');
         back.style.display='flex';

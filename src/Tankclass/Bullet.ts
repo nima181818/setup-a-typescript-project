@@ -10,6 +10,7 @@ export class Bullet{
     sin:number
     target:pointerface
     speed: number
+  
     drawsize:{
       width:number,
       height:number
@@ -159,7 +160,7 @@ export class Bullet{
            //目标血量减少？条件：要击中
            //classType表明是坦克  否则就是建筑
            //TODO--  建筑的position可能不一样
-           debugger
+           
            if(this.distanceFormlation(this.target,this.targetobject.classType=='tank'?this.targetobject.currentclickpoints:this.targetobject.positions,true)<=(this.targetobject.classType=='tank'?20:120)){
             this.targetobject.bloodLess(this.harm)
             this.handleEnemydied()

@@ -4,6 +4,27 @@
 body{
     display: flex;
 }
+.dashboard{
+    /* color:red
+     */
+     display: flex;
+     width:1350px;
+     height:600px;
+
+}
+.dashboard .leftradios{
+    width:750px;
+    height:600px;
+    background: red;
+}
+.dashboard .rightselections{
+    width:200px;
+    height:600px;
+    background: green;
+}
+.world{
+    display: flex;
+}
 .leftwrapper{
     max-width:750px;
     height:600px;
@@ -110,5 +131,5 @@ body>img{
 .rightcontainer{
     color:red;
     width:200px;
-    border:1px solid red;
+    /* border:1px solid red; */
 }

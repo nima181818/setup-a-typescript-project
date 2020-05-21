@@ -16,6 +16,8 @@ import {fog} from '../fog'
 console.log(rvosystem)
 export class Tank {
     static id: number = -1
+    chaostime:number = 0
+    fps:number = 0 //采样每20帧采样一次
     cost:number //消耗金钱
     alive:boolean=true
     gathertimeobj:{s:number,e:number}={s:null,e:null} //截取时间开始与截取时间结束
@@ -73,6 +75,7 @@ export class Tank {
     autofirecurrency: number = 200
     bulletmaxmile: number = 173
     clicktimestamp: number = new Date().getTime()
+    lastp:pointerface={x:null,y:null}
     currentclickpoints: Position1 = { x: null, y: null }
     proxycurrentclickpoints: Position1 = { x: null, y: null } //保证在不操作 currentclickpoints的情况下处理rvo的回调，以备不时之需
     targetpoint: Position1 = { x: 0, y: 0 } //目标点
@@ -156,7 +159,10 @@ export class Tank {
        
 		 
 	//	 this.paintAgain()
-		 
+    setTimeout(()=>{
+        let player1 = world.playerManage.find(item=>{return item.unittype==this.unittype})
+        player1.updateMoney('reduce',this.cost)
+    })
     }
     //初始化几个tank集合 other，all，my
     initEventtanklist(){
@@ -203,6 +209,7 @@ export class Tank {
       if(this.selected){
         // tankmoving_audio
 	if(this._name=='rhinocerotidaetank'||this._name=='skystarttank'){
+
             waitingorders_audio.playAudio();
         }else if(this._name=='liberationarmy'){
             howaboutaction_audio.playAudio();
@@ -237,7 +244,10 @@ export class Tank {
             if(this._name=='rhinocerotidaetank'||this._name=='skystarttank'){
                 //目标点不是敌人
                 if(!this.enemytarget){
-                    tankmoving_audio.playAudio();
+                    if(this.unittype!='ai1'){
+                        tankmoving_audio.playAudio();
+                    }
+                    
               //      this.enemytarget = null
                    
                 }
@@ -245,7 +255,10 @@ export class Tank {
                
             }else if(this._name=='liberationarmy'){
                 if(!this.enemytarget){
-                    movingnow_audio.playAudio();
+                    if(this.unittype!='ai1'){
+                        movingnow_audio.playAudio();
+                    }
+                   
                //     this.enemytarget = null
                 }
                
@@ -604,7 +617,7 @@ export class Tank {
         if (type == 'setendpoints') {
             this.targetpoint.x = x;
             this.targetpoint.y = y;
- 
+            this.chaostime = 1
             clearInterval(this.timer);
             this.timer = null;
             this.startpoint = JSON.parse(JSON.stringify(this.currentclickpoints));
@@ -700,12 +713,18 @@ export class Tank {
 				   for(let j=0;j<player.eventlist.tanklist.length;j++){
                   if(this.pointDistance(p,player.eventlist.tanklist[j].currentclickpoints,true)<=player.eventlist.tanklist[j].r){
 					  if(this._name=='liberationarmy'){
-						  soilderdoit_audio.playAudio()
+                          if(this.unittype!='ai1'){
+                            soilderdoit_audio.playAudio()
+                          }
+						 
 					  }
 					  if(this._name=='engineer'){
 					  }
 					  if(this._name=='rhinocerotidaetank'||this._name=='skystarttank'){
-						  tankattacking_audio.playAudio()
+                        if(this.unittype!='ai1'){
+                            tankattacking_audio.playAudio()
+                        }
+						  
 					  }
                   
                    this.movingwithattack = true
@@ -744,14 +763,20 @@ export class Tank {
 						//currentstructure.size.x??
 					 if(this.pointDistance(p,centerposition,true)<=0.5*currentstructure.size.x){
 					  if(this._name=='liberationarmy'){
-						  soilderdoit_audio.playAudio()
+                          if(this.unittype!='ai1'){
+                            soilderdoit_audio.playAudio()
+                          }
+					
 					  }
 					  if(this._name=='engineer'){
 						  
 						  //TODO
 					  }
 					  if(this._name=='rhinocerotidaetank'){
-						  tankattacking_audio.playAudio()
+                        if(this.unittype!='ai1'){
+                            tankattacking_audio.playAudio()
+                        }
+						 
 					  }
                   
                    this.movingwithattack = true
@@ -928,6 +953,7 @@ export class Tank {
         }
 		let calltime=0;
         that.timer = window.setInterval(() => {
+            that.fps++;
           calltime++;
 	//	  console.log(calltime)
             //p为当前点，a为寻路算法当前点，b为寻路算法下一点
@@ -1247,14 +1273,35 @@ export class Tank {
                    
 				}
                
-		    }
-             
-		    //如果是多个单位到达同一个地点，在目标点已经被占据的情况下。。。
-			let alleventlist = world.getEventlist('all',this.unittype).tanklist,
+            }
+            // else{
+                //凌乱模式检测
+             if(this._id==8){
+                 debugger
+             }
+               if((this.timer)&&(this.pointDistance(this.lastp,this.currentclickpoints,true)<=10)){
+                   
+                   this.chaostime++;
+               }else{
+                this.chaostime=1
+               }
+              
+               if(this.fps%20==0){
+                this.lastp.x = this.currentclickpoints.x;
+                this.lastp.y = this.currentclickpoints.y;
+                 
+               }
+               if(this.chaostime>20){
+                clearInterval(this.timer);
+                this.timer = null;
+                this.chaostime=1
+               }
+                return;
+                let alleventlist = world.getEventlist('all',this.unittype).tanklist,
 			   sametargets = [];
 			  
 			   for(let j=0;j<alleventlist.length;j++){
-				   if(this.pointDistance(this.targetpoint,alleventlist[j].targetpoint,true)<=10){
+				   if((this._id!=alleventlist._id)&&this.pointDistance(this.targetpoint,alleventlist[j].targetpoint,true)<=10){
 					   //即说明 有相同的目标；
 					   if(this.pointDistance(this.targetpoint,alleventlist[j].currentclickpoints,true)<=this.firerange){
 						   //已经抵达周围，当前单位已经被其他单位挡住了路线
@@ -1266,39 +1313,19 @@ export class Tank {
 						   
 					   }
 				   }
-			   }
-			   //r从firerange开始
-			    let f=(r)=>{
-				   let theta = 2*Math.PI/10;
-				     for(let j=0;j<10;j++){
-						 let canuse = false,
-						     radioend = {
-								 x:this.targetpoint.x+r*Math.cos(theta*j),
-								 y:this.targetpoint.y+r*Math.sin(theta*j),
-							 }
-						 for(let k=0;k<sametargets.length;k++){
-							 let sx = sametargets[k].currentclickpoints.x - this.obwidth*0.5 - sametargets[k].obwidth.x, 
-							     sy = sametargets[k].currentclickpoints.y - this.obheight*0.5 - sametargets[k].obheight.x,
-								 ex = sametargets[k].currentclickpoints.x + this.obwidth*0.5 + sametargets[k].obwidth.x,
-								 ey = sametargets[k].currentclickpoints.y + this.obheight*0.5 + sametargets[k].obheight.x; //得加上自己的半径才行哦
-								 if(radioend.x>=sx
-								 &&radioend.x<=ex
-								 &&radioend.y>=sy
-								 &&radioend.y<=ey){
-									 canuse = false;
-								 }
-						 }
-						 if(canuse){
-							 return radioend
-						 }
-					 }
-			   }
-			   for(let j=0;j<30;j++){
-				   if(f(this.firerange+40*j)){
-					   this.targetpoint = f(this.firerange+40*j);
-					   return;
-				   }
-			   }
+               }
+               //上面为找到已经达到目标点附近的点
+               for(let j=0;j<sametargets.length;j++){
+                   let r1 = (sametargets[j].obheight**2+sametargets[j].obwidth**2)**0.5,
+                       r2 = (this.obheight**2+this.obwidth**2)**0.5;
+                   if(this.pointDistance(sametargets[j].currentclickpoints,this.currentclickpoints,true)<=(r1+r2)){
+                       clearInterval(this.timer);
+                       this.timer = null
+                   }
+               }
+            
+             
+		  
 		}
     //计算两个机车圆心的距离
     minDistancefromcenter(){
@@ -1396,6 +1423,10 @@ export class Tank {
                     y: this.velocity.y - velocitylengthmatrix.y
 
                 }
+                // this.seekforce = {
+                //     x:this.seekforce.x - 10*velocitylengthmatrix.x,
+                //     y:this.seekforce.y - 10*velocitylengthmatrix.y,
+                // }
             }
             // let overlapdistance = ((((obstacle.currentclickpoints.x - this.currentclickpoints.x) ** 2 + (obstacle.currentclickpoints.y - this.currentclickpoints.y) ** 2) ** 0.5 - (this.r + obstacle.r)) ** 2) ** 0.5,
             // overlapobj = {

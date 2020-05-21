@@ -19,95 +19,29 @@
     1层 UNIt层
     2层 fog层
     3层 选择层 -->
-    <img src='./src/assets/victory.jpg' style="width: 544px;
-    height: 144px;
-    display: none;
-    position: absolute;
-    left: 85px;
-    z-index: 11;
-    flex-shrink: 0;
-    top: 190px;" class="victory" />
-    <div class="leftwrapper" style="flex-shrink:0">
-    <canvas width="4480" height="1400" id="canvas1" style="background: black;"></canvas>
-    <canvas width="4480"  height="1400" style="position: absolute;top:0px;z-index:3" id="canvas2"></canvas>
-    <!-- canvas3 fog 层 -->
-    <canvas width="4480"  height="1400" style="position: absolute;top:0px;z-index:4;border:1px solid red" id="canvas3"></canvas>
-    <canvas width="4480"  height="1400" style="position: absolute;top:0px;z-index:5;border:1px solid red" id="canvasclick"></canvas>
+    <script src="./src/utils/mutithread.js" ></script>
     
-    <div id="back" style="display: flex;z-index: -1;width:4480px;"></div>
-    <div id="basecontrol">
-       
-    </div>
-    </div>
-    <div class="rightcontainer">
-        <div class="moneyandpower">
-         
-            <div class="tops">
-               $ 0
-            </div>
-            
-            <div class="powers">
-                / 
-               <img style="width:29px"  src="./src/assets/powervalue.png" /><span id="powernumber"> 0</span>
-            </div>
-
-        </div>
-       
-        <div class="playground">
-            <div class="wrappers" style="background: black;">
-                <img id="canvas6"  style="background: black;width:100%;height:105.8px;margin-top:35px"/>
-                <canvas id="canvas4"  width=180 height=105.8 style="position:relative;top:-110px;"></canvas>
-                <canvas id="fog_littlewindow" width=180 height=105.8 style="position:relative;top:-219px;z-index:6"></canvas>
-                <canvas id="click_littlewindow" width=180 height=105.8 style="position:relative;top:-328px;z-index:7"></canvas>
-            </div>
-        </div>
-        <div class="bars">
-            <div class="items">
-                
-            </div>
-            <div class="items"></div>
-            <div class="items"></div>
-            <div class="items"></div>
-        </div>
-        <!-- 建筑 -->
-        <div class="stlist">
-          <div id="stpowertation"></div>
-          <div id="stoil"></div>
-          <div id="stinfantry"></div>
-          <div id="stwcf"></div>
-          
-        </div>
-        <!-- 防御 -->
-        <div class="guardlist">
-            <div id="prismtower"></div>
-          
-            <!-- <div id="sentrycannon"></div> -->
-        </div>
-
-        <!-- 兵种 -->
-        <div class="soilderlist">
-            <div id="liberationarmy"></div>
-            <div id="engineer"></div>
-            <!-- <div id="spy"></div> -->
-        </div>
-
-        <!-- 坦克 -->
-        <div class="wartanklist">
-            <div id="rhinocerotidaetank"></div>
-            <div id="skystart"></div>
-        </div>
-    </div>
-    <br>
-    <div id="mapshows">
-        地图映射器
-    </div>
-    <script src="./src/utils/ROV.js"></script>
-    <script src="./src/utils/mutithread.js"></script>
-    <script src="app.js" type="text/javascript"></script>
-   
-    <script>
-      //！注意  以后的事件绑定请使用addEventlistner
-    </script>
+    <script src="./src/utils/ROV.js" ></script>
+    <script src="app.js"></script>
+   <script>
+//        function unicodeToChar(text) {
+//    return text.replace(/\\u[\dA-F]{4}/gi, 
+//           function (match) {
+//                return String.fromCharCode(parseInt(match.replace(/\\u/g, ''), 16));
+//           });
+// }
+//        window.onload = function(){
+        
+//           let template = document.createElement('div')
+//            template.innerHTML = unicodeToChar(strings);
+//            console.dir(template)
+//            for(let j=0;j<template.children.length;j++){
+//             var y=template.children[j].cloneNode(true);  
+//             document.body.appendChild(y)
+//            }
+     
+//        }
+   </script>
 </body>
 
 </html>

@@ -218,7 +218,7 @@ export class Timemanager {
         //设计player1的一些建筑为随机目标
         let player1 = this.kuilei.getAnotherplayer(),
             player1Structurelist = [];
-        this.troops = []
+      
 
         for (let j in player1.structuresets.unitsList) {
             for (let k = 0; k < player1.structuresets.unitsList[j].length; k++) {
@@ -228,6 +228,7 @@ export class Timemanager {
         let randomindex = parseInt((Math.random() * (player1Structurelist.length - 1)).toString())
       
         if (!hasalive && this.looptime % 60 == 0) {
+            this.troops = []
             this.enemytarget = player1Structurelist[randomindex]
             if (this.enemytarget) {
                 if (lierationarmy.length == 13) {
@@ -260,7 +261,9 @@ export class Timemanager {
 
         }
         if (hasalive) {
+           try{
             if (!this.enemytarget.alive) {
+               
                 //建筑物死亡 reset target
                 this.enemytarget = player1Structurelist.find(item=>{return item.alive});
                   if(this.enemytarget){
@@ -275,7 +278,12 @@ export class Timemanager {
                      
                     }
                   }
+              
             }
+           }catch(e){
+                 
+           }
+            
         }
 
     }

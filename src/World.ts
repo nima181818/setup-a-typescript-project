@@ -59,7 +59,11 @@ this.changeCanvasdrawimgbehavior();
    this.initComponents()
    setInterval(()=>{
 	   let gameresults = this.judgeWinornot();
-	   console.log(gameresults)
+	    if(gameresults=='win'){
+        let victory = document.getElementsByClassName('victory')[0] as HTMLImageElement;
+          victory.style.display = 'block';
+          //回到主页面
+      }
    },500)
   }
   	//判断是否玩家失败/胜利
@@ -79,7 +83,7 @@ this.changeCanvasdrawimgbehavior();
 					}
 				}
 			}
-			if((!hasstructure)&&(!hasaliveunits)){
+			if((!hasstructure)){
 				//敌方建筑均死亡
 				gamestate = 'win';
 				return gamestate
@@ -97,7 +101,7 @@ this.changeCanvasdrawimgbehavior();
 					}
 				}
 			}
-			if((!hasstructure)&&(!hasaliveunits)){
+			if((!hasstructure)){
 				//我方建筑均死亡
 				gamestate = 'lost';
 				return gamestate

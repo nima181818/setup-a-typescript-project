@@ -34,7 +34,10 @@ class Eventlist {
           
         }
         for(let j=0;j<this.tanklist.length;j++){
-            this.tanklist[j].showBloodlength(); //保证血量显示不被覆盖掉
+            if(this.tanklist[j].unittype=='player1'){
+                this.tanklist[j].showBloodlength(); //保证血量显示不被覆盖掉
+            }
+        
         }
        
       //  console.timeEnd()

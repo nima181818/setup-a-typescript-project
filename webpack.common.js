@@ -18,7 +18,12 @@
             use: [
                 {
                     loader: 'file-loader',
-                    options: {}
+                    options: {
+                      output: {
+                        filename: '[name].js',
+                        path: path.resolve(__dirname, 'dist'),
+                      }
+                    }
                 }]
         },
         {

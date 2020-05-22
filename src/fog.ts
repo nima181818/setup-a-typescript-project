@@ -13,8 +13,8 @@ class Fog {
         this.context = this.fogcanvas.getContext('2d');
         this.fog_littlewindow = document.getElementById('fog_littlewindow') as HTMLCanvasElement
         this.fog_littlewindowctx = this.fog_littlewindow.getContext('2d');
-        // this.context.fillRect(0,0,4480,1400);
-        // this.fog_littlewindowctx.fillRect(0,0,180,105.8);
+        this.context.fillRect(0,0,4480,1400);
+        this.fog_littlewindowctx.fillRect(0,0,180,105.8);
         this.clear(782,442,1123-782,835-442)
     }
     clear(x:number,y:number,width:number,height:number){

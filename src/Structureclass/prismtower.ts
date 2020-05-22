@@ -52,9 +52,9 @@ export class Prismtower extends Structure {
             })
         }
     }
-    //监听模式 TODO-- 现在是连自己人都打
+    //监听模式 TODO-- 
     watchMode() {
-        let othereventlist = world.getEventlist('all', this.unittype),
+        let othereventlist = world.getEventlist('other', this.unittype),
             distance = 10 ** 9,
             index = 0,
             structureposition = {

@@ -1,6 +1,6 @@
 import { Structuresets } from './Structureclass/structureSet'
 import { Eventlist } from './Tankclass/Eventlist';
-import { Tank } from './Tankclass/tank';
+
 import { Rhinocerotidaetank } from './Tankclass/rhinocerotidaetank'
 import { BaseControl } from './Structureclass/basecontrol'
 import { Soliderfactory } from './Structureclass/soliderfactory'

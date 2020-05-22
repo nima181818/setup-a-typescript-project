@@ -1291,7 +1291,7 @@ export class Tank {
                 this.lastp.y = this.currentclickpoints.y;
                  
                }
-               if(this.chaostime>20){
+               if(this.chaostime>40){
                 clearInterval(this.timer);
                 this.timer = null;
                 this.chaostime=1

@@ -13,14 +13,54 @@ body{
 
 }
 .dashboard .leftradios{
-    width:750px;
-    height:600px;
-    background: red;
+    width: 750px;
+    height: 600px;
+    background: black;
+    box-sizing: border-box;
+    overflow: hidden;
+    box-sizing: border-box;
+    padding-left: 38px;
+}
+
+.leftradios .sons{
+   width:664px;
+   height:600px;
+   overflow: hidden;
+}
+.sons>img{
+    width: 1221px;
+    height: 816px;
+    position: relative;
+    left: -192px;
+    top: -59px;
 }
 .dashboard .rightselections{
     width:200px;
     height:600px;
-    background: green;
+    
+}
+.rightselections .top1{
+    width:200px;
+    height:215px;
+}
+.selectionslist{
+    cursor: pointer;
+    overflow: hidden;
+}
+.selectionslist .menu_items{
+    width: 200px;
+    position: relative;
+    height: 53px;
+    left:0;
+    font-size:21px;
+    text-align: center;
+    line-height: 53px;
+    color: yellow;
+    border-top: 2px solid white;
+    background-image: url(./assets/covers/selection_items.jpg);
+    background-repeat: no-repeat;
+    background-size: 100% 53px;
+    transition:left 0.2s
 }
 .world{
     display: flex;

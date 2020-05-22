@@ -57,10 +57,25 @@ this.changeCanvasdrawimgbehavior();
 
     this.playerManage.push(player1,ai1);
    this.initComponents()
-   setInterval(()=>{
+  let timers = setInterval(()=>{
+    
 	   let gameresults = this.judgeWinornot();
 	    if(gameresults=='win'){
+        clearInterval(timers)
         let victory = document.getElementsByClassName('victory')[0] as HTMLImageElement;
+          victory.style.display = 'block';
+          //回到主页面
+          setTimeout(()=>{
+            window.location.reload()
+          },10000)
+         
+      }
+      if(gameresults=='lost'){
+        clearInterval(timers)
+        setTimeout(()=>{
+          window.location.reload()
+        },10000)
+        let victory = document.getElementsByClassName('lost')[0] as HTMLImageElement;
           victory.style.display = 'block';
           //回到主页面
       }

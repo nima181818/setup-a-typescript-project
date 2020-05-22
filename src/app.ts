@@ -5,6 +5,18 @@ class App{
     dashboard:Dashboard
      constructor(){
          this.dashboard = new Dashboard()
+         this.initJsFile();
+     }
+     initJsFile(){
+        
+         let multithread = document.createElement('script');
+         multithread.src="./src/utils/mutithread.js"
+         document.body.appendChild(multithread)
+         {
+            let multithread = document.createElement('script');
+            multithread.src="./src/utils/ROV.js"
+            document.body.appendChild(multithread)
+         }
      }
 }
 let app = new App();

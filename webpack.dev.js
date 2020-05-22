@@ -1,9 +1,35 @@
  const merge = require('webpack-merge');
  const common = require('./webpack.common.js');
-
- module.exports = merge(common, {
-   mode: 'development',
-   devtool: 'inline-source-map',
-   devServer: {
-    contentBase: './dist',
-   }, });
+ const path = require('path');
+ module.exports = {
+  entry: path.join(__dirname, './src/app.ts'),
+  output: {
+    filename: 'app.js',
+    path: __dirname
+},
+  devServer: {
+      disableHostCheck: true,
+      host:'127.0.0.1',
+port:40021
+    },
+    module: {
+      rules: [
+          {
+              test: /\.tsx?$/,
+              loader: 'ts-loader',
+              exclude: /node_modules/,
+          },
+          {
+              test: /\.(png|jpg|gif|mp3|wav)$/,
+              use: [
+                  {
+                      loader: 'file-loader',
+                      options: {}
+                  }]
+          }
+      ]
+  },
+  resolve: {
+      extensions: [".tsx", ".ts", ".js"]
+  },
+};
